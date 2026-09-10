@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" role="img" aria-labelledby="logoTitle logoDesc">
   <title id="logoTitle">Logo MAX Carnes Premium</title>
-  <desc id="logoDesc">Sello heráldico con un toro y el texto MAX Carnes Premium</desc>
+  <desc id="logoDesc">Sello heráldico dorado con el Sol de Mayo, un toro y el texto MAX Carnes Premium</desc>
 
   <defs>
     <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
@@ -32,7 +32,33 @@
   <g fill="url(#gold)">
     <rect x="86" y="116" width="11" height="11" transform="rotate(45 91.5 121.5)"/>
     <rect x="303" y="116" width="11" height="11" transform="rotate(45 308.5 121.5)"/>
-    <rect x="195" y="66" width="10" height="10" transform="rotate(45 200 71)"/>
+  </g>
+
+  <!-- Sol de Mayo -->
+  <g>
+    <circle cx="200" cy="79" r="9.5" fill="url(#gold)"/>
+    <g fill="none" stroke="#8f6a2f" stroke-width="1.3" stroke-linecap="round">
+      <circle cx="196.3" cy="77" r="1.4" fill="#8f6a2f" stroke="none"/>
+      <circle cx="203.7" cy="77" r="1.4" fill="#8f6a2f" stroke="none"/>
+      <path d="M 200 78.5 v 3"/>
+      <path d="M 200 82.5 q 2.5 1.8 0 3 q -2.5 -1.2 0 -3"/>
+    </g>
+    <g fill="url(#gold)">
+      <rect x="197.3" y="58" width="5.4" height="13" rx="2.7"/>
+      <rect x="197.3" y="58" width="5.4" height="13" rx="2.7" transform="rotate(60 200 79)"/>
+      <rect x="197.3" y="58" width="5.4" height="13" rx="2.7" transform="rotate(120 200 79)"/>
+      <rect x="197.3" y="58" width="5.4" height="13" rx="2.7" transform="rotate(180 200 79)"/>
+      <rect x="197.3" y="58" width="5.4" height="13" rx="2.7" transform="rotate(240 200 79)"/>
+      <rect x="197.3" y="58" width="5.4" height="13" rx="2.7" transform="rotate(300 200 79)"/>
+    </g>
+    <g fill="url(#gold)">
+      <path d="M 200 66 Q 194.5 58 200 49 Q 205.5 58 200 66 Z" transform="rotate(30 200 79)"/>
+      <path d="M 200 66 Q 194.5 58 200 49 Q 205.5 58 200 66 Z" transform="rotate(90 200 79)"/>
+      <path d="M 200 66 Q 194.5 58 200 49 Q 205.5 58 200 66 Z" transform="rotate(150 200 79)"/>
+      <path d="M 200 66 Q 194.5 58 200 49 Q 205.5 58 200 66 Z" transform="rotate(210 200 79)"/>
+      <path d="M 200 66 Q 194.5 58 200 49 Q 205.5 58 200 66 Z" transform="rotate(270 200 79)"/>
+      <path d="M 200 66 Q 194.5 58 200 49 Q 205.5 58 200 66 Z" transform="rotate(330 200 79)"/>
+    </g>
   </g>
 
   <!-- Horns -->
