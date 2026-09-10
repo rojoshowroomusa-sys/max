@@ -252,20 +252,25 @@ Las fotos en `assets/img/cortes/` provienen de [Wikimedia Commons](https://commo
 
 Fuentes por corte:
 - **Vacío / Taco de vacío**: [Vacío (corte argentino de carne) con sal gruesa al horno](https://commons.wikimedia.org/wiki/File:Vac%C3%ADo_(corte_argentino_de_carne)_con_sal_gruesa_al_horno.jpg)
-- **Tapa de asado / Paleta**: [Raw Beef Short Ribs Slices](https://commons.wikimedia.org/wiki/File:Raw_Beef_Short_Ribs_Slices.jpg)
+- **Tapa de asado**: [Raw Beef Short Ribs Slices](https://commons.wikimedia.org/wiki/File:Raw_Beef_Short_Ribs_Slices.jpg)
+- **Paleta / Peceto / Nalga**: [Beef round top round steak in pan, raw](https://commons.wikimedia.org/wiki/File:Beef_round_top_round_steak_in_pan,_raw.jpg) *(no hay foto específica de paleta; se usa el round como aproximación)*
 - **Matambre**: [Matambre1](https://commons.wikimedia.org/wiki/File:Matambre1.jpg)
 - **Entraña**: [Skirt steak](https://commons.wikimedia.org/wiki/File:Skirt_steak_1_2015-02-15.JPG)
-- **Lomo / Bola de lomo / Mocho**: [Beef tenderloin](https://commons.wikimedia.org/wiki/File:Beef_tenderloin.jpg)
-- **Cuadril / Peceto**: [Rump steak](https://commons.wikimedia.org/wiki/File:Rump_steak.jpg)
-- **Cuadrada / Bife c/ Lomo**: [Raw Beef Ribeye Slices for Hot Pot](https://commons.wikimedia.org/wiki/File:Raw_Beef_Ribeye_Slices_for_Hot_Pot.jpg)
-- **Colita / Picaña**: [Picanha](https://commons.wikimedia.org/wiki/File:Picanha.jpg)
+- **Lomo / Bola de lomo**: [Beef tenderloin](https://commons.wikimedia.org/wiki/File:Beef_tenderloin.jpg) — *bola de lomo usa* [Top sirloin steak](https://commons.wikimedia.org/wiki/File:Top_sirloin_steak.jpg)
+- **Mocho**: [Flat Iron Steak](https://commons.wikimedia.org/wiki/File:Flat_Iron_Steak_-_Flat_Iron_2025-05-12.jpg)
+- **Cuadril**: [Rump steak](https://commons.wikimedia.org/wiki/File:Rump_steak.jpg)
+- **Cuadrada**: [Roast topside of beef](https://commons.wikimedia.org/wiki/File:Roast_topside_of_beef.jpg)
+- **Colita de cuadril**: [Tri Tip (uncooked)](https://commons.wikimedia.org/wiki/File:Morton%27s_of_Omaha_Steakhouse_Classic_Tri_Tip_beef_bottom_sirloin_uncooked.JPG)
 - **Bifes**: [Bife de chorizo](https://commons.wikimedia.org/wiki/File:Bife_de_chorizo.jpg)
-- **Nalga / Roast beef**: [Beef round top round steak in pan](https://commons.wikimedia.org/wiki/File:Beef_round_top_round_steak_in_pan,_raw.jpg)
-- **Picada**: [Ground beef USDA](https://commons.wikimedia.org/wiki/File:Ground_beef_USDA.jpg)
+- **Roast beef**: [Roast beef (ready and served)](https://commons.wikimedia.org/wiki/File:Rostas_(ready_and_served).JPG)
+- **Picada**: [Diced meat](https://commons.wikimedia.org/wiki/File:Diced_meat.JPG)
 - **Osobuco / Osobuco del Rey**: [Osobuco](https://commons.wikimedia.org/wiki/File:Osobuco_-_2010-10-20.jpg)
-- **T-Bone / Tomahawk**: [Angus Organic Entrecote](https://commons.wikimedia.org/wiki/File:Angus_Organic_Entrecote.jpg)
+- **T-Bone**: [T-Bone Steak](https://commons.wikimedia.org/wiki/File:T-Bone_Steak_(9417095101).jpg)
+- **Tomahawk**: [Angus Organic Entrecote](https://commons.wikimedia.org/wiki/File:Angus_Organic_Entrecote.jpg)
+- **Picaña**: [Picanha](https://commons.wikimedia.org/wiki/File:Picanha.jpg)
 - **Pecho**: [Brisket](https://commons.wikimedia.org/wiki/File:Brisketphoto.jpg)
 - **Completo**: [Asadito](https://commons.wikimedia.org/wiki/File:Asadito.jpg)
+- **Bife c/ Lomo**: [Australian beef porterhouse steak](https://commons.wikimedia.org/wiki/File:Australian_beef_porterhouse_steak.jpg)
 
 ### Cloudflare Workers
 
