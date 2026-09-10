@@ -246,6 +246,27 @@ El frontend consulta Supabase y usa el catálogo local como respaldo si no hay d
 
 > Las credenciales van en `js/config.js`. La **publishable key** es pública por diseño (RLS protege los datos). La `service_role` key **nunca** debe ir al frontend ni al repo.
 
+## Imágenes de los cortes
+
+Las fotos en `assets/img/cortes/` provienen de [Wikimedia Commons](https://commons.wikimedia.org) y se usan bajo sus licencias (mayormente CC BY-SA). Pueden reemplazarse por fotos propias actualizando la columna `image_url` (o el campo `img` en `js/products.js` como respaldo).
+
+Fuentes por corte:
+- **Vacío / Taco de vacío**: [Vacío (corte argentino de carne) con sal gruesa al horno](https://commons.wikimedia.org/wiki/File:Vac%C3%ADo_(corte_argentino_de_carne)_con_sal_gruesa_al_horno.jpg)
+- **Tapa de asado / Paleta**: [Raw Beef Short Ribs Slices](https://commons.wikimedia.org/wiki/File:Raw_Beef_Short_Ribs_Slices.jpg)
+- **Matambre**: [Matambre1](https://commons.wikimedia.org/wiki/File:Matambre1.jpg)
+- **Entraña**: [Skirt steak](https://commons.wikimedia.org/wiki/File:Skirt_steak_1_2015-02-15.JPG)
+- **Lomo / Bola de lomo / Mocho**: [Beef tenderloin](https://commons.wikimedia.org/wiki/File:Beef_tenderloin.jpg)
+- **Cuadril / Peceto**: [Rump steak](https://commons.wikimedia.org/wiki/File:Rump_steak.jpg)
+- **Cuadrada / Bife c/ Lomo**: [Raw Beef Ribeye Slices for Hot Pot](https://commons.wikimedia.org/wiki/File:Raw_Beef_Ribeye_Slices_for_Hot_Pot.jpg)
+- **Colita / Picaña**: [Picanha](https://commons.wikimedia.org/wiki/File:Picanha.jpg)
+- **Bifes**: [Bife de chorizo](https://commons.wikimedia.org/wiki/File:Bife_de_chorizo.jpg)
+- **Nalga / Roast beef**: [Beef round top round steak in pan](https://commons.wikimedia.org/wiki/File:Beef_round_top_round_steak_in_pan,_raw.jpg)
+- **Picada**: [Ground beef USDA](https://commons.wikimedia.org/wiki/File:Ground_beef_USDA.jpg)
+- **Osobuco / Osobuco del Rey**: [Osobuco](https://commons.wikimedia.org/wiki/File:Osobuco_-_2010-10-20.jpg)
+- **T-Bone / Tomahawk**: [Angus Organic Entrecote](https://commons.wikimedia.org/wiki/File:Angus_Organic_Entrecote.jpg)
+- **Pecho**: [Brisket](https://commons.wikimedia.org/wiki/File:Brisketphoto.jpg)
+- **Completo**: [Asadito](https://commons.wikimedia.org/wiki/File:Asadito.jpg)
+
 ### Cloudflare Workers
 
 ```bash
