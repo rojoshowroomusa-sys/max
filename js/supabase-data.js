@@ -10,7 +10,6 @@ function mapProduct(row) {
     categoria: row.categoria || "clasicos",
     price: Number(row.price_per_kg),
     desc: row.description || "",
-    img: row.image_url || null,
     meta: meta.coccion
       ? { coccion: meta.coccion, punto: meta.punto || "", tiempo: meta.tiempo || "" }
       : undefined,
@@ -31,7 +30,7 @@ function mapCombo(row) {
 async function fetchProducts(supabaseClient) {
   const { data, error } = await supabaseClient
     .from("products")
-    .select("slug, name, categoria, price_per_kg, description, image_url, meta")
+    .select("slug, name, categoria, price_per_kg, description, meta")
     .eq("is_active", true)
     .order("sku", { ascending: true });
   if (error) throw error;

@@ -246,32 +246,6 @@ El frontend consulta Supabase y usa el catálogo local como respaldo si no hay d
 
 > Las credenciales van en `js/config.js`. La **publishable key** es pública por diseño (RLS protege los datos). La `service_role` key **nunca** debe ir al frontend ni al repo.
 
-## Imágenes de los cortes
-
-Las fotos en `assets/img/cortes/` provienen de [Wikimedia Commons](https://commons.wikimedia.org) y se usan bajo sus licencias (mayormente CC BY-SA). Pueden reemplazarse por fotos propias actualizando la columna `image_url` (o el campo `img` en `js/products.js` como respaldo).
-
-Fuentes por corte:
-- **Vacío / Taco de vacío**: [Vacío (corte argentino de carne) con sal gruesa al horno](https://commons.wikimedia.org/wiki/File:Vac%C3%ADo_(corte_argentino_de_carne)_con_sal_gruesa_al_horno.jpg)
-- **Tapa de asado**: [Raw Beef Short Ribs Slices](https://commons.wikimedia.org/wiki/File:Raw_Beef_Short_Ribs_Slices.jpg)
-- **Paleta / Peceto / Nalga**: [Beef round top round steak in pan, raw](https://commons.wikimedia.org/wiki/File:Beef_round_top_round_steak_in_pan,_raw.jpg) *(no hay foto específica de paleta; se usa el round como aproximación)*
-- **Matambre**: [Matambre1](https://commons.wikimedia.org/wiki/File:Matambre1.jpg)
-- **Entraña**: [Skirt steak](https://commons.wikimedia.org/wiki/File:Skirt_steak_1_2015-02-15.JPG)
-- **Lomo / Bola de lomo**: [Beef tenderloin](https://commons.wikimedia.org/wiki/File:Beef_tenderloin.jpg) — *bola de lomo usa* [Top sirloin steak](https://commons.wikimedia.org/wiki/File:Top_sirloin_steak.jpg)
-- **Mocho**: [Flat Iron Steak](https://commons.wikimedia.org/wiki/File:Flat_Iron_Steak_-_Flat_Iron_2025-05-12.jpg)
-- **Cuadril**: [Rump steak](https://commons.wikimedia.org/wiki/File:Rump_steak.jpg)
-- **Cuadrada**: [Roast topside of beef](https://commons.wikimedia.org/wiki/File:Roast_topside_of_beef.jpg)
-- **Colita de cuadril**: [Tri Tip (uncooked)](https://commons.wikimedia.org/wiki/File:Morton%27s_of_Omaha_Steakhouse_Classic_Tri_Tip_beef_bottom_sirloin_uncooked.JPG)
-- **Bifes**: [Bife de chorizo](https://commons.wikimedia.org/wiki/File:Bife_de_chorizo.jpg)
-- **Roast beef**: [Roast beef (ready and served)](https://commons.wikimedia.org/wiki/File:Rostas_(ready_and_served).JPG)
-- **Picada**: [Diced meat](https://commons.wikimedia.org/wiki/File:Diced_meat.JPG)
-- **Osobuco / Osobuco del Rey**: [Osobuco](https://commons.wikimedia.org/wiki/File:Osobuco_-_2010-10-20.jpg)
-- **T-Bone**: [T-Bone Steak](https://commons.wikimedia.org/wiki/File:T-Bone_Steak_(9417095101).jpg)
-- **Tomahawk**: [Angus Organic Entrecote](https://commons.wikimedia.org/wiki/File:Angus_Organic_Entrecote.jpg)
-- **Picaña**: [Picanha](https://commons.wikimedia.org/wiki/File:Picanha.jpg)
-- **Pecho**: [Brisket](https://commons.wikimedia.org/wiki/File:Brisketphoto.jpg)
-- **Completo**: [Asadito](https://commons.wikimedia.org/wiki/File:Asadito.jpg)
-- **Bife c/ Lomo**: [Australian beef porterhouse steak](https://commons.wikimedia.org/wiki/File:Australian_beef_porterhouse_steak.jpg)
-
 ### Cloudflare Workers
 
 ```bash

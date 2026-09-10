@@ -221,7 +221,3 @@ let COMBOS = [
     regularPrice: 44980,
   },
 ];
-
-CORTES.forEach(function (c) {
-  c.img = c.img || "assets/img/cortes/" + c.id + ".jpg";
-});
