@@ -1,66 +1,70 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 520" role="img" aria-labelledby="logoTitle logoDesc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" role="img" aria-labelledby="logoTitle logoDesc">
   <title id="logoTitle">Logo MAX Carnes Premium</title>
-  <desc id="logoDesc">Cinta azul con una cabeza de vaca y el texto MAX Carnes Premium</desc>
+  <desc id="logoDesc">Sello heráldico con un toro y el texto MAX Carnes Premium</desc>
 
-  <!-- Ribbons -->
-  <g>
-    <path d="M145 320 L110 470 L155 470 L175 350 Z" fill="#0ea5e9"/>
-    <path d="M255 320 L290 470 L245 470 L225 350 Z" fill="#0ea5e9"/>
-    <path d="M110 470 L155 470 L155 455 L125 455 Z" fill="#38bdf8"/>
-    <path d="M290 470 L245 470 L245 455 L275 455 Z" fill="#38bdf8"/>
-    <path d="M145 320 L110 470 L155 470 L175 350 Z" fill="none" stroke="#0369a1" stroke-width="3" stroke-linejoin="round"/>
-    <path d="M255 320 L290 470 L245 470 L225 350 Z" fill="none" stroke="#0369a1" stroke-width="3" stroke-linejoin="round"/>
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e6c883"/>
+      <stop offset="0.5" stop-color="#b8914b"/>
+      <stop offset="1" stop-color="#8f6a2f"/>
+    </linearGradient>
+    <radialGradient id="sealDark" cx="0.5" cy="0.32" r="0.9">
+      <stop offset="0" stop-color="#2a2e35"/>
+      <stop offset="0.65" stop-color="#141518"/>
+      <stop offset="1" stop-color="#0e0f12"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Seal rings -->
+  <circle cx="200" cy="210" r="150" fill="none" stroke="url(#gold)" stroke-width="6"/>
+  <circle cx="200" cy="210" r="156" fill="none" stroke="#c9a35c" stroke-width="2"/>
+  <circle cx="200" cy="210" r="142" fill="none" stroke="#6f5b3a" stroke-width="1.5"/>
+  <circle cx="200" cy="210" r="124" fill="url(#sealDark)" stroke="url(#gold)" stroke-width="3"/>
+  <circle cx="200" cy="210" r="110" fill="none" stroke="#8a6d3b" stroke-width="1.5" opacity="0.8"/>
+
+  <!-- Fine arc under MAX -->
+  <path d="M 132 104 Q 200 92 268 104" fill="none" stroke="url(#gold)" stroke-width="1.5" opacity="0.85"/>
+
+  <!-- MAX wordmark -->
+  <text x="200" y="140" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-size="46" letter-spacing="12" fill="url(#gold)">MAX</text>
+
+  <!-- Diamond accents -->
+  <g fill="url(#gold)">
+    <rect x="86" y="116" width="11" height="11" transform="rotate(45 91.5 121.5)"/>
+    <rect x="303" y="116" width="11" height="11" transform="rotate(45 308.5 121.5)"/>
+    <rect x="195" y="66" width="10" height="10" transform="rotate(45 200 71)"/>
   </g>
 
-  <!-- Outer ribbon circle with scalloped edge -->
-  <g>
-    <circle cx="200" cy="200" r="150" fill="none" stroke="#38bdf8" stroke-width="16"/>
-    <circle cx="200" cy="200" r="150" fill="none" stroke="#0ea5e9" stroke-width="16" stroke-dasharray="18 10"/>
-    <circle cx="200" cy="200" r="150" fill="none" stroke="#0284c7" stroke-width="3"/>
-    <circle cx="200" cy="200" r="122" fill="#0891b2" stroke="#e0f2fe" stroke-width="8"/>
+  <!-- Horns -->
+  <g fill="none" stroke="url(#gold)" stroke-width="8" stroke-linecap="round">
+    <path d="M 142 210 C 118 198 106 170 112 148"/>
+    <path d="M 258 210 C 282 198 294 170 288 148"/>
   </g>
 
-  <!-- Inner decorative circle -->
-  <circle cx="200" cy="200" r="108" fill="none" stroke="#bae6fd" stroke-width="2" stroke-dasharray="4 6"/>
+  <!-- Head silhouette -->
+  <path d="M 142 284 Q 142 220 200 220 Q 258 220 258 284 Q 258 332 200 332 Q 142 332 142 284 Z" fill="#15171c" stroke="#b8914b" stroke-width="2.5"/>
 
-  <!-- MAX text -->
-  <text x="200" y="145" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="44" fill="#111827" letter-spacing="4">MAX</text>
+  <!-- Ears -->
+  <ellipse cx="144" cy="252" rx="13" ry="24" fill="#15171c" stroke="#b8914b" stroke-width="2.5" transform="rotate(-20 144 252)"/>
+  <ellipse cx="256" cy="252" rx="13" ry="24" fill="#15171c" stroke="#b8914b" stroke-width="2.5" transform="rotate(20 256 252)"/>
 
-  <!-- Cow head -->
-  <g>
-    <!-- Ears -->
-    <ellipse cx="128" cy="235" rx="34" ry="20" fill="#374151" transform="rotate(-20 128 235)"/>
-    <ellipse cx="272" cy="235" rx="34" ry="20" fill="#374151" transform="rotate(20 272 235)"/>
-    <ellipse cx="132" cy="237" rx="20" ry="11" fill="#9ca3af" transform="rotate(-20 132 237)"/>
-    <ellipse cx="268" cy="237" rx="20" ry="11" fill="#9ca3af" transform="rotate(20 268 237)"/>
+  <!-- Face -->
+  <path d="M 154 282 Q 154 234 200 234 Q 246 234 246 282 Q 246 318 200 318 Q 154 318 154 282 Z" fill="#efe8d8"/>
 
-    <!-- Head base -->
-    <ellipse cx="200" cy="275" rx="62" ry="72" fill="#374151"/>
-    <ellipse cx="200" cy="280" rx="52" ry="60" fill="#f3f4f6"/>
+  <!-- Eyes -->
+  <circle cx="180" cy="268" r="6" fill="#15171c"/>
+  <circle cx="220" cy="268" r="6" fill="#15171c"/>
+  <circle cx="182" cy="266" r="2" fill="#efe8d8"/>
+  <circle cx="222" cy="266" r="2" fill="#efe8d8"/>
 
-    <!-- White face pattern -->
-    <path d="M155 235 Q200 205 245 235 Q255 300 200 350 Q145 300 155 235 Z" fill="#f9fafb"/>
+  <!-- Muzzle -->
+  <ellipse cx="200" cy="306" rx="22" ry="12" fill="#ded0b0"/>
+  <path d="M 188 306 l 4 7" fill="none" stroke="#15171c" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M 212 306 l -4 7" fill="none" stroke="#15171c" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M 200 306 v 9" fill="none" stroke="#15171c" stroke-width="2.5" stroke-linecap="round"/>
 
-    <!-- Eyes -->
-    <circle cx="178" cy="270" r="9" fill="#111827"/>
-    <circle cx="222" cy="270" r="9" fill="#111827"/>
-    <circle cx="181" cy="267" r="3" fill="#ffffff"/>
-    <circle cx="225" cy="267" r="3" fill="#ffffff"/>
-
-    <!-- Muzzle -->
-    <ellipse cx="200" cy="325" rx="34" ry="26" fill="#fda4af"/>
-    <ellipse cx="188" cy="322" rx="6" ry="9" fill="#9f1239" transform="rotate(-15 188 322)"/>
-    <ellipse cx="212" cy="322" rx="6" ry="9" fill="#9f1239" transform="rotate(15 212 322)"/>
-    <path d="M190 335 Q200 342 210 335" fill="none" stroke="#9f1239" stroke-width="3" stroke-linecap="round"/>
-  </g>
-
-  <!-- Carnes Premium curved text -->
-  <path id="bottomArc" d="M115 290 Q200 345 285 290" fill="none"/>
-  <text font-family="Comic Sans MS, cursive, sans-serif" font-size="24" font-weight="700" fill="#ffffff" letter-spacing="1">
-    <textPath href="#bottomArc" startOffset="50%" text-anchor="middle">Carnes Premium</textPath>
-  </text>
-
-  <!-- Gold star accents -->
-  <path d="M105 105 L112 120 L128 120 L116 130 L120 146 L105 136 L90 146 L94 130 L82 120 L98 120 Z" fill="#fde047"/>
-  <path d="M295 105 L302 120 L318 120 L306 130 L310 146 L295 136 L280 146 L284 130 L272 120 L288 120 Z" fill="#fde047"/>
+  <!-- Wordmark -->
+  <line x1="96" y1="452" x2="304" y2="452" stroke="url(#gold)" stroke-width="2"/>
+  <text x="200" y="476" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-size="27" letter-spacing="7" fill="url(#gold)">CARNES PREMIUM</text>
+  <text x="200" y="502" text-anchor="middle" font-family="Verdana, Arial, sans-serif" font-size="13" letter-spacing="6" fill="#8a6d3b">FINAS CARNES ARGENTINAS</text>
 </svg>
