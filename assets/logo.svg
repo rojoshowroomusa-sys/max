@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" role="img" aria-labelledby="logoTitle logoDesc">
   <title id="logoTitle">Logo MAX Carnes Premium</title>
-  <desc id="logoDesc">Sello heráldico dorado con el Sol de Mayo, un toro y el texto MAX Carnes Premium</desc>
+  <desc id="logoDesc">Sello heráldico dorado con el Sol de Mayo, un toro, cinta celeste y blanca y el texto MAX Carnes Premium</desc>
 
   <defs>
     <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
@@ -88,6 +88,15 @@
   <path d="M 188 306 l 4 7" fill="none" stroke="#15171c" stroke-width="2.5" stroke-linecap="round"/>
   <path d="M 212 306 l -4 7" fill="none" stroke="#15171c" stroke-width="2.5" stroke-linecap="round"/>
   <path d="M 200 306 v 9" fill="none" stroke="#15171c" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Escarapela ribbon -->
+  <g>
+    <ellipse cx="177" cy="382" rx="17" ry="9.5" fill="#75aadb" stroke="#5b93c2" stroke-width="1.5" transform="rotate(-18 177 382)"/>
+    <ellipse cx="223" cy="382" rx="17" ry="9.5" fill="#75aadb" stroke="#5b93c2" stroke-width="1.5" transform="rotate(18 223 382)"/>
+    <circle cx="200" cy="382" r="6" fill="#ffffff" stroke="#75aadb" stroke-width="2"/>
+    <path d="M 192 386 Q 182 402 184 420 L 173 415 L 183 400 Z" fill="#75aadb" stroke="#5b93c2" stroke-width="1"/>
+    <path d="M 208 386 Q 218 402 216 420 L 227 415 L 217 400 Z" fill="#75aadb" stroke="#5b93c2" stroke-width="1"/>
+  </g>
 
   <!-- Wordmark -->
   <line x1="96" y1="452" x2="304" y2="452" stroke="url(#gold)" stroke-width="2"/>
