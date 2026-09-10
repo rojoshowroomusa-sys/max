@@ -1,6 +1,6 @@
 const WHATSAPP_NUMBER = "5492213541722";
 
-const CORTES = [
+let CORTES = [
   {
     id: "vacio",
     nombre: "Vacío",
@@ -195,7 +195,7 @@ const CORTES = [
   },
 ];
 
-const COMBOS = [
+let COMBOS = [
   {
     id: "combo-asado",
     icon: "🔥",

@@ -234,6 +234,18 @@ supabase start
 supabase db reset
 ```
 
+### Conectar el catálogo al proyecto remoto
+
+El frontend consulta Supabase y usa el catálogo local como respaldo si no hay datos. Para activar el catálogo en vivo:
+
+1. Abrir [Supabase Dashboard](https://supabase.com/dashboard) → tu proyecto → **SQL Editor**
+2. Ejecutar las migraciones en orden:
+   - `supabase/migrations/20260909000100_create_meat_store_schema.sql` (tablas base + RLS)
+   - `supabase/migrations/20260910001000_connect_frontend_catalog.sql` (columnas, tabla `combos` y semilla de 24 cortes + 3 combos)
+3. Recargar la página → debería mostrarse **"Catálogo en vivo desde Supabase"**
+
+> Las credenciales van en `js/config.js`. La **publishable key** es pública por diseño (RLS protege los datos). La `service_role` key **nunca** debe ir al frontend ni al repo.
+
 ### Cloudflare Workers
 
 ```bash

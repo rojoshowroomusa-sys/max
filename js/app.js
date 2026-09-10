@@ -230,11 +230,35 @@ document.getElementById("altaComercialBtn").href =
   `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hola MAX Carnes! Quiero solicitar el alta comercial mayorista.")}`;
 
 loadPedido();
-renderCortes();
-renderCombos();
 renderGuia();
-renderDrawer();
-updateOrderCount();
+
+async function bootstrap() {
+  const statusEl = document.getElementById("dataStatus");
+  if (statusEl) {
+    statusEl.textContent = "Conectando catálogo…";
+    statusEl.classList.remove("hidden");
+  }
+  try {
+    const catalog = await loadCatalog();
+    if (catalog) {
+      CORTES = catalog.products;
+      COMBOS = catalog.combos;
+      if (statusEl) statusEl.textContent = "Catálogo en vivo desde Supabase";
+    } else if (statusEl) {
+      statusEl.textContent = "Catálogo local (supabase sin datos)";
+    }
+  } catch (err) {
+    console.warn(err);
+    if (statusEl) statusEl.textContent = "Catálogo local";
+  }
+  renderCortes();
+  renderCombos();
+  renderDrawer();
+  updateOrderCount();
+  document.getElementById("bootSkeleton")?.classList.add("hidden");
+}
+
+bootstrap();
 
 if ("IntersectionObserver" in window) {
   const observer = new IntersectionObserver(

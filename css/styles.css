@@ -360,6 +360,31 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
 .empty-msg { text-align: center; color: var(--muted); padding: 40px 0; }
 .center-actions { text-align: center; margin-top: 34px; }
 
+/* Skeleton loader */
+.skeleton-card { pointer-events: none; }
+.skeleton-img {
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  margin: -4px -4px 4px;
+  background: linear-gradient(100deg, #171310 40%, #241b16 50%, #171310 60%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite linear;
+}
+@keyframes shimmer {
+  to { background-position: -200% 0; }
+}
+
+/* Data status */
+.data-status {
+  text-align: center;
+  color: var(--amber);
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 16px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 /* Accessibility helpers */
 .visually-hidden {
   position: absolute;
