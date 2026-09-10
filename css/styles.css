@@ -63,15 +63,15 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
   height: 64px;
 }
 .logo {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 22px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text);
+  display: inline-flex;
+  align-items: center;
   text-decoration: none;
 }
-.logo span { color: var(--red); }
+.logo img {
+  height: 52px;
+  width: auto;
+  display: block;
+}
 .nav { display: flex; gap: 22px; }
 .nav a {
   color: var(--muted);
