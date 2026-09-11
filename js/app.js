@@ -188,6 +188,127 @@ function sendOrderByWhatsAppFeedback() {
   sendOrderByWhatsApp();
 }
 
+/* ---------------- Mercado Pago --------------- */
+
+const mpStatusEl = () => document.getElementById("mpStatus");
+const mpFormEl = () => document.getElementById("card-form-container");
+const mpPayBtn = () => document.getElementById("mpPayBtn");
+
+function setMpStatus(msg, type = "") {
+  const el = mpStatusEl();
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.remove("hidden", "mp-error", "mp-success");
+  if (type) el.classList.add(`mp-${type}`);
+}
+
+function setMpFormVisible(visible) {
+  const wrap = mpFormEl();
+  if (!wrap) return;
+  wrap.classList.toggle("hidden", !visible);
+}
+
+async function initMercadoPago() {
+  if (itemCount() === 0) {
+    const items = document.getElementById("drawerItems");
+    items.classList.remove("shake");
+    void items.offsetWidth;
+    items.classList.add("shake");
+    return;
+  }
+  if (typeof MercadoPago === "undefined") {
+    setMpStatus("El SDK de Mercado Pago no se pudo cargar.", "error");
+    return;
+  }
+  if (!MP_PUBLIC_KEY || MP_PUBLIC_KEY === "TU_PUBLIC_KEY_MP") {
+    setMpStatus("Mercado Pago no está configurado todavía (falta la Public Key).", "error");
+    return;
+  }
+
+  const btn = mpPayBtn();
+  btn.disabled = true;
+  setMpStatus("Creando pago…");
+  setMpFormVisible(false);
+
+  const payload = { items: Object.entries(pedido).map(([slug, qtyKg]) => ({ slug, qty_kg: qtyKg })) };
+
+  let pref;
+  try {
+    const res = await fetch(MP_EDGE_FUNCTION_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok) {
+      throw new Error((data && data.error) || `Error ${res.status}`);
+    }
+    pref = data;
+  } catch (err) {
+    console.error("[mp] No se pudo crear la preferencia:", err);
+    setMpStatus(String(err.message || err), "error");
+    btn.disabled = false;
+    return;
+  }
+
+  const total = totalPrice();
+  const mp = new MercadoPago(MP_PUBLIC_KEY);
+  const bricks = mp.bricks();
+
+  try {
+    const bricksBuilder = await bricks.create(
+      "cardForm",
+      "card-form-container",
+      {
+        initialization: {
+          amount: total,
+          // El preferenceId lo genera la Edge Function con precios server-side.
+          preferenceId: pref.id,
+        },
+        callbacks: {
+          onFormInitialize() {
+            setMpStatus("");
+            setMpFormVisible(true);
+            btn.classList.add("hidden");
+          },
+          onStatusChange({ status, statusDetail }) {
+            // NOTA DE SEGURIDAD: este `status` es informativo de UI (UX) y NO
+            // confirma el pago. La confirmación real es server-side: la Edge
+            // Function mp-webhook valida el pago contra la API de Mercado Pago
+            // y recién entonces marca la orden 'orders.status' como 'paid'.
+            if (status === "approved") {
+              // Pago aprobado: limpiar pedido y mostrar confirmación.
+              pedido = {};
+              savePedido();
+              renderDrawer();
+              updateOrderCount();
+              setMpStatus("¡Pago aprobado! Te confirmamos la entrega por WhatsApp.", "success");
+              btn.classList.remove("hidden");
+              btn.disabled = false;
+            } else if (status === "pending") {
+              setMpStatus("Pago pendiente de acreditación.", "");
+            } else if (status === "rejected") {
+              setMpStatus(
+                `El pago fue rechazado (${statusDetail || "intentá otra tarjeta"}). Tu pedido sigue armado.`,
+                "error",
+              );
+              btn.classList.remove("hidden");
+              btn.disabled = false;
+            }
+          },
+        },
+      },
+    );
+    await bricksBuilder.mount("#card-form-container");
+  } catch (err) {
+    console.error("[mp] No se pudo montar el Brick:", err);
+    setMpStatus("No se pudo mostrar el formulario de pago. Podés usar WhatsApp.", "error");
+    btn.disabled = false;
+  }
+}
+
+document.getElementById("mpPayBtn").addEventListener("click", initMercadoPago);
+
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") closeDrawer();
 });

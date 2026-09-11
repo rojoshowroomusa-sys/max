@@ -58,9 +58,10 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
 .header-inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 16px;
   height: 64px;
+  position: relative;
 }
 .logo {
   display: inline-flex;
@@ -83,6 +84,10 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
 .nav a:hover { color: var(--text); }
 
 .order-btn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
   background: var(--card);
   border: 1px solid var(--border);
   color: var(--text);
@@ -414,6 +419,7 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
 /* Mobile nav (hamburger) */
 .nav-toggle {
   display: none;
+  margin-right: auto;
   background: none;
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -684,6 +690,24 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
   z-index: 90;
 }
 .overlay.show { opacity: 1; pointer-events: auto; }
+
+/* Mercado Pago */
+.btn-mercado-pago {
+  background: #009ee3;
+  color: #fff;
+  margin-top: 10px;
+}
+.btn-mercado-pago:hover { background: #007cc4; filter: brightness(1.05); }
+.mp-status {
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+.mp-status.mp-success { color: #4ade80; }
+.mp-status.mp-error { color: #f87171; }
+#card-form-container { margin-top: 14px; }
+#card-form-container .hidden { display: none; }
 
 .wa-float {
   position: fixed;
