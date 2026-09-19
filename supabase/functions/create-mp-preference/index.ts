@@ -21,21 +21,34 @@ const ACCESS_TOKEN = Deno.env.get("MP_ACCESS_TOKEN");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-// Origen permitido para CORS (el dominio del sitio). Ajustar al dominio real.
-const ALLOWED_ORIGIN = Deno.env.get("CORS_ALLOWED_ORIGIN") ?? "*";
+// Orígenes permitidos para CORS (lista separada por comas). Ajustar al dominio real.
+const ALLOWED_ORIGINS = (Deno.env.get("CORS_ALLOWED_ORIGIN") ?? "*")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
 
-function corsHeaders() {
+function corsHeaders(req?: Request) {
+  const reqOrigin = req?.headers.get("origin") || "";
+  let allow: string;
+  if (ALLOWED_ORIGINS.includes("*")) {
+    allow = "*";
+  } else if (reqOrigin && ALLOWED_ORIGINS.includes(reqOrigin)) {
+    allow = reqOrigin;
+  } else {
+    allow = ALLOWED_ORIGINS[0] || "*";
+  }
   return {
-    "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
+    "Access-Control-Allow-Origin": allow,
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Vary": "Origin",
   };
 }
 
-function json(data: unknown, status = 200): Response {
+function json(data: unknown, status = 200, req?: Request): Response {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { ...corsHeaders(), "Content-Type": "application/json" },
+    headers: { ...corsHeaders(req), "Content-Type": "application/json" },
   });
 }
 
@@ -85,20 +98,20 @@ async function createOrder(
 serve(async (req) => {
   // CORS preflight
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders() });
+    return new Response("ok", { headers: corsHeaders(req) });
   }
   if (req.method !== "POST") {
-    return json({ error: "Método no permitido" }, 405);
+    return json({ error: "Método no permitido" }, 405, req);
   }
 
   // 1) Validación de entorno
   if (!ACCESS_TOKEN) {
     console.error("Falta MP_ACCESS_TOKEN en el entorno de la Edge Function");
-    return json({ error: "Configuración del servidor incompleta (MP_ACCESS_TOKEN)" }, 500);
+    return json({ error: "Configuración del servidor incompleta (MP_ACCESS_TOKEN)" }, 500, req);
   }
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     console.error("Faltan credenciales de Supabase en el Edge Function");
-    return json({ error: "Configuración del servidor incompleta (Supabase)" }, 500);
+    return json({ error: "Configuración del servidor incompleta (Supabase)" }, 500, req);
   }
 
   // 2) Parseo y validación del body
@@ -106,12 +119,12 @@ serve(async (req) => {
   try {
     body = await req.json();
   } catch {
-    return json({ error: "Body inválido: se esperaba JSON" }, 400);
+    return json({ error: "Body inválido: se esperaba JSON" }, 400, req);
   }
 
   const items = Array.isArray(body.items) ? body.items : null;
   if (!items || items.length === 0) {
-    return json({ error: "El pedido está vacío" }, 400);
+    return json({ error: "El pedido está vacío" }, 400, req);
   }
 
   // Normaliza y valida cada item (sin confiar en precios del cliente)
@@ -119,9 +132,9 @@ serve(async (req) => {
   for (const it of items) {
     const slug = typeof it.slug === "string" ? it.slug.trim() : "";
     const qtyKg = Number(it.qty_kg);
-    if (!slug) return json({ error: "Cada item requiere un slug válido" }, 400);
+    if (!slug) return json({ error: "Cada item requiere un slug válido" }, 400, req);
     if (!Number.isFinite(qtyKg) || qtyKg <= 0) {
-      return json({ error: `Cantidad inválida para ${slug}` }, 400);
+      return json({ error: `Cantidad inválida para ${slug}` }, 400, req);
     }
     requested.push({ slug, qtyKg: Math.round(qtyKg * 100) / 100 });
   }
@@ -139,7 +152,7 @@ serve(async (req) => {
 
   if (dbError) {
     console.error("Error de Supabase: ", dbError);
-    return json({ error: "Error interno al consultar el catálogo" }, 500);
+    return json({ error: "Error interno al consultar el catálogo" }, 500, req);
   }
 
   const bySlug = new Map(products.map((p) => [p.slug, p]));
@@ -155,7 +168,7 @@ serve(async (req) => {
   for (const { slug, qtyKg } of requested) {
     const prod = bySlug.get(slug);
     if (!prod || !prod.is_active) {
-      return json({ error: `El corte "${slug}" no está disponible` }, 400);
+      return json({ error: `El corte "${slug}" no está disponible` }, 400, req);
     }
     const unitPrice = Number(prod.price_per_kg);
     mpItems.push({
@@ -176,17 +189,16 @@ serve(async (req) => {
     externalReference = await createOrder(supabase, enrichedItems, total);
   } catch (orderErr: any) {
     console.error("Error al crear orden en Supabase: ", orderErr);
-    return json({ error: "Error interno al crear la orden" }, 500);
+    return json({ error: "Error interno al crear la orden" }, 500, req);
   }
 
   // 5) Prepara el body de la preferencia de Mercado Pago.
   // external_reference vincula el pago de MP con nuestra orden en Supabase.
-  const origin = ALLOWED_ORIGIN === "*" ? "http://localhost:8080" : ALLOWED_ORIGIN;
-  // Mercado Pago rechaza `back_urls` con dominios locales (localhost/127.x),
-  // y las redirecciones solo aplican al checkout que redirige (wallet brick).
-  // El frontend usa cardForm (pago en página), así que back_urls solo se
-  // envían cuando el origen es un dominio público (producción).
-  const isLocalOrigin = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/.test(origin);
+  // La redirección (back_urls) solo aplica al checkout que redirige (wallet brick);
+  // el frontend usa cardForm (pago en página), así que back_urls solo se envían
+  // cuando el request viene de un dominio público (producción).
+  const origin = req.headers.get("origin");
+  const isLocalOrigin = !origin || /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/.test(origin);
   const preferenceBody: Record<string, unknown> = {
     items: mpItems,
     external_reference: externalReference,
@@ -214,7 +226,7 @@ serve(async (req) => {
     });
   } catch (err) {
     console.error("Error de red con Mercado Pago: ", err);
-    return json({ error: "No se pudo conectar con la pasarela de pago" }, 502);
+    return json({ error: "No se pudo conectar con la pasarela de pago" }, 502, req);
   }
 
   const mpData = await mpResp.json().catch(() => null);
@@ -225,6 +237,7 @@ serve(async (req) => {
     return json(
       { error: "Mercado Pago no pudo procesar la preferencia", detail: mpData },
       mpResp.status,
+      req,
     );
   }
 
