@@ -1,6 +1,9 @@
 .git
 .gitignore
+.git-corrupt
 .wrangler
 node_modules
+node_modules_old_bad
+node_modules_partial_bad
 wrangler.jsonc
 .assetsignore
