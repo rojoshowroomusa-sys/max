@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MAX Carnes Premium - Carne Argentina directo a tu mesa</title>
+  <meta name="description" content="MAX Carnes Premium. Emprendimiento familiar de carnes premium. Cortes de calidad con envío sin cargo. Proveedor para gastronomía y venta directa." />
+  <meta property="og:title" content="MAX Carnes Premium" />
+  <meta property="og:description" content="Carne Argentina directo a tu mesa. Cortes premium, envío sin cargo." />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="es_AR" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="MAX Carnes Premium" />
+  <meta name="twitter:description" content="Carne Argentina directo a tu mesa. Cortes premium, envío sin cargo." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#inicio">Saltar al contenido</a>
+  <header class="header">
+    <div class="container header-inner">
+      <a class="logo" href="#inicio" aria-label="MAX Carnes Premium">
+        <img src="assets/logo-watermark.png" alt="MAX Carnes Premium" />
+      </a>
+      <nav class="nav" id="mainNav">
+        <a href="#cortes">Cortes</a>
+        <a href="#guia">Guía</a>
+        <a href="#nosotros">Nosotros</a>
+        <a href="#mayoristas">Mayoristas</a>
+      </nav>
+      <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="mainNav">
+        <span></span><span></span><span></span>
+      </button>
+      <button class="order-btn" id="orderBtn">
+        Pedido <span class="order-count hidden" id="orderCount" aria-live="polite">0</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="shipping-banner">
+    <div class="container">
+      <span>🚚</span>
+      <p>Envíos sin cargo y entregas pactadas en <strong>24hs</strong></p>
+    </div>
+  </div>
+
+  <main id="inicio">
+    <section class="hero">
+      <div class="container hero-inner">
+        <p class="eyebrow">Volver a disfrutar</p>
+        <h1>La verdadera carne argentina,<br /><span>directo a tu mesa.</span></h1>
+        <p class="hero-sub">Sin especulaciones, con el valor de la familia.</p>
+        <div class="hero-stats">
+          <div class="hero-stat"><strong>100%</strong><span>Carne argentina</span></div>
+          <div class="hero-stat"><strong>+15</strong><span>cortes premium</span></div>
+          <div class="hero-stat"><strong>24hs</strong><span>entrega pactada</span></div>
+        </div>
+        <div class="hero-actions">
+          <a href="#cortes" class="btn btn-primary">Comprar Cortes</a>
+          <a href="#nosotros" class="btn btn-ghost">Conocenos</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="flyer" aria-label="Promoción destacada">
+      <div class="flyer-card">
+        <div class="flyer-left">
+          <p class="flyer-kicker">Oferta de la semana</p>
+          <h2 class="flyer-title">Asado Argentino<br /><span>$8.900</span> el kg</h2>
+          <p class="flyer-sub">Envío sin cargo en 24hs en La Plata y alrededores. Reservá el tuyo antes de que se agote.</p>
+          <a class="btn btn-primary" href="https://wa.me/5492213541722?text=Hola%20MAX%20Carnes!%20Quiero%20reservar%20el%20Asado%20Argentino" target="_blank" rel="noopener">Reservar ahora</a>
+        </div>
+        <div class="flyer-right" aria-hidden="true">
+          <span class="flyer-stamp">🥩</span>
+          <div class="flyer-badge">-15%<small>hoy</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section container" id="cortes">
+      <p class="eyebrow center">Comprá tus</p>
+      <h2 class="center">Cortes</h2>
+      <p class="section-sub center">Elegí el corte, seleccioná los kilos, y envianos el pedido por WhatsApp. Te confirmamos el envío a la brevedad.</p>
+      <div class="search-wrap">
+        <label class="visually-hidden" for="searchInput">Buscar cortes</label>
+        <input type="search" id="searchInput" placeholder="Buscar corte..." autocomplete="off" />
+      </div>
+      <div class="filter-chips" id="catChips">
+        <button class="chip-btn active" data-cat="todos">Todos</button>
+        <button class="chip-btn" data-cat="clasicos">Clásicos</button>
+        <button class="chip-btn" data-cat="premium">⭐ Premium</button>
+      </div>
+      <div class="grid" id="cortesGrid"></div>
+      <div class="grid" id="bootSkeleton" aria-hidden="true">
+        <div class="card skeleton-card"><div class="skeleton-img"></div></div>
+        <div class="card skeleton-card"><div class="skeleton-img"></div></div>
+        <div class="card skeleton-card"><div class="skeleton-img"></div></div>
+        <div class="card skeleton-card"><div class="skeleton-img"></div></div>
+      </div>
+      <p class="data-status hidden" id="dataStatus" role="status"></p>
+      <p class="empty-msg hidden" id="emptyMsg">No encontramos cortes que coincidan con tu búsqueda.</p>
+    </section>
+
+    <section class="section section-alt" id="combos">
+      <div class="container">
+        <p class="eyebrow center">Armá tu pedido</p>
+        <h2 class="center">Combos Recomendados</h2>
+        <p class="section-sub center">Selecciones armadas para que no tengas que pensar. Ideal para asados, parrilladas o cenas especiales.</p>
+        <div class="grid grid-3" id="combosGrid"></div>
+        <p class="note center">Los combos son armados según disponibilidad. Consultá por combinaciones personalizadas.</p>
+      </div>
+    </section>
+
+    <section class="section container" id="guia">
+      <p class="eyebrow center">Conocé tu corte</p>
+      <h2 class="center">Guía de Cortes</h2>
+      <p class="section-sub center">Cada corte tiene su personalidad. Te contamos cómo cocinarlo para que disfrutes al máximo cada bocado.</p>
+      <div class="grid grid-3" id="guiaGrid"></div>
+    </section>
+
+    <section class="section section-alt" id="nosotros">
+      <div class="container about-grid">
+        <div>
+          <p class="eyebrow">Nuestra Esencia</p>
+          <h2>El puente hacia<br />el buen fuego</h2>
+          <div class="info-chips">
+            <div class="chip"><strong>Envío</strong><span>Sin cargo, horario pactado</span></div>
+            <div class="chip"><strong>Pagos</strong><span>Efectivo / Cuenta DNI</span></div>
+          </div>
+        </div>
+        <div class="about-text">
+          <p><strong>MAX CARNES PREMIUM</strong> es un emprendimiento familiar que nació con un propósito claro: facilitar a todos el acceso directo a productos de calidad a precios reales. Sin especulaciones.</p>
+          <p>Buscamos generar una red de reciprocidad. Nuestro objetivo es ser el puente entre la calidad y el disfrute. Un puente para llegar con lo mejor a ese asado de amigos, ser un puente para que las pibas le metan a ese fuego.</p>
+          <blockquote>"Que nuestros hijos disfruten los platos que nuestros padres y abuelos nos regalaban, con esos sabores, con el mismo amor."</blockquote>
+          <p>Respetando el esfuerzo ajeno, entendiendo que todo cuesta y que cada momento vale. Sabiendo que merecemos lo mejor, porque producimos lo mejor.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="testimonios">
+      <div class="container">
+        <p class="eyebrow center">Ellos ya probaron</p>
+        <h2 class="center">Lo que dicen nuestros clientes</h2>
+        <div class="testimonials-grid">
+          <article class="card testimonial">
+            <div class="stars" aria-label="5 de 5 estrellas">★★★★★</div>
+            <p class="testimonial-text">"La tapa de asado más parecida al de mi abuelo. Llegó en el horario pactado y bien fría. Un lujo."</p>
+            <footer class="testimonial-author"><strong>Martín G.</strong><span>La Plata</span></footer>
+          </article>
+          <article class="card testimonial">
+            <div class="stars" aria-label="5 de 5 estrellas">★★★★★</div>
+            <p class="testimonial-text">"El Combo Parrillada rindió para toda la familia. La picada y el vacío, increíbles. Ya la segunda compra."</p>
+            <footer class="testimonial-author"><strong>Carolina R.</strong><span>Ciudad Evita</span></footer>
+          </article>
+          <article class="card testimonial">
+            <div class="stars" aria-label="5 de 5 estrellas">★★★★★</div>
+            <p class="testimonial-text">"Atienden por WhatsApp súper rápido y la atención es de primera. La entraña crocante por fuera, jugosa por dentro."</p>
+            <footer class="testimonial-author"><strong>Diego P.</strong><span>Berisso</span></footer>
+          </article>
+          <article class="card testimonial">
+            <div class="stars" aria-label="5 de 5 estrellas">★★★★★</div>
+            <p class="testimonial-text">"Como parrillero de restaurante, la calidad del bife con lomo me sorprendió. Clientela feliz."</p>
+            <footer class="testimonial-author"><strong>Parrilla El Gaucho</strong><span>Ensenada</span></footer>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt" id="faq">
+      <div class="container faq-wrap">
+        <p class="eyebrow center">Consultas</p>
+        <h2 class="center">Preguntas frecuentes</h2>
+        <details class="faq-item">
+          <summary>¿Hacen envíos a dónde?</summary>
+          <p>Cubrimos La Plata, Berisso, Ensenada, City Bell y alrededores. Coordinamos horario de entrega por WhatsApp.</p>
+        </details>
+        <details class="faq-item">
+          <summary>¿Cómo hago el pedido?</summary>
+          <p>Elegís los cortes y los kilos con el selector, los agregás a tu pedido y lo envías por WhatsApp. Te confirmamos disponibilidad y entrega a la brevedad.</p>
+        </details>
+        <details class="faq-item">
+          <summary>¿Qué medios de pago aceptan?</summary>
+          <p>Aceptamos efectivo y transferencia por Cuenta DNI. Para comercios y mayoristas coordinamos condiciones especiales.</p>
+        </details>
+        <details class="faq-item">
+          <summary>¿Los cortes llegan congelados o frescos?</summary>
+          <p>Trabajamos carnes frescas, envasadas al vacío para mantener temperatura y calidad durante el transporte.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="section container" id="mayoristas">
+      <p class="eyebrow center">División Comercial</p>
+      <h2 class="center">Mayoristas</h2>
+      <p class="section-sub center">Abastecemos a carnicerías, restaurantes, parrillas y servicios de catering con mercadería de calidad innegociable.</p>
+      <div class="grid grid-3">
+        <div class="card center-card"><span class="card-icon">🤝</span><h3>Atención Personalizada</h3></div>
+        <div class="card center-card"><span class="card-icon">📋</span><h3>Lista de Precios Especial</h3></div>
+        <div class="card center-card"><span class="card-icon">🏪</span><h3>Proveedor para Gastronomía</h3></div>
+      </div>
+      <div class="center-actions">
+        <a class="btn btn-primary" id="altaComercialBtn" href="#" target="_blank" rel="noopener">Solicitar Alta Comercial</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" id="contacto">
+    <div class="container footer-inner">
+      <a class="footer-phone" href="https://wa.me/5492213541722" target="_blank" rel="noopener">221 354 1722</a>
+      <p>© 2026 MAX Carnes Premium</p>
+    </div>
+  </footer>
+
+  <aside class="drawer" id="drawer" aria-hidden="true" aria-label="Tu pedido">
+    <div class="drawer-head">
+      <h2>Tu pedido</h2>
+      <button class="close-btn" id="closeDrawerBtn" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="drawer-items" id="drawerItems" aria-live="polite"></div>
+    <div class="drawer-foot">
+      <div class="drawer-totals" aria-live="polite">
+        <div class="total-row">
+          <span>Kilos totales</span>
+          <strong id="totalKg">0 kg</strong>
+        </div>
+      </div>
+      <p class="cart-note">El pedido y cotización se confirman directamente por WhatsApp.</p>
+      <button class="btn btn-whatsapp btn-block" id="sendOrderBtn">Enviar pedido por WhatsApp</button>
+      <button class="btn btn-mp btn-block" id="mpPayBtn">Pagar con Mercado Pago</button>
+      <p class="mp-status hidden" id="mpStatus" role="status"></p>
+      <div id="card-form-container" class="hidden"></div>
+    </div>
+  </aside>
+  <div class="overlay" id="overlay"></div>
+
+  <a class="wa-float" id="waFloat" href="https://wa.me/5492213541722" target="_blank" rel="noopener" aria-label="Chateá con nosotros por WhatsApp">
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/></svg>
+  </a>
+
+  <script src="https://sdk.mercadopago.com/js/v2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/order.js"></script>
+  <script src="js/supabase-data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

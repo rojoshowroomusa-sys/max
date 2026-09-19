@@ -1,0 +1,10 @@
+.wrangler/
+node_modules/
+node_modules_old_bad/
+node_modules_partial_bad/
+claude/
+.claude/
+worker-configuration.d.ts
+.env
+supabase/config.toml.bak
+.git-corrupt/

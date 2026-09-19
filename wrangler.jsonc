@@ -1,0 +1,27 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "carnesmax",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-01",
+  "compatibility_flags": ["nodejs_compat", "experimental"],
+  "assets": {
+    "directory": "."
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "MaxAgent",
+        "class_name": "MaxAgent"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["MaxAgent"]
+    }
+  ],
+  "ai": {
+    "binding": "AI"
+  }
+}
