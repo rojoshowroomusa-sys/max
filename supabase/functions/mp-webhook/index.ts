@@ -22,14 +22,27 @@ const WEBHOOK_SECRET = Deno.env.get("MP_WEBHOOK_SECRET"); // opcional
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-const ALLOWED_ORIGIN = (Deno.env.get("CORS_ALLOWED_ORIGIN") ?? "").replace(/\/+$/, "");
+// Lista de orígenes permitidos (separados por comas): dominio del sitio + previews.
+const ALLOWED_ORIGINS = (Deno.env.get("CORS_ALLOWED_ORIGIN") ?? "")
+  .split(",")
+  .map((o) => o.trim().replace(/\/+$/, ""))
+  .filter(Boolean);
+const ALLOWED_ORIGIN = ALLOWED_ORIGINS[0] ?? "";
 
-function corsHeaders() {
+function matchOrigin(origin: string | null): string | null {
+  if (!origin) return null;
+  const clean = origin.replace(/\/+$/, "");
+  if (ALLOWED_ORIGINS.includes("*")) return "*";
+  return ALLOWED_ORIGINS.includes(clean) ? clean : null;
+}
+
+function corsHeaders(origin: string | null = null) {
   const headers: Record<string, string> = {
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "content-type, x-signature, x-request-id, data-id",
   };
-  if (ALLOWED_ORIGIN) headers["Access-Control-Allow-Origin"] = ALLOWED_ORIGIN;
+  const allowed = matchOrigin(origin) ?? ALLOWED_ORIGIN;
+  if (allowed) headers["Access-Control-Allow-Origin"] = allowed;
   return headers;
 }
 

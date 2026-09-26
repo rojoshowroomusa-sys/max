@@ -26,8 +26,13 @@ const ACCESS_TOKEN = Deno.env.get("MP_ACCESS_TOKEN");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-// Origen permitido para CORS (el dominio del sitio). El deploy exige una URL exacta.
-const ALLOWED_ORIGIN = (Deno.env.get("CORS_ALLOWED_ORIGIN") ?? "").replace(/\/+$/, "");
+// Orígenes permitidos para CORS: dominio del sitio + previews locales.
+// Lista separada por comas; cada entrada debe ser una URL exacta.
+const ALLOWED_ORIGINS = (Deno.env.get("CORS_ALLOWED_ORIGIN") ?? "")
+  .split(",")
+  .map((o) => o.trim().replace(/\/+$/, ""))
+  .filter(Boolean);
+const ALLOWED_ORIGIN = ALLOWED_ORIGINS[0] ?? "";
 
 const MAX_BODY_BYTES = 16 * 1024;
 const MAX_SLUG_LENGTH = 100;
@@ -83,20 +88,27 @@ function round2(value: number): number {
   return Math.round(value * 100) / 100;
 }
 
-function corsHeaders() {
+function matchOrigin(origin: string | null): string | null {
+  if (!origin) return null;
+  const clean = origin.replace(/\/+$/, "");
+  if (ALLOWED_ORIGINS.includes("*")) return "*";
+  return ALLOWED_ORIGINS.includes(clean) ? clean : null;
+}
+
+function corsHeaders(origin: string | null = null) {
   const headers: Record<string, string> = {
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   };
-  if (ALLOWED_ORIGIN && ALLOWED_ORIGIN !== "*") {
-    headers["Access-Control-Allow-Origin"] = ALLOWED_ORIGIN;
-  }
+  const allowed = matchOrigin(origin) ?? ALLOWED_ORIGIN;
+  if (allowed) headers["Access-Control-Allow-Origin"] = allowed;
   return headers;
 }
 
 function requestOriginAllowed(req: Request): boolean {
-  if (!ALLOWED_ORIGIN) return false;
-  return ALLOWED_ORIGIN === "*" || req.headers.get("origin") === ALLOWED_ORIGIN;
+  if (!ALLOWED_ORIGINS.length) return false;
+  if (ALLOWED_ORIGINS.includes("*")) return true;
+  return matchOrigin(req.headers.get("origin")) !== null;
 }
 
 function clientIp(req: Request): string {
@@ -130,7 +142,7 @@ function json(data: unknown, status = 200, extraHeaders: Record<string, string> 
   });
 }
 
-serve(async (req) => {
+async function handleRequest(req: Request): Promise<Response> {
   // 1) Método, origen y configuración
   if (req.method === "OPTIONS") {
     if (!requestOriginAllowed(req)) {
@@ -389,7 +401,7 @@ serve(async (req) => {
   // 4) Prepara la preferencia. external_reference vincula el pago de MP
   //    con nuestra orden en Supabase.
   const externalReference = crypto.randomUUID();
-  const origin = ALLOWED_ORIGIN.replace(/\/+$/, "");
+  const origin = matchOrigin(req.headers.get("origin")) ?? ALLOWED_ORIGIN;
   const preferenceBody = {
     items: mpItems,
     external_reference: externalReference,
@@ -493,4 +505,18 @@ serve(async (req) => {
     checkout_url: checkoutUrl,
     total,
   });
+}
+
+// json()/corsHeaders() no conocen el request: acá se reescribe
+// Access-Control-Allow-Origin con el origen exacto del llamador cuando está
+// en la lista permitida (multi-origen: dominio del sitio + previews locales).
+serve(async (req) => {
+  const res = await handleRequest(req);
+  const allowed = matchOrigin(req.headers.get("origin"));
+  if (allowed && res.headers.get("Access-Control-Allow-Origin")) {
+    const headers = new Headers(res.headers);
+    headers.set("Access-Control-Allow-Origin", allowed);
+    return new Response(res.body, { status: res.status, statusText: res.statusText, headers });
+  }
+  return res;
 });

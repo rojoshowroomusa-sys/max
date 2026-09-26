@@ -21,9 +21,6 @@ enabled = true
 [storage]
 enabled = true
 
-[functions]
-enabled = true
-
 # Edge function que crea la preferencia de pago de Mercado Pago.
 # verify_jwt = false porque el sitio no tiene autenticación de usuario.
 [functions.create-mp-preference]

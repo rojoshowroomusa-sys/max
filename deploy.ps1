@@ -106,13 +106,17 @@ try {
   }
 
   if (-not $SkipFunctions) {
-    $accessToken = Read-Env "MP_ACCESS_TOKEN" -Required
-    Assert-NoPlaceholder "MP_ACCESS_TOKEN" $accessToken
+    # Opcional: el secret ya puede estar cargado en Supabase (dashboard o CLI).
+    # Si .env está vacío se conserva el valor remoto existente.
+    $accessToken = Read-Env "MP_ACCESS_TOKEN"
+    if ($accessToken) { Assert-NoPlaceholder "MP_ACCESS_TOKEN" $accessToken }
+    else { Write-Host "  (MP_ACCESS_TOKEN vacío: se conserva el secret ya configurado en Supabase)" -ForegroundColor DarkYellow }
 
     $corsOrigin = Read-Env "CORS_ALLOWED_ORIGIN" -Required
     Assert-NoPlaceholder "CORS_ALLOWED_ORIGIN" $corsOrigin
-    if ($corsOrigin -notmatch '^https://') {
-      throw "CORS_ALLOWED_ORIGIN debe ser una URL https:// del sitio público."
+    $firstOrigin = ($corsOrigin -split ",")[0].Trim()
+    if ($firstOrigin -notmatch '^https://') {
+      throw "CORS_ALLOWED_ORIGIN debe ser una lista de URLs https:// separadas por comas."
     }
 
     $webhookSecret = Read-Env "MP_WEBHOOK_SECRET"
@@ -141,10 +145,8 @@ try {
     # Se genera un archivo temporal solo con los secrets de las Functions.
     # El project ref y la contraseña de DB nunca se envían como secrets.
     $tempSecretFile = Join-Path ([IO.Path]::GetTempPath()) "max-carnes-functions-$PID.env"
-    $secretLines = @(
-      "MP_ACCESS_TOKEN=$accessToken",
-      "CORS_ALLOWED_ORIGIN=$corsOrigin"
-    )
+    $secretLines = @("CORS_ALLOWED_ORIGIN=$corsOrigin")
+    if ($accessToken) { $secretLines = @("MP_ACCESS_TOKEN=$accessToken") + $secretLines }
     if ($webhookSecret) { $secretLines += "MP_WEBHOOK_SECRET=$webhookSecret" }
     [IO.File]::WriteAllLines(
       $tempSecretFile,
