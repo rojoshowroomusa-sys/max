@@ -307,3 +307,15 @@ let COMBOS = [
     kg: 2,
   },
 ];
+
+/* Accesorios de parrilla: precio cerrado por unidad, como los combos pero sin
+   kilos. Viven en la tabla `accesorios` de Supabase y el administrador los carga
+   desde el dashboard, asi que esta lista solo actúa de respaldo cuando el
+   remoto no está disponible.
+
+   Se deja vacía a propósito: no hay catálogo de accesorios confirmado, y poner
+   productos con precios inventados es peor que no mostrar nada. Cuando se carguen
+   en Supabase, esta lista puede seguir vacía sin efecto: el remoto manda.
+
+   Forma de cada ficha: { id, icon, nombre, detalle, price, regularPrice, stock }. */
+let ACCESORIOS = [];

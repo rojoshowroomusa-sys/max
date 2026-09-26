@@ -245,6 +245,32 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
 }
 .card:hover { border-color: rgba(224, 52, 47, 0.45); transform: translateY(-2px); box-shadow: 0 0 0 1px rgba(224, 52, 47, 0.12), 0 12px 32px rgba(0, 0, 0, 0.45); }
 .card-icon { font-size: 34px; }
+
+/* Accesorios: la tarjeta no tiene foto, así que el ícono es el visual. Se lo
+   agranda y se lo pone sobre un disco para que la card no se vea vacía ni
+   parezca un placeholder roto. */
+.accesorio-icon {
+  font-size: 44px;
+  line-height: 1;
+  width: 84px;
+  height: 84px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 4px auto 6px;
+  border-radius: 999px;
+  background: radial-gradient(120px 80px at 70% 30%, rgba(245, 158, 11, 0.16), transparent),
+    linear-gradient(135deg, #1f1512, #0d0a09);
+  border: 1px solid var(--border);
+}
+.accesorio-sin-stock {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 14px 0 0;
+}
 .card-img {
   aspect-ratio: 4 / 3;
   border-radius: 12px;
@@ -889,6 +915,7 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 .drawer-item-kind.combo { color: var(--amber); }
+.drawer-item-kind.accesorio { color: var(--text); }
 .drawer-item .qty { flex-shrink: 0; }
 .drawer-item-remove {
   background: none;

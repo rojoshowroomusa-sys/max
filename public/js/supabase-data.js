@@ -89,14 +89,54 @@ async function fetchCombos(supabaseClient) {
   return (result.data || []).map(mapCombo);
 }
 
+function mapAccesorio(row) {
+  return {
+    id: row.slug || row.id,
+    // Sin foto propia todavia, la tarjeta se dibuja con el icono. Por eso el
+    // icono es un campo de primera clase del catalogo, no un adorno.
+    icon: row.icon || "🧰",
+    nombre: row.name,
+    detalle: row.description || "",
+    price: Number(row.price),
+    regularPrice: Number(row.regular_price || row.price),
+    // Stock en unidades. El servidor lo revalida antes de cobrar, pero el
+    // cliente lo necesita para no ofrecer agregar algo que no se puede comprar.
+    stock: Math.max(0, Math.round(Number(row.stock_units) || 0)),
+  };
+}
+
+const ACCESORIO_COLUMNS = "slug, name, icon, description, price, regular_price, stock_units";
+
+/* A diferencia de fetchProducts y fetchCombos, esta NO propaga el error. La tabla
+   `accesorios` llega con la migracion 20260926090000 y puede no estar aplicada en
+   remoto todavia. Si tirara, loadCatalog caeria al catalogo local COMPLETO y se
+   perderia el catalogo vivo de cortes y combos, que es un dano mucho mayor que
+   no mostrar la seccion de accesorios. */
+async function fetchAccesorios(supabaseClient) {
+  const { data, error } = await supabaseClient
+    .from("accesorios")
+    .select(ACCESORIO_COLUMNS)
+    .eq("is_active", true)
+    .order("price", { ascending: true });
+  if (error) {
+    console.warn(
+      "[supabase] No se pudieron leer los accesorios (tabla todavia no migrada?):",
+      error.message || error,
+    );
+    return [];
+  }
+  return (data || []).map(mapAccesorio);
+}
+
 async function loadCatalog() {
   const client = createSupabaseClient();
   if (!client) return null;
 
   try {
-    const [products, combos] = await Promise.all([
+    const [products, combos, accesorios] = await Promise.all([
       fetchProducts(client),
       fetchCombos(client),
+      fetchAccesorios(client),
     ]);
     if (!products.length) return null;
     // Puente de sincronización: cortes del catálogo oficial que la migración
@@ -110,7 +150,7 @@ async function loadCatalog() {
     const remoteIds = new Set(products.map((p) => p.id));
     const pending = PENDING_LOCAL_CUTS.map((id) => CORTES.find((c) => c.id === id))
       .filter((corte) => corte && !remoteIds.has(corte.id));
-    return { products: [...products, ...pending], combos };
+    return { products: [...products, ...pending], combos, accesorios };
   } catch (err) {
     console.warn("[supabase] No se pudo cargar el catálogo remoto, usando datos locales:", err);
     return null;

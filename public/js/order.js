@@ -1,16 +1,18 @@
 const ORDER_KEY = "max_pedido_v2";
 const LEGACY_ORDER_KEY = "max_pedido_v1";
 
-/* Límites por línea. Deben coincidir con MAX_CORTE_KG / MAX_COMBO_UNITS de
-   supabase/functions/create-mp-preference/index.ts. Acá sólo se avisa; la
-   validación real siempre es server-side. */
+/* Límites por línea. Deben coincidir con MAX_CORTE_KG / MAX_COMBO_UNITS /
+   MAX_ACCESORIO_UNITS de supabase/functions/create-mp-preference/index.ts.
+   Acá sólo se avisa; la validación real siempre es server-side. */
 const MAX_CORTE_KG = 100;
 const MAX_COMBO_UNITS = 20;
+const MAX_ACCESORIO_UNITS = 20;
 
-/* Dos mapas porque los cortes se venden por kg y los combos por unidad
-   con precio cerrado. Se guardan juntos bajo una sola clave. */
+/* Tres mapas porque los cortes se venden por kg y los combos y los accesorios
+   por unidad con precio cerrado. Se guardan juntos bajo una sola clave. */
 let pedido = {}; // slug -> kg        (cortes sueltos)
 let comboPedido = {}; // slug -> unidades (combos armados)
+let accesorioPedido = {}; // slug -> unidades (accesorios)
 
 function round2(value) {
   return Math.round(Number(value) * 100) / 100;
@@ -20,8 +22,9 @@ function clampCorteKg(value) {
   return Math.min(MAX_CORTE_KG, round2(value));
 }
 
-function clampComboUnits(value) {
-  return Math.min(MAX_COMBO_UNITS, Math.max(0, Math.round(Number(value) || 0)));
+/* Unidades de combos y accesorios: siempre enteras, con tope por línea. */
+function clampUnits(value, max) {
+  return Math.min(max, Math.max(0, Math.round(Number(value) || 0)));
 }
 
 /* ---------- Reglas de venta (espejo server-side) ----------
@@ -66,8 +69,9 @@ function isObject(value) {
   return value && typeof value === "object" && !Array.isArray(value);
 }
 
-/* Descarta valores corruptos o negativos que could've quedado guardados. */
-function sanitizeCartMap(raw, integerValues = false) {
+/* Descarta valores corruptos o negativos que could've quedado guardados.
+   `max` es el tope de la línea y `integerValues` si las unidades son enteras. */
+function sanitizeCartMap(raw, max, integerValues = false) {
   if (!isObject(raw)) return {};
   const clean = {};
   for (const [id, rawQty] of Object.entries(raw)) {
@@ -75,7 +79,6 @@ function sanitizeCartMap(raw, integerValues = false) {
     if (!id || !Number.isFinite(qty) || qty <= 0) continue;
     const normalized = integerValues ? Math.round(qty) : round2(qty);
     if (!(normalized > 0)) continue;
-    const max = integerValues ? MAX_COMBO_UNITS : MAX_CORTE_KG;
     clean[id] = Math.min(max, normalized);
   }
   return clean;
@@ -87,25 +90,36 @@ function loadPedido() {
     const stored = localStorage.getItem(ORDER_KEY);
     const raw = stored ? JSON.parse(stored) : null;
 
-    if (isObject(raw) && (isObject(raw.cortes) || isObject(raw.combos))) {
-      pedido = sanitizeCartMap(raw.cortes);
-      comboPedido = sanitizeCartMap(raw.combos, true);
+    // Un carrito guardado antes de los accesorios no tiene la clave `accesorios`:
+    // se carga como {} sin romper nada.
+    if (
+      isObject(raw) &&
+      (isObject(raw.cortes) || isObject(raw.combos) || isObject(raw.accesorios))
+    ) {
+      pedido = sanitizeCartMap(raw.cortes, MAX_CORTE_KG);
+      comboPedido = sanitizeCartMap(raw.combos, MAX_COMBO_UNITS, true);
+      accesorioPedido = sanitizeCartMap(raw.accesorios, MAX_ACCESORIO_UNITS, true);
       return;
     }
 
     const legacy = JSON.parse(localStorage.getItem(LEGACY_ORDER_KEY) || "null");
-    pedido = sanitizeCartMap(legacy);
+    pedido = sanitizeCartMap(legacy, MAX_CORTE_KG);
     comboPedido = {};
+    accesorioPedido = {};
     if (Object.keys(pedido).length) savePedido();
   } catch {
     pedido = {};
     comboPedido = {};
+    accesorioPedido = {};
   }
 }
 
 function savePedido() {
   try {
-    localStorage.setItem(ORDER_KEY, JSON.stringify({ cortes: pedido, combos: comboPedido }));
+    localStorage.setItem(
+      ORDER_KEY,
+      JSON.stringify({ cortes: pedido, combos: comboPedido, accesorios: accesorioPedido }),
+    );
   } catch (err) {
     console.warn("[carrito] No se pudo guardar el pedido:", err);
   }
@@ -125,6 +139,7 @@ function persistPedido() {
 function reconcilePedidoWithCatalog() {
   const activeCortes = new Set(CORTES.map((corte) => corte.id));
   const activeCombos = new Set(COMBOS.map((combo) => combo.id));
+  const activeAccesorios = new Set(ACCESORIOS.map((accesorio) => accesorio.id));
   let removed = 0;
 
   for (const slug of Object.keys(pedido)) {
@@ -148,12 +163,27 @@ function reconcilePedidoWithCatalog() {
       removed += 1;
       continue;
     }
-    const units = clampComboUnits(comboPedido[slug]);
+    const units = clampUnits(comboPedido[slug], MAX_COMBO_UNITS);
     if (!(units > 0)) {
       delete comboPedido[slug];
       removed += 1;
     } else {
       comboPedido[slug] = units;
+    }
+  }
+
+  for (const slug of Object.keys(accesorioPedido)) {
+    if (!activeAccesorios.has(slug)) {
+      delete accesorioPedido[slug];
+      removed += 1;
+      continue;
+    }
+    const units = clampUnits(accesorioPedido[slug], MAX_ACCESORIO_UNITS);
+    if (!(units > 0)) {
+      delete accesorioPedido[slug];
+      removed += 1;
+    } else {
+      accesorioPedido[slug] = units;
     }
   }
 
@@ -169,6 +199,10 @@ function findCorte(id) {
 
 function findCombo(id) {
   return COMBOS.find((c) => c.id === id);
+}
+
+function findAccesorio(id) {
+  return ACCESORIOS.find((a) => a.id === id);
 }
 
 function kgDeCombo(combo) {
@@ -211,7 +245,7 @@ function addComboToPedido(id, units = 1) {
   const combo = findCombo(id);
   const qty = Math.max(1, Math.round(Number(units) || 1));
   if (!combo) return;
-  comboPedido[id] = clampComboUnits((comboPedido[id] || 0) + qty);
+  comboPedido[id] = clampUnits((comboPedido[id] || 0) + qty, MAX_COMBO_UNITS);
   persistPedido();
   renderDrawer();
   updateOrderCount();
@@ -219,7 +253,7 @@ function addComboToPedido(id, units = 1) {
 
 function changeComboQty(id, delta) {
   if (!(id in comboPedido)) return;
-  comboPedido[id] = clampComboUnits(comboPedido[id] + delta);
+  comboPedido[id] = clampUnits(comboPedido[id] + delta, MAX_COMBO_UNITS);
   if (comboPedido[id] <= 0) delete comboPedido[id];
   persistPedido();
   renderDrawer();
@@ -233,8 +267,39 @@ function removeComboFromPedido(id) {
   updateOrderCount();
 }
 
+/* ---------- Accesorios (por unidad) ---------- */
+
+function addAccesorioToPedido(id, units = 1) {
+  const accesorio = findAccesorio(id);
+  const qty = Math.max(1, Math.round(Number(units) || 1));
+  if (!accesorio) return;
+  accesorioPedido[id] = clampUnits((accesorioPedido[id] || 0) + qty, MAX_ACCESORIO_UNITS);
+  persistPedido();
+  renderDrawer();
+  updateOrderCount();
+}
+
+function changeAccesorioQty(id, delta) {
+  if (!(id in accesorioPedido)) return;
+  accesorioPedido[id] = clampUnits(accesorioPedido[id] + delta, MAX_ACCESORIO_UNITS);
+  if (accesorioPedido[id] <= 0) delete accesorioPedido[id];
+  persistPedido();
+  renderDrawer();
+  updateOrderCount();
+}
+
+function removeAccesorioFromPedido(id) {
+  delete accesorioPedido[id];
+  persistPedido();
+  renderDrawer();
+  updateOrderCount();
+}
+
 /* ---------- Totales ---------- */
 
+/* Los accesorios no aportan kilos: pesan 0. Un pedido sólo de accesorios
+   devuelve 0, y por eso el resumen de WhatsApp omite el total de kilos cuando
+   no hay carne en el pedido. */
 function totalKg() {
   const cortes = Object.values(pedido).reduce((sum, kg) => sum + Number(kg || 0), 0);
   const combos = Object.entries(comboPedido).reduce((sum, [id, units]) => {
@@ -244,8 +309,15 @@ function totalKg() {
   return round2(cortes + combos);
 }
 
+/* Cuenta líneas, no unidades: es lo que ve el cliente en el badge del botón
+   "Pedido". Los accesorios cuentan acá o el pago quedaría bloqueado cuando el
+   carrito sólo tiene un accesorio. */
 function itemCount() {
-  return Object.keys(pedido).length + Object.keys(comboPedido).length;
+  return (
+    Object.keys(pedido).length +
+    Object.keys(comboPedido).length +
+    Object.keys(accesorioPedido).length
+  );
 }
 
 function updateOrderCount() {
@@ -285,10 +357,19 @@ function buildWhatsAppMessage() {
     lines.push(`• ${combo.nombre} x${units}: ${combo.detalle}`);
   }
 
-  lines.push(
-    "",
-    `Kilos totales: ${kgFmt(totalKg())}`
-  );
+  for (const [id, units] of Object.entries(accesorioPedido)) {
+    const accesorio = findAccesorio(id);
+    if (!accesorio) {
+      lines.push(`• ${id}: ${units} unidad(es)`);
+      continue;
+    }
+    lines.push(`• ${accesorio.nombre} x${units}`);
+  }
+
+  // Los accesorios no pesan, asi que en un pedido solo de accesorios el total
+  // de kilos seria 0. Se omite la linea en vez de mandar "0 kg".
+  const kg = totalKg();
+  if (kg > 0) lines.push("", `Kilos totales: ${kgFmt(kg)}`);
   return encodeURIComponent(lines.join("\n"));
 }
 

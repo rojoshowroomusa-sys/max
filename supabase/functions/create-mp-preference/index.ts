@@ -6,7 +6,8 @@
 //   body: {
 //     items: [
 //       { kind: "corte", slug: "<slug del corte>", qty: <kg> },
-//       { kind: "combo", slug: "<slug del combo>", qty: <unidades> }
+//       { kind: "combo", slug: "<slug del combo>", qty: <unidades> },
+//       { kind: "accesorio", slug: "<slug del accesorio>", qty: <unidades> }
 //     ]
 //   }
 //   resp: { id: "<preference_id>", checkout_url: "<url checkout>", total: <n> }
@@ -36,16 +37,17 @@ const ALLOWED_ORIGIN = ALLOWED_ORIGINS[0] ?? "";
 
 const MAX_BODY_BYTES = 16 * 1024;
 const MAX_SLUG_LENGTH = 100;
-// Límites por línea. Deben coincidir con MAX_CORTE_KG / MAX_COMBO_UNITS de
-// public/js/order.js: el cliente los avisa antes de cobrar y el servidor los
-// vuelve a imponer (el cliente nunca es una frontera de confianza).
+// Límites por línea. Deben coincidir con MAX_CORTE_KG / MAX_COMBO_UNITS /
+// MAX_ACCESORIO_UNITS de public/js/order.js: el cliente los avisa antes de cobrar
+// y el servidor los vuelve a imponer (el cliente nunca es una frontera de confianza).
 const MAX_CORTE_KG = 100;
 const MAX_COMBO_UNITS = 20;
+const MAX_ACCESORIO_UNITS = 20;
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 30;
 const rateLimitByIp = new Map<string, { count: number; resetAt: number }>();
 
-type ItemKind = "corte" | "combo";
+type ItemKind = "corte" | "combo" | "accesorio";
 
 type RequestedItem = {
   kind: ItemKind;
@@ -72,6 +74,16 @@ type ComboRow = {
   is_active: boolean;
 };
 
+/* Los accesorios viven en su propia tabla (no en products) porque no se venden
+   por kilo: su precio es por unidad y el stock se cuenta en unidades. */
+type AccesorioRow = {
+  slug: string;
+  name: string;
+  price: number;
+  stock_units: number;
+  is_active: boolean;
+};
+
 type LineItem = {
   kind: ItemKind;
   slug: string;
@@ -86,6 +98,12 @@ type LineItem = {
 
 function round2(value: number): number {
   return Math.round(value * 100) / 100;
+}
+
+function maxQtyFor(kind: ItemKind): number {
+  if (kind === "combo") return MAX_COMBO_UNITS;
+  if (kind === "accesorio") return MAX_ACCESORIO_UNITS;
+  return MAX_CORTE_KG;
 }
 
 function matchOrigin(origin: string | null): string | null {
@@ -227,7 +245,7 @@ async function handleRequest(req: Request): Promise<Response> {
     const slug = typeof item.slug === "string" ? item.slug.trim() : "";
     const rawQty = item.qty ?? item.qty_kg;
 
-    if (kind !== "corte" && kind !== "combo") {
+    if (kind !== "corte" && kind !== "combo" && kind !== "accesorio") {
       return json({ error: `Tipo de item inválido para ${slug || "el pedido"}` }, 400);
     }
     if (!slug || slug.length > MAX_SLUG_LENGTH || !/^[a-z0-9][a-z0-9-]*$/i.test(slug)) {
@@ -237,12 +255,16 @@ async function handleRequest(req: Request): Promise<Response> {
       return json({ error: `Cantidad inválida para ${slug}` }, 400);
     }
     const qty = rawQty;
-    if (kind === "combo" && !Number.isInteger(qty)) {
-      return json({ error: `Los combos se venden por unidades enteras: ${slug}` }, 400);
+    // Los cortes van por kg (se acepta fraccional). Combos y accesorios van por
+    // unidades enteras: no existe media pinza ni media tabla.
+    const isUnitKind = kind === "combo" || kind === "accesorio";
+    if (isUnitKind && !Number.isInteger(qty)) {
+      const label = kind === "combo" ? "Los combos" : "Los accesorios";
+      return json({ error: `${label} se venden por unidades enteras: ${slug}` }, 400);
     }
 
-    const normalizedQty = kind === "combo" ? qty : round2(qty);
-    const maxQty = kind === "combo" ? MAX_COMBO_UNITS : MAX_CORTE_KG;
+    const normalizedQty = isUnitKind ? qty : round2(qty);
+    const maxQty = maxQtyFor(kind);
     if (!(normalizedQty > 0)) {
       return json({ error: `Cantidad inválida para ${slug}` }, 400);
     }
@@ -267,8 +289,10 @@ async function handleRequest(req: Request): Promise<Response> {
 
   const corteSlugs = requested.filter((item) => item.kind === "corte").map((item) => item.slug);
   const comboSlugs = requested.filter((item) => item.kind === "combo").map((item) => item.slug);
+  const accesorioSlugs = requested.filter((item) => item.kind === "accesorio").map((item) => item.slug);
   const products: ProductRow[] = [];
   const combos: ComboRow[] = [];
+  const accesorios: AccesorioRow[] = [];
 
   if (corteSlugs.length > 0) {
     const { data, error } = await supabase
@@ -294,8 +318,21 @@ async function handleRequest(req: Request): Promise<Response> {
     combos.push(...((data || []) as ComboRow[]));
   }
 
+  if (accesorioSlugs.length > 0) {
+    const { data, error } = await supabase
+      .from("accesorios")
+      .select("slug, name, price, stock_units, is_active")
+      .in("slug", accesorioSlugs);
+    if (error) {
+      console.error("Error de Supabase al leer accesorios: ", error);
+      return json({ error: "Error interno al consultar los accesorios" }, 500);
+    }
+    accesorios.push(...((data || []) as AccesorioRow[]));
+  }
+
   const productsBySlug = new Map(products.map((product) => [product.slug, product]));
   const combosBySlug = new Map(combos.map((combo) => [combo.slug, combo]));
+  const accesoriosBySlug = new Map(accesorios.map((accesorio) => [accesorio.slug, accesorio]));
   const lines: LineItem[] = [];
 
   for (const item of requested) {
@@ -360,29 +397,65 @@ async function handleRequest(req: Request): Promise<Response> {
       continue;
     }
 
-    const combo = combosBySlug.get(item.slug);
-    const unitPrice = Number(combo?.price);
-    const kgPerCombo = Number(combo?.total_kg);
-    if (!combo || !combo.is_active) {
-      return json({ error: `El combo "${item.slug}" no está disponible` }, 400);
+    if (item.kind === "combo") {
+      const combo = combosBySlug.get(item.slug);
+      const unitPrice = Number(combo?.price);
+      const kgPerCombo = Number(combo?.total_kg);
+      if (!combo || !combo.is_active) {
+        return json({ error: `El combo "${item.slug}" no está disponible` }, 400);
+      }
+      if (!Number.isFinite(unitPrice) || unitPrice <= 0) {
+        return json({ error: `El combo "${item.slug}" no tiene un precio válido` }, 400);
+      }
+      if (!Number.isFinite(kgPerCombo) || kgPerCombo <= 0) {
+        return json({ error: `El combo "${item.slug}" no declara sus kilos` }, 400);
+      }
+
+      lines.push({
+        kind: "combo",
+        slug: item.slug,
+        title: combo.name,
+        qty: item.qty,
+        deliveredKg: round2(kgPerCombo * item.qty),
+        unitPrice: round2(unitPrice),
+        subtotal: round2(unitPrice * item.qty),
+        mpQuantity: item.qty,
+        mpUnitPrice: round2(unitPrice),
+      });
+      continue;
     }
-    if (!Number.isFinite(unitPrice) || unitPrice <= 0) {
-      return json({ error: `El combo "${item.slug}" no tiene un precio válido` }, 400);
+
+    const accesorio = accesoriosBySlug.get(item.slug);
+    const accesorioPrice = Number(accesorio?.price);
+    if (!accesorio || !accesorio.is_active) {
+      return json({ error: `El accesorio "${item.slug}" no está disponible` }, 400);
     }
-    if (!Number.isFinite(kgPerCombo) || kgPerCombo <= 0) {
-      return json({ error: `El combo "${item.slug}" no declara sus kilos` }, 400);
+    if (!Number.isFinite(accesorioPrice) || accesorioPrice <= 0) {
+      return json({ error: `El accesorio "${item.slug}" no tiene un precio válido` }, 400);
+    }
+    // Mismo criterio que el stock de cortes: es un snapshot de disponibilidad,
+    // no una reserva. Un accesorio se cuenta en unidades, no en gramos.
+    const stockUnits = Number(accesorio.stock_units);
+    if (!Number.isInteger(stockUnits) || stockUnits < item.qty) {
+      const quedan = Number.isFinite(stockUnits) ? stockUnits : 0;
+      return json(
+        { error: `El accesorio "${item.slug}" no tiene stock suficiente (quedan ${quedan})` },
+        400,
+      );
     }
 
     lines.push({
-      kind: "combo",
+      kind: "accesorio",
       slug: item.slug,
-      title: combo.name,
+      title: accesorio.name,
       qty: item.qty,
-      deliveredKg: round2(kgPerCombo * item.qty),
-      unitPrice: round2(unitPrice),
-      subtotal: round2(unitPrice * item.qty),
+      // Un accesorio no pesa. deliveredKg = 0 es lo que hace que la linea entre
+      // en order_items con qty_kg = 0 (ver order_items_kind_shape_check).
+      deliveredKg: 0,
+      unitPrice: round2(accesorioPrice),
+      subtotal: round2(accesorioPrice * item.qty),
       mpQuantity: item.qty,
-      mpUnitPrice: round2(unitPrice),
+      mpUnitPrice: round2(accesorioPrice),
     });
   }
 
@@ -437,7 +510,9 @@ async function handleRequest(req: Request): Promise<Response> {
       product_name: line.title,
       kind: line.kind,
       qty_kg: line.deliveredKg,
-      qty_units: line.kind === "combo" ? line.qty : null,
+      // qty_units es para todo lo que no se vende por kg: combo y accesorio.
+      // Un corte lo audita el cliente en gramos, así que va en null.
+      qty_units: line.kind === "corte" ? null : line.qty,
       unit_price: line.unitPrice,
       subtotal: line.subtotal,
     })),

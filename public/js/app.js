@@ -1,5 +1,6 @@
 const kgSelection = {};
 const comboSelection = {};
+const accesorioSelection = {};
 let activeCat = "todos";
 let activeSort = "destacado";
 
@@ -229,6 +230,25 @@ function syncComboStepper(id) {
   }
 }
 
+/* Igual que syncComboStepper pero para accesorios. El tope no es el límite de la
+   línea (MAX_ACCESORIO_UNITS) sino el stock real del producto: no tiene sentido
+   dejar seleccionar 5 unidades de algo que queda 1. */
+function syncAccesorioStepper(id) {
+  const accesorio = findAccesorio(id);
+  const stock = Math.min(MAX_ACCESORIO_UNITS, (accesorio && accesorio.stock) || 0);
+  const units = Math.min(accesorioSelection[id] || 1, Math.max(1, stock));
+  const output = document.getElementById(`accesorio-units-${id}`);
+  if (!output) return;
+  output.textContent = units;
+  const qtyBox = output.closest(".qty");
+  if (qtyBox) {
+    const minus = qtyBox.querySelector('[data-action="accesorio-minus"]');
+    const plus = qtyBox.querySelector('[data-action="accesorio-plus"]');
+    if (minus) minus.disabled = units <= 1;
+    if (plus) plus.disabled = units >= stock;
+  }
+}
+
 function renderGuia() {
   const grid = document.getElementById("guiaGrid");
   grid.replaceChildren();
@@ -280,15 +300,60 @@ function renderCombos() {
   });
 }
 
+/* Accesorios: precio por unidad, sin foto. La tarjeta se dibuja con el icono
+   que trae el producto, asi que el icono es parte del dato y no un adorno.
+   Sin stock no hay stepper ni boton: no se puede agregar al carrito algo que el
+   servidor va a rechazar al cobrar. */
+function renderAccesorios() {
+  const grid = document.getElementById("accesoriosGrid");
+  const empty = document.getElementById("accesoriosEmpty");
+  if (!grid) return;
+  grid.replaceChildren();
+
+  const hayAccesorios = ACCESORIOS.length > 0;
+  if (empty) empty.classList.toggle("hidden", hayAccesorios);
+  grid.classList.toggle("hidden", !hayAccesorios);
+  if (!hayAccesorios) return;
+
+  ACCESORIOS.forEach((accesorio, idx) => {
+    const stock = Math.min(MAX_ACCESORIO_UNITS, Math.max(0, Number(accesorio.stock) || 0));
+    if (!(accesorio.id in accesorioSelection)) accesorioSelection[accesorio.id] = 1;
+    const units = Math.min(accesorioSelection[accesorio.id] || 1, Math.max(1, stock));
+    const safeId = escapeHtml(accesorio.id);
+    const safeName = escapeHtml(accesorio.nombre);
+    const card = document.createElement("article");
+    card.className = "card center-card combo-card accesorio-card animate-in";
+    card.style.setProperty("--i", idx);
+    card.innerHTML = `
+      <span class="card-icon accesorio-icon" aria-hidden="true">${escapeHtml(accesorio.icon)}</span>
+      <h3>${safeName}</h3>
+      <p class="card-desc">${escapeHtml(accesorio.detalle)}</p>
+      ${stock > 0
+        ? `<div class="combo-actions">
+            <div class="qty" role="group" aria-label="Cantidad de ${safeName}">
+              <button data-action="accesorio-minus" data-id="${safeId}" aria-label="Restar una unidad de ${safeName}" aria-controls="accesorio-units-${safeId}" ${units <= 1 ? "disabled" : ""}>−</button>
+              <output id="accesorio-units-${safeId}">${units}</output>
+              <button data-action="accesorio-plus" data-id="${safeId}" aria-label="Sumar una unidad de ${safeName}" aria-controls="accesorio-units-${safeId}" ${units >= stock ? "disabled" : ""}>+</button>
+            </div>
+            <button class="add-btn" data-action="accesorio-add" data-id="${safeId}"
+              aria-label="Agregar ${units} ${units === 1 ? "unidad" : "unidades"} de ${safeName} al pedido">Agregar</button>
+          </div>`
+        : `<p class="accesorio-sin-stock">Sin stock por el momento</p>`}
+    `;
+    grid.appendChild(card);
+  });
+}
+
 function renderDrawer() {
   const wrap = document.getElementById("drawerItems");
   const totalEl = document.getElementById("totalKg");
   const corteIds = Object.keys(pedido);
   const comboIds = Object.keys(comboPedido);
+  const accesorioIds = Object.keys(accesorioPedido);
 
   wrap.replaceChildren();
-  if (corteIds.length === 0 && comboIds.length === 0) {
-    wrap.innerHTML = `<p class="drawer-empty">Tu pedido está vacio.<br />Agregá cortes o combos desde el catálogo.</p>`;
+  if (corteIds.length === 0 && comboIds.length === 0 && accesorioIds.length === 0) {
+    wrap.innerHTML = `<p class="drawer-empty">Tu pedido está vacio.<br />Agregá cortes, combos o accesorios desde el catálogo.</p>`;
   } else {
     for (const id of corteIds) {
       const corte = findCorte(id);
@@ -332,6 +397,28 @@ function renderDrawer() {
           <button data-action="item-inc" data-kind="combo" data-id="${safeId}" aria-label="Sumar un combo ${safeName}" ${units >= MAX_COMBO_UNITS ? "disabled" : ""}>+</button>
         </div>
         <button class="drawer-item-remove" data-action="item-remove" data-kind="combo" data-id="${safeId}" aria-label="Quitar ${safeName}">Quitar</button>
+      `;
+      wrap.appendChild(item);
+    }
+
+    for (const id of accesorioIds) {
+      const accesorio = findAccesorio(id);
+      const units = accesorioPedido[id];
+      const safeId = escapeHtml(id);
+      const safeName = escapeHtml(accesorio ? accesorio.nombre : id);
+      const item = document.createElement("div");
+      item.className = "drawer-item";
+      item.innerHTML = `
+        <div class="drawer-item-info">
+          <span class="drawer-item-kind accesorio">Accesorio</span>
+          <strong>${safeName}</strong>
+          <small>${units} ${units === 1 ? "unidad" : "unidades"}</small>
+        </div>
+        <div class="qty">
+          <button data-action="item-dec" data-kind="accesorio" data-id="${safeId}" aria-label="Restar una unidad de ${safeName}">−</button>
+          <button data-action="item-inc" data-kind="accesorio" data-id="${safeId}" aria-label="Sumar una unidad de ${safeName}" ${units >= MAX_ACCESORIO_UNITS ? "disabled" : ""}>+</button>
+        </div>
+        <button class="drawer-item-remove" data-action="item-remove" data-kind="accesorio" data-id="${safeId}" aria-label="Quitar ${safeName}">Quitar</button>
       `;
       wrap.appendChild(item);
     }
@@ -413,15 +500,43 @@ document.addEventListener("click", (e) => {
     }, 900);
   }
 
+  if (action === "accesorio-minus" || action === "accesorio-plus") {
+    const accesorio = findAccesorio(id);
+    const stock = Math.min(MAX_ACCESORIO_UNITS, Math.max(0, (accesorio && accesorio.stock) || 0));
+    const base = accesorioSelection[id] ?? 1;
+    accesorioSelection[id] = Math.min(
+      Math.max(1, stock),
+      Math.max(1, base + (action === "accesorio-plus" ? 1 : -1)),
+    );
+    syncAccesorioStepper(id);
+  }
+
+  if (action === "accesorio-add") {
+    addAccesorioToPedido(id, accesorioSelection[id] || 1);
+    btn.textContent = "✓ Agregado";
+    btn.disabled = true;
+    accesorioSelection[id] = 1;
+    syncAccesorioStepper(id);
+    setTimeout(() => {
+      btn.textContent = "Agregar";
+      btn.disabled = false;
+    }, 900);
+  }
+
   if (action === "item-inc" || action === "item-dec") {
     const delta = action === "item-inc" ? 1 : -1;
+    // Cada kind tiene su propia unidad: los cortes van por kg (fraccion de
+    // CORTE_STEP_KG), los combos y los accesorios por unidades enteras. Sin esta
+    // separacion, un accesorio sumaria kilos.
     if (kind === "combo") changeComboQty(id, delta);
+    else if (kind === "accesorio") changeAccesorioQty(id, delta);
     else changeQty(id, delta * CORTE_STEP_KG);
     refocusDrawerItem(action, kind, id);
   }
 
   if (action === "item-remove") {
     if (kind === "combo") removeComboFromPedido(id);
+    else if (kind === "accesorio") removeAccesorioFromPedido(id);
     else removeFromPedido(id);
     refocusDrawerItem(action, kind, id);
   }
@@ -574,6 +689,10 @@ function buildMpPayload() {
     items: [
       ...Object.entries(pedido).map(([slug, qty]) => ({ kind: "corte", slug, qty })),
       ...Object.entries(comboPedido).map(([slug, qty]) => ({ kind: "combo", slug, qty })),
+      // Los accesorios TIENEN que ir acá. buildMpPayload es la huella del
+      // carrito: si un accesorio no estuviera, cambiarlo no invalidaría el
+      // checkout pendiente y el cliente pagaria un carrito distinto al que cree.
+      ...Object.entries(accesorioPedido).map(([slug, qty]) => ({ kind: "accesorio", slug, qty })),
     ],
   };
 }
@@ -783,6 +902,11 @@ async function bootstrap() {
     if (catalog) {
       CORTES = catalog.products;
       COMBOS = catalog.combos;
+      // Puede venir vacío si la tabla `accesorios` todavía no está migrada: en
+      // ese caso se conserva la lista local de respaldo en vez de vaciarla.
+      if (catalog.accesorios && catalog.accesorios.length) {
+        ACCESORIOS = catalog.accesorios;
+      }
       if (statusEl) statusEl.textContent = "Catálogo actualizado";
     } else if (statusEl) {
       statusEl.textContent = "Catálogo de respaldo (sin conexión)";
@@ -797,8 +921,8 @@ async function bootstrap() {
   const heroCount = document.getElementById("heroCortes");
   if (heroCount && CORTES.length) heroCount.textContent = `+${CORTES.length}`;
 
-  // El carrito se depura contra el catálogo activo: un corte o combo que ya no
-  // está disponible se quita en lugar de hacer fallar todo el checkout.
+  // El carrito se depura contra el catálogo activo: un corte, combo o accesorio
+  // que ya no está disponible se quita en lugar de hacer fallar todo el checkout.
   const removedLines = reconcilePedidoWithCatalog();
   if (removedLines) {
     setMpStatus(
@@ -809,6 +933,7 @@ async function bootstrap() {
 
   renderCortes();
   renderCombos();
+  renderAccesorios();
   renderDrawer();
   updateOrderCount();
   document.getElementById("bootSkeleton")?.classList.add("hidden");
