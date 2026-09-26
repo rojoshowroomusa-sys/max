@@ -131,6 +131,26 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
   text-align: center;
 }
 .hero-inner { max-width: 760px; }
+/* Sello de marca (logo.svg). El SVG es vector y ya trae <title>/<desc>
+   propios, pero dentro de un <img> el navegador solo usa el alt, asi que
+   el alt se carga la accesibilidad. width/height en el HTML fijan la
+   proporcion 400x560 para que no haya salto de layout al cargar. */
+.brandmark {
+  display: block;
+  height: auto;
+}
+.brandmark--hero {
+  width: 84px;
+  margin: 0 auto 26px;
+}
+.brandmark--about {
+  width: 64px;
+  margin: 24px 0;
+}
+.brandmark--footer {
+  width: 88px;
+  margin: 0 auto;
+}
 .hero-sub { color: var(--muted); font-size: 18px; margin-top: 14px; }
 .hero-actions { margin-top: 30px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
 
@@ -795,10 +815,19 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
 .footer { border-top: 1px solid var(--border); padding: 36px 0; }
 .footer-inner {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+/* El sello va centrado arriba; la fila de contacto conserva el
+   telefono a la izquierda y el copyright a la derecha. */
+.footer-row {
+  display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
+  width: 100%;
 }
 .footer-inner p { color: var(--muted); font-size: 13px; }
 .footer-phone { color: var(--text); font-weight: 700; text-decoration: none; }
@@ -947,6 +976,10 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
   .drawer-item { flex-wrap: wrap; }
   .photo-slide h2 { font-size: 26px; }
   .photo-cta { margin-top: 18px; padding: 12px 24px; font-size: 14px; }
+  .brandmark--hero { width: 64px; margin-bottom: 20px; }
+  .brandmark--about { width: 56px; margin: 20px 0; }
+  .brandmark--footer { width: 72px; }
+  .footer-row { justify-content: center; text-align: center; }
 }
 
 @media (prefers-reduced-motion: reduce) {
