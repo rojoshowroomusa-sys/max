@@ -50,12 +50,45 @@
     </div>
   </header>
 
-  <div class="shipping-banner">
-    <div class="container">
-      <span>🚚</span>
-      <p>Envío sin cargo en La Plata y alrededores</p>
+  <section class="photo-carousel" id="photoCarousel" aria-label="Carrusel fotográfico">
+    <div class="photo-track">
+      <figure class="photo-slide active">
+        <img src="images/cortes/asado.jpeg" alt="Asado argentino en la parrilla" loading="eager" />
+        <figcaption>
+          <span class="photo-badge">🚚 Envío sin cargo</span>
+          <h2>La Plata y alrededores</h2>
+          <p>Entrega pactada en 24 hs, directo a tu puerta</p>
+        </figcaption>
+      </figure>
+      <figure class="photo-slide">
+        <img src="images/cortes/tomahawk.jpeg" alt="Tomahawk premium corte imponente" loading="lazy" />
+        <figcaption>
+          <span class="photo-badge">⭐ Cortes premium</span>
+          <h2>Calidad innegociable</h2>
+          <p>Seleccionados a mano, envasados al vacío</p>
+        </figcaption>
+      </figure>
+      <figure class="photo-slide">
+        <img src="images/cortes/vacio.jpeg" alt="Vacio jugoso corte clásico" loading="lazy" />
+        <figcaption>
+          <span class="photo-badge">🥩 Campo a mesa</span>
+          <h2>Directo del productor</h2>
+          <p>Sin intermediarios, precio real familiar</p>
+        </figcaption>
+      </figure>
+      <figure class="photo-slide">
+        <img src="images/cortes/bife-de-chorizo.jpeg" alt="Bife de chorizo jugoso" loading="lazy" />
+        <figcaption>
+          <span class="photo-badge">💳 Pago fácil</span>
+          <h2>Mercado Pago · Cuenta DNI · Efectivo</h2>
+          <p>Elegí cómo pagar, coordinamos la entrega</p>
+        </figcaption>
+      </figure>
     </div>
-  </div>
+    <button class="photo-btn photo-prev" id="photoPrev" aria-label="Foto anterior" title="Anterior">‹</button>
+    <button class="photo-btn photo-next" id="photoNext" aria-label="Foto siguiente" title="Siguiente">›</button>
+    <div class="photo-dots" id="photoDots" aria-label="Navegación del carrusel"></div>
+  </section>
 
   <main id="inicio">
     <section class="hero">
@@ -73,15 +106,6 @@
           <a href="#nosotros" class="btn btn-ghost">Conocenos</a>
         </div>
       </div>
-    </section>
-
-    <section class="section container flyer-promo" aria-label="Flyer promocional Carnes Max Premium">
-      <img
-        src="assets/flyer-share.png"
-        alt="Carnes Max Premium — carne argentina directo a tu mesa. Combos, guía de cortes, mayoristas y envío sin cargo."
-        width="1200"
-        height="630"
-      />
     </section>
 
     <section class="section container" id="cortes">
@@ -119,24 +143,6 @@
       <p class="center empty-actions">
         <button class="btn btn-ghost hidden" id="clearFiltersBtn">Limpiar búsqueda y filtros</button>
       </p>
-    </section>
-
-    <section class="section container" id="galeria">
-      <p class="eyebrow center">Antes de pedir</p>
-      <h2 class="center">Galería de Cortes</h2>
-      <p class="section-sub center">Mirá cada corte de cerca: fotos reales de nuestro catálogo.</p>
-      <div class="carousel">
-        <button type="button" class="carousel-btn" id="galPrev" aria-label="Fotos anteriores">‹</button>
-        <div
-          class="carousel-track"
-          id="galTrack"
-          role="region"
-          aria-label="Fotos de los cortes del catálogo"
-          tabindex="0"
-        ></div>
-        <button type="button" class="carousel-btn" id="galNext" aria-label="Fotos siguientes">›</button>
-      </div>
-      <p class="empty-msg hidden" id="galEmpty">Pronto sumamos fotos de los cortes.</p>
     </section>
 
     <section class="section section-alt" id="combos">

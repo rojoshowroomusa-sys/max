@@ -3,6 +3,96 @@ const comboSelection = {};
 let activeCat = "todos";
 let activeSort = "destacado";
 
+/* Rotación del título de la pestaña (carrusel de títulos) */
+const TITLE_CAROUSEL = [
+  "Carnes Max Premium — Cortes argentinos directo a tu mesa",
+  "MAX Carnes Premium — Envío sin cargo en La Plata",
+  "Carnes Max Premium — Combos para tu asado",
+  "MAX Carnes Premium — Paga con Mercado Pago o WhatsApp",
+  "Carnes Max Premium — Carnicería familiar, calidad real",
+];
+let titleIdx = 0;
+function rotateTitle() {
+  document.title = TITLE_CAROUSEL[titleIdx];
+  titleIdx = (titleIdx + 1) % TITLE_CAROUSEL.length;
+}
+setInterval(rotateTitle, 4500); // cambia cada 4.5s
+rotateTitle(); // inicializa
+
+/* Photo carousel — ancho, fotográfico, con dots y autoplay */
+(function initPhotoCarousel() {
+  const carousel = document.getElementById("photoCarousel");
+  if (!carousel) return;
+  const track = carousel.querySelector(".photo-track");
+  const slides = Array.from(carousel.querySelectorAll(".photo-slide"));
+  const prev = carousel.querySelector("#photoPrev");
+  const next = carousel.querySelector("#photoNext");
+  const dotsWrap = carousel.querySelector("#photoDots");
+  if (!track || !slides.length || !prev || !next || !dotsWrap) return;
+
+  // crea dots
+  slides.forEach((_, i) => {
+    const btn = document.createElement("button");
+    btn.setAttribute("role", "tab");
+    btn.setAttribute("aria-label", `Foto ${i + 1}`);
+    btn.addEventListener("click", () => goTo(i));
+    dotsWrap.appendChild(btn);
+  });
+  const dots = Array.from(dotsWrap.querySelectorAll("button"));
+
+  let idx = 0;
+  let timer = null;
+
+  function update() {
+    track.style.transform = `translateX(-${idx * 100}%)`;
+    slides.forEach((s, i) => s.classList.toggle("active", i === idx));
+    dots.forEach((d, i) => d.classList.toggle("active", i === idx));
+  }
+
+  function goTo(i) {
+    idx = (i + slides.length) % slides.length;
+    update();
+    resetTimer();
+  }
+
+  function resetTimer() {
+    clearInterval(timer);
+    timer = setInterval(() => goTo(idx + 1), 4500);
+  }
+
+  prev.addEventListener("click", () => goTo(idx - 1));
+  next.addEventListener("click", () => goTo(idx + 1));
+
+  // pausa en hover/focus
+  carousel.addEventListener("mouseenter", () => clearInterval(timer));
+  carousel.addEventListener("focusin", () => clearInterval(timer));
+  carousel.addEventListener("mouseleave", resetTimer);
+  carousel.addEventListener("focusout", resetTimer);
+
+  // swipe táctil
+  let startX = 0;
+  carousel.addEventListener("touchstart", (e) => (startX = e.touches[0].clientX), { passive: true });
+  carousel.addEventListener("touchend", (e) => {
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 50) goTo(idx + (dx < 0 ? 1 : -1));
+  });
+
+  // teclado
+  carousel.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowLeft") goTo(idx - 1);
+    else if (e.key === "ArrowRight") goTo(idx + 1);
+  });
+
+  // prefers-reduced-motion
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    clearInterval(timer);
+    timer = null;
+  }
+
+  update();
+  resetTimer();
+})();
+
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>'"]/g, (char) => ({
     "&": "&amp;",
@@ -663,74 +753,6 @@ loadPedido();
 renderGuia();
 
 /* ---- Galería: carrusel de fotos relacionadas (apetito visual) ---- */
-function renderGaleria() {
-  const track = document.getElementById("galTrack");
-  if (!track) return;
-  const conFoto = CORTES.filter((c) => c.img);
-  if (!conFoto.length) {
-    document.getElementById("galEmpty")?.classList.remove("hidden");
-    return;
-  }
-  track.innerHTML = conFoto
-    .map(
-      (c) =>
-        `<figure class="carousel-slide">` +
-        `<img src="${escapeHtml(c.img)}" alt="Foto de ${escapeHtml(c.nombre)}" width="480" height="360" loading="lazy" />` +
-        `<figcaption>${escapeHtml(c.nombre)}</figcaption>` +
-        `</figure>`,
-    )
-    .join("");
-}
-
-function initGaleriaCarousel() {
-  const track = document.getElementById("galTrack");
-  const prev = document.getElementById("galPrev");
-  const next = document.getElementById("galNext");
-  if (!track || !prev || !next) return;
-  // Entornos sin scroll programático (jsdom en tests): el carrusel queda inerte
-  // en vez de romper el arranque.
-  if (typeof track.scrollBy !== "function" || typeof track.scrollTo !== "function") return;
-
-  const slideStep = () => {
-    const slide = track.querySelector(".carousel-slide");
-    return slide ? slide.getBoundingClientRect().width + 16 : track.clientWidth * 0.8;
-  };
-  const atEnd = () => track.scrollLeft + track.clientWidth >= track.scrollWidth - 8;
-  const atStart = () => track.scrollLeft <= 8;
-  const advance = (dir) => track.scrollBy({ left: dir * slideStep(), behavior: "smooth" });
-  const advanceAuto = () => {
-    if (document.hidden) return;
-    if (atEnd()) track.scrollTo({ left: 0, behavior: "smooth" });
-    else advance(1);
-  };
-
-  prev.addEventListener("click", () => {
-    if (atStart()) track.scrollTo({ left: track.scrollWidth, behavior: "smooth" });
-    else advance(-1);
-  });
-  next.addEventListener("click", () => {
-    if (atEnd()) track.scrollTo({ left: 0, behavior: "smooth" });
-    else advance(1);
-  });
-
-  // Autoavance suave: se pausa con hover/focus y se desactiva si el sistema
-  // pide menos movimiento.
-  if (typeof window.matchMedia !== "function" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  let timer = setInterval(advanceAuto, 4200);
-  const zone = track.closest(".carousel");
-  if (!zone) return;
-  zone.addEventListener("mouseenter", () => clearInterval(timer));
-  zone.addEventListener("mouseleave", () => {
-    clearInterval(timer);
-    timer = setInterval(advanceAuto, 4200);
-  });
-  zone.addEventListener("focusin", () => clearInterval(timer));
-  zone.addEventListener("focusout", () => {
-    clearInterval(timer);
-    timer = setInterval(advanceAuto, 4200);
-  });
-}
-
 async function bootstrap() {
   const statusEl = document.getElementById("dataStatus");
   if (statusEl) {
@@ -767,8 +789,6 @@ async function bootstrap() {
   }
 
   renderCortes();
-  renderGaleria();
-  initGaleriaCarousel();
   renderCombos();
   renderDrawer();
   updateOrderCount();
