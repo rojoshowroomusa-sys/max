@@ -12,6 +12,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="MAX Carnes Premium" />
   <meta name="twitter:description" content="Carne Argentina directo a tu mesa. Cortes premium, envío sin cargo." />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap" />
@@ -23,6 +24,7 @@
     <div class="container header-inner">
       <nav class="nav" id="mainNav">
         <a href="#cortes">Cortes</a>
+        <a href="#combos">Combos</a>
         <a href="#guia">Guía</a>
         <a href="#nosotros">Nosotros</a>
         <a href="#mayoristas">Mayoristas</a>
@@ -39,7 +41,7 @@
   <div class="shipping-banner">
     <div class="container">
       <span>🚚</span>
-      <p>Envío sin cargo en pedidos mayores a <strong>$40.000</strong></p>
+      <p>Envío sin cargo en La Plata y alrededores</p>
     </div>
   </div>
 
@@ -64,15 +66,25 @@
     <section class="section container" id="cortes">
       <p class="eyebrow center">Comprá tus</p>
       <h2 class="center">Cortes</h2>
-      <p class="section-sub center">Elegí el corte, seleccioná los kilos, y envianos el pedido por WhatsApp. Te confirmamos el envío a la brevedad.</p>
+      <p class="section-sub center">Elegí el corte, seleccioná los kilos y pagá con Mercado Pago o enviá el pedido por WhatsApp.</p>
       <div class="search-wrap">
         <label class="visually-hidden" for="searchInput">Buscar cortes</label>
-        <input type="search" id="searchInput" placeholder="Buscar corte..." autocomplete="off" />
+        <input type="search" id="searchInput" placeholder="Buscar corte..." autocomplete="off" aria-controls="cortesGrid" />
       </div>
       <div class="filter-chips" id="catChips">
         <button class="chip-btn active" data-cat="todos">Todos</button>
         <button class="chip-btn" data-cat="clasicos">Clásicos</button>
         <button class="chip-btn" data-cat="premium">⭐ Premium</button>
+      </div>
+      <div class="catalog-toolbar">
+        <p class="result-count" id="cortesCount" aria-live="polite"></p>
+        <label class="sort-control" for="sortSelect">
+          <span>Ordenar por</span>
+          <select id="sortSelect">
+            <option value="destacado">Destacados</option>
+            <option value="nombre">Nombre (A-Z)</option>
+          </select>
+        </label>
       </div>
       <div class="grid" id="cortesGrid"></div>
       <div class="grid" id="bootSkeleton" aria-hidden="true">
@@ -91,7 +103,7 @@
         <h2 class="center">Combos Recomendados</h2>
         <p class="section-sub center">Selecciones armadas para que no tengas que pensar. Ideal para asados, parrilladas o cenas especiales.</p>
         <div class="grid grid-3" id="combosGrid"></div>
-        <p class="note center">Los combos son armados según disponibilidad. Consultá por combinaciones personalizadas.</p>
+        <p class="note center">Los combos se preparan según disponibilidad. También podés consultarme por combinaciones personalizadas.</p>
       </div>
     </section>
 
@@ -160,11 +172,11 @@
         </details>
         <details class="faq-item">
           <summary>¿Cómo hago el pedido?</summary>
-          <p>Elegís los cortes y los kilos con el selector, los agregás a tu pedido y lo envías por WhatsApp. Te confirmamos disponibilidad y entrega a la brevedad.</p>
+          <p>Elegís cortes o combos, los agregás al pedido y pagás con Mercado Pago o enviás la consulta por WhatsApp. Te confirmamos disponibilidad y entrega.</p>
         </details>
         <details class="faq-item">
           <summary>¿Qué medios de pago aceptan?</summary>
-          <p>Aceptamos efectivo y transferencia por Cuenta DNI. Para comercios y mayoristas coordinamos condiciones especiales.</p>
+          <p>Aceptamos Mercado Pago online, efectivo y transferencia por Cuenta DNI. Para comercios y mayoristas coordinamos condiciones especiales.</p>
         </details>
         <details class="faq-item">
           <summary>¿Los cortes llegan congelados o frescos?</summary>
@@ -207,16 +219,11 @@
           <span>Kilos totales</span>
           <strong id="totalKg">0 kg</strong>
         </div>
-        <div class="total-row">
-          <span>Total estimado</span>
-          <strong id="totalPrice">$0</strong>
-        </div>
       </div>
-      <p class="cart-note">Precios por kg. El total final se confirma al coordinar la entrega.</p>
+      <p class="cart-note">Cortes por kg y combos por unidad. El monto lo ves al pagar con Mercado Pago o lo coordinás por WhatsApp.</p>
       <button class="btn btn-whatsapp btn-block" id="sendOrderBtn">Enviar pedido por WhatsApp</button>
       <button class="btn btn-mercado-pago btn-block" id="mpPayBtn">Pagá con Mercado Pago</button>
       <p class="mp-status hidden" id="mpStatus" role="status"></p>
-      <div id="card-form-container" class="hidden"></div>
     </div>
   </aside>
   <div class="overlay" id="overlay"></div>
@@ -225,7 +232,6 @@
     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/></svg>
   </a>
 
-  <script src="https://sdk.mercadopago.com/js/v2"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config.js"></script>
   <script src="js/products.js"></script>

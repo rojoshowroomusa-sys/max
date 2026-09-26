@@ -7,10 +7,9 @@ const SUPABASE_URL = "https://dezoakblkwhmzskbyugw.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_D9QSuoLLEDbUUczUhd7Dqg_3K7tXYwz";
 
 /* Mercado Pago.
-   - MP_PUBLIC_KEY es pública por diseño (va en el frontend).
-   - El ACCESS TOKEN de MP es secreto y vive solo en la Supabase Edge Function.
-   Reemplazar MP_PUBLIC_KEY y el ref del URL por los reales del proyecto. */
-const MP_PUBLIC_KEY = "TU_PUBLIC_KEY_MP"; // TODO: reemplazar por la Public Key de Mercado Pago
+   El checkout usa Checkout Pro alojado: el navegador sólo redirige a la
+   Preference creada server-side, así que NO hay ninguna clave de MP en el
+   frontend. El MP_ACCESS_TOKEN es secreto y vive sólo en la Edge Function. */
 const MP_EDGE_FUNCTION_URL =
   "https://dezoakblkwhmzskbyugw.supabase.co/functions/v1/create-mp-preference";
 

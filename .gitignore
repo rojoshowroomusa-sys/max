@@ -2,3 +2,11 @@
 node_modules/
 claude/
 .claude/
+
+# Secretos locales: nunca deben entrar al repo ni publicarse.
+.env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
+supabase/.temp/

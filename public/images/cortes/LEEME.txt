@@ -1,0 +1,59 @@
+# Fotos de cortes — instrucciones
+
+## Estado actual (25/09)
+
+Ya cargadas y mapeadas (fotos propias en la página):
+- `vacio.jpeg` → Vacío ✅
+- `tapa-de-asado.jpeg` → Tapa de Asado ✅
+- `matambre.jpeg` → Matambre ✅
+- `entrana.jpeg` → Entraña ✅ (sin tilde en el nombre)
+- `falda.jpeg` → Falda (corte NUEVO agregado) ✅
+- `ojo-de-bife.jpeg` → Ojo de Bife (corte NUEVO agregado) ✅
+- `lomo.jpeg` → Lomo ✅
+- `peceto.jpeg` → Peceto ✅
+- `nalga.jpeg` → Nalga ✅
+- `bola-de-lomo.jpeg` → Bola de Lomo ✅
+- `cuadrada.jpeg` → Cuadrada ✅
+- `cuadril.jpeg` → Cuadril ✅
+- `colita-de-cuadril.jpeg` → Colita de Cuadril ✅
+- `roast-beef.jpeg` → Roast Beef ✅
+- `paleta.jpeg` → Paleta ✅
+- `tapa-de-nalga.jpeg` → Tapa de Nalga (corte NUEVO agregado) ✅
+- `aguja.jpeg` → Aguja (corte NUEVO agregado) ✅
+- `bife-ancho.jpeg` → Bife Ancho (corte NUEVO agregado) ✅
+- `bife-angosto.jpeg` → reemplazada por bife-de-chorizo.jpeg (mismo corte) ⚠️
+- `bife-de-chorizo.jpeg` → Bife Angosto ✅ (reemplazó a bife-angosto.jpeg)
+- `osobuco.jpeg` → Osobuco ✅
+- `picada.jpeg` → Picada ✅
+- `tira-de-asado.jpeg` → Tira de Asado (corte NUEVO agregado) ✅
+- `tortuguita.webp` → Tortuguita (corte NUEVO agregado, era WebP) ✅
+- `palomita.jpeg` → Palomita (corte NUEVO agregado) ✅
+- `t-bone.jpeg` → T-Bone ✅ (era T-bone.jpeg)
+- `tomahawk.jpeg` → Tomahawk ✅ (era Tomahawk.jpeg)
+- `picana.jpeg` → Picaña ✅ (era picaña.jpeg)
+- `osobuco-rey.jpeg` → Osobuco del Rey ✅ (era PNG, convertida a JPEG)
+
+## Cómo agregar más fotos
+
+1. Guardá las fotos en esta carpeta: `public\images\cortes\`
+2. Nombralas con el **slug** del corte (minúscula, sin tildes, espacios → guión).
+   Ejemplo: `cuadrada.jpg`, `t-bone.jpg`
+3. Avisame; yo las mapeo y actualizo `products.js` + la migración.
+
+## Slug por corte que faltan fotos propias
+
+- `pecho.jpg`
+
+## Tips para que queden lindas
+
+- Fondo limpio (tabla de madera o superficie clara).
+- Luz natural, sin filtros.
+- Cámara de frente/45°, que se vea la textura del corte.
+- JPG/PNG, cualquier tamaño (las cards las muestran a 960px max).
+
+## Qué hago yo cuando lleguen
+
+1. Verifico que cada nombre corresponda al corte correcto.
+2. Actualizo `img` en `public/js/products.js` apuntando a `/images/cortes/<slug>.jpg`.
+3. Actualizo la migración de imágenes para que Supabase use la foto local.
+4. Elimino la URL de Wikimedia de ese corte (adiós hotlinking y licencias).

@@ -34,13 +34,18 @@ for each row execute function public.set_updated_at();
 -- 3) RLS para combos: lectura pública de combos activos
 alter table public.combos enable row level security;
 
+drop policy if exists "Anyone can view active combos" on public.combos;
 create policy "Anyone can view active combos"
 on public.combos for select
 using (is_active);
 
--- 4) Si hay productos de ejemplo, borrarlos para sembrar el catálogo real
-delete from public.products where sku like 'CORTE-%';
-delete from public.combos;
+-- 4) La siembra es idempotente: NO se borra el catálogo existente. Se insertan
+--    o actualizan únicamente las filas del catálogo oficial, por lo que correr
+--    la migración dos veces no destruye datos reales ni commercializados.
+--
+--    A propósito NO se sobrescriben stock_grams ni is_active: re-correr la
+--    migración no debe resetear el inventario vendido ni reactivar un producto
+--    que el administrador desactivó.
 
 -- 5) Semilla del catálogo: 24 cortes (slugs = ids del frontend legacy)
 insert into public.products
@@ -70,11 +75,28 @@ values
   ('CORTE-021', 'Pecho',                'pecho',             'Con marmoleado natural, ideal para cocciones lentas que se deshacen en la boca.', 'variable_weight', 13990, 'premium', '{"coccion":"Cocción lenta","punto":"Muy tierno","tiempo":"180-240 min"}'::jsonb, 500, 15000, 11000, true, true),
   ('CORTE-022', 'Mocho',                'mocho',             'Tierno y sabroso, ideal para estofados que caen solos del tenedor.', 'variable_weight', 15990, 'premium', '{"coccion":"Estofado","punto":"Muy tierno","tiempo":"90-120 min"}'::jsonb, 500, 12000, 10000, true, true),
   ('CORTE-023', 'Completo',             'completo',          'Asado, vacío, matambre y entraña. La parrillada completa lista para el fuego.', 'variable_weight', 14990, 'premium', '{"coccion":"Parrilla","punto":"Según corte","tiempo":"40-60 min"}'::jsonb, 500, 15000, 12000, true, true),
-  ('CORTE-024', 'Bife c/ Lomo — Media Res', 'bife-lomo-media-res', 'Media res de bife con lomo, lista para tu evento o reunión grande.', 'variable_weight', 17990, 'premium', '{"coccion":"Parrilla","punto":"A punto","tiempo":"25-35 min"}'::jsonb, 1000, 30000, 15000, true, true);
+  ('CORTE-024', 'Bife c/ Lomo — Media Res', 'bife-lomo-media-res', 'Media res de bife con lomo, lista para tu evento o reunión grande.', 'variable_weight', 17990, 'premium', '{"coccion":"Parrilla","punto":"A punto","tiempo":"25-35 min"}'::jsonb, 1000, 30000, 15000, true, true)
+on conflict (slug) do update set
+  name        = excluded.name,
+  sku         = excluded.sku,
+  description = excluded.description,
+  sale_mode   = excluded.sale_mode,
+  price_per_kg = excluded.price_per_kg,
+  categoria   = excluded.categoria,
+  meta        = excluded.meta,
+  min_weight_grams = excluded.min_weight_grams,
+  max_weight_grams = excluded.max_weight_grams,
+  vacuum_packed = excluded.vacuum_packed;
 
 -- 6) Semilla de combos
 insert into public.combos (name, slug, icon, description, price, regular_price, is_active)
 values
   ('Combo Asado para 4',      'combo-asado',      '🔥', '2kg de tapa de asado + 1kg de vacío + 1kg de entraña',            49990, 56960, true),
   ('Combo Parrillada para 6', 'combo-parrillada', '🥩', '2kg de tapa de asado + 2kg de vacío + 1kg de matambre + 1kg de entraña', 74990, 86940, true),
-  ('Combo Premium para 2',    'combo-premium',    '⭐', '1kg de lomo + 1kg de picaña',                                      39990, 44980, true);
+  ('Combo Premium para 2',    'combo-premium',    '⭐', '1kg de lomo + 1kg de picaña',                                      39990, 44980, true)
+on conflict (slug) do update set
+  name          = excluded.name,
+  icon          = excluded.icon,
+  description   = excluded.description,
+  price         = excluded.price,
+  regular_price = excluded.regular_price;

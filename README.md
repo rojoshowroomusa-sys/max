@@ -1,6 +1,6 @@
 # MAX Carnes Premium 🥩
 
-Tienda online de carnes premium argentinas. Emprendimiento familiar con cortes de calidad, combos recomendados y pedido directo por WhatsApp.
+Tienda online de carnes premium argentinas. Emprendimiento familiar con cortes de calidad, combos comprables y pago online con Mercado Pago o pedido por WhatsApp.
 
 **URL del repositorio:** https://github.com/rojoshowroomusa-sys/max
 
@@ -27,7 +27,7 @@ Tienda online de carnes premium argentinas. Emprendimiento familiar con cortes d
 
 ## Descripción
 
-MAX Carnes Premium es un sitio web estático para la venta directa de carnes argentinas. El usuario navega el catálogo de cortes, selecciona cantidades en kilos, arma su pedido y lo envía por WhatsApp. La tienda también ofrece combos recomendados, una guía de cocción, testimonios de clientes y sección de preguntas frecuentes.
+MAX Carnes Premium es un sitio web para la venta directa de carnes argentinas. El usuario navega el catálogo, selecciona cortes por kilo o combos por unidad, arma su pedido y puede pagarlo con Mercado Pago o enviarlo por WhatsApp. La tienda también ofrece una guía de cocción, testimonios y preguntas frecuentes.
 
 El backend se apoya en Supabase para el catálogo, cajas recurrentes, suscripciones de usuarios y recetas.
 
@@ -42,7 +42,7 @@ El backend se apoya en Supabase para el catálogo, cajas recurrentes, suscripcio
 | Backend/DB | Supabase (PostgreSQL + Auth + RLS) |
 | Hosting/Edge | Cloudflare Workers (wrangler.jsonc) |
 | Persistencia del carrito | localStorage |
-| Comunicación | WhatsApp Business API (wa.me deep links) |
+| Comunicación | WhatsApp (wa.me) + Mercado Pago Checkout Pro |
 
 ---
 
@@ -50,25 +50,22 @@ El backend se apoya en Supabase para el catálogo, cajas recurrentes, suscripcio
 
 ```
 max/
-├── assets/
-│   ├── logo.svg          # Logo principal (cinta azul + vaca)
-│   └── favicon.svg       # Favicon alternativo
-├── css/
-│   └── styles.css        # Estilos globales y componentes
-├── js/
-│   ├── products.js       # Datos de cortes y combos (catálogo)
-│   ├── order.js          # Lógica del carrito (localStorage + WhatsApp)
-│   └── app.js            # Renderizado, eventos, navegación, animaciones
+├── public/                      # ÚNICO directorio publicado por Wrangler
+│   ├── assets/                  # Logo y favicon
+│   ├── css/styles.css           # Estilos globales y componentes
+│   ├── js/
+│   │   ├── products.js          # Datos de cortes y combos (catálogo)
+│   │   ├── order.js             # Carrito (localStorage + WhatsApp)
+│   │   └── app.js               # Renderizado, eventos, navegación y checkout
+│   └── index.html               # Página principal
 ├── supabase/
-│   └── migrations/
-│       └── 20260909000100_create_meat_store_schema.sql  # Esquema DB
+│   ├── migrations/              # Esquema, catálogo y órdenes
+│   └── functions/               # Edge Functions de Mercado Pago
+├── .env.example                 # Plantilla; nunca contiene secretos reales
 ├── .gitignore
-├── .assetsignore
-├── wrangler.jsonc        # Configuración Cloudflare Workers
-├── index.html            # Página principal
-├── README.md             # Este archivo
-└── claude/
-    └── settings.json     # Configuración local Claude (excluido de git)
+├── deploy.ps1                   # Deploy seguro de migraciones + Functions + sitio
+├── wrangler.jsonc               # Configuración Cloudflare Workers
+└── README.md                    # Este archivo
 ```
 
 ---
@@ -76,16 +73,17 @@ max/
 ## Características
 
 ### Catálogo
-- 23 cortes de carne argentina (clásicos y premium)
-- Precio por kilogramo visible en cada corte
+- 24 cortes de carne argentina (clásicos y premium)
+- Precio por kilogramo y método de cocción visible en cada corte
 - Selector de kilos con subtotal dinámico
-- Búsqueda por nombre y filtro por categoría (Clásicos / Premium)
-- 3 combos recomendados con ahorro porcentual
+- Búsqueda, filtro por categoría y orden por precio o nombre
+- 3 combos comprables por unidad, con ahorro y kilos incluidos
 
 ### Carrito de compras
-- Agregar cortes con cantidad en kg
-- Mesa de pedidos con detalle (precio/kg, subtotal por ítem, total en $ y kg)
+- Agregar cortes por kg y combos por unidad
+- Mesa de pedidos con detalle, subtotales, total en $ y total de kg
 - Persistencia en localStorage (sobrevive recargas)
+- Checkout de Mercado Pago con redirección al Checkout Pro y precios validados en servidor
 - Envío del pedido formateado por WhatsApp con desglose de precios
 
 ### Contenido
@@ -93,6 +91,7 @@ max/
 - Testimonios de clientes (4 reseñas con rating)
 - FAQ interactivo (4 preguntas con acordeón)
 - Guía de cortes con información de cocción, punto y tiempo
+- Fotos reales de los cortes (Wikimedia Commons), verificadas contra la equivalencia anatómica de cada corte
 - Sección mayoristas con contacto directo por WhatsApp
 
 ### Responsive
@@ -159,19 +158,20 @@ El color corporativo principal es el **rojo** (`#e0342f`) sobre fondos oscuros.
 
 ### Archivos JS
 
-**`js/products.js`**
-- `CORTES[]` — array de 23 cortes con: id, nombre, categoría, precio, descripción, meta de cocción
-- `COMBOS[]` — array de 3 combos con: id, icono, nombre, detalle, precio, precio regular
+**`public/js/products.js`**
+- `CORTES[]` — array de 24 cortes con: id, nombre, categoría, precio, descripción, meta de cocción
+- `COMBOS[]` — array de 3 combos con: id, icono, nombre, detalle, precio, precio regular y kilos incluidos
 
-**`js/order.js`**
-- Funciones del carrito: `addToPedido`, `changeQty`, `removeFromPedido`, `totalKg`, `totalPrice`, `itemCount`
+**`public/js/order.js`**
+- Funciones del carrito: cortes por kg (`addToPedido`, `changeQty`) y combos por unidad (`addComboToPedido`, `changeComboQty`)
+- `totalKg`, `totalPrice` e `itemCount` — totales mezclando cortes y combos
 - `buildWhatsAppMessage()` — construye mensaje formateado con ítems, precios y totales
 - `sendOrderByWhatsApp()` — abre wa.me con el mensaje
-- Persistencia en `localStorage` con clave `max_pedido_v1`
+- Persistencia en `localStorage` con clave `max_pedido_v2` (migra automáticamente desde `max_pedido_v1`)
 
-**`js/app.js`**
-- `renderCortes()` — genera cards de cortes con precios, filtros y búsqueda
-- `renderCombos()` — genera cards de combos con precios y ahorro
+**`public/js/app.js`**
+- `renderCortes()` — genera cards de cortes con precios, búsqueda, filtros y orden por precio/nombre
+- `renderCombos()` — genera combos comprables por unidad, con precio regular, ahorro y kilos incluidos
 - `renderGuia()` — tarjetas guía de cocción
 - `renderDrawer()` — actualiza el panel lateral del pedido
 - Event delegation para todas las interacciones (búsqueda, filtros, carrito, navegación)
@@ -199,6 +199,16 @@ La migración `supabase/migrations/20260909000100_create_meat_store_schema.sql` 
 | `recipes` | Recetas/guías de cocina con método y tiempo |
 | `recipe_products` | Relación receta ↔ corte (N:N con cantidad) |
 
+### Imágenes de los cortes
+
+La columna `products.image_url` se alimenta con la migración `20260925020000_product_imagenes.sql` (idempotente, update por `slug`).
+
+- **Verificación previa:** cada foto fue elegida contrastando la equivalencia anatómica del corte argentino con su equivalente NAMP (p. ej. Vacío = Flank, Bola de Lomo = Knuckle/Sirloin Tip, Cuadrada = Outside Flat, Cuadril = Top Sirloin, Colita de Cuadril = Tri-Tip, Peceto = Eye Round, Lomo = Tenderloin, Pecho = Brisket).
+- **Hotlink:** se usan thumbnails **960px** de `thumb.wikimedia.org` (los tamaños estándar que permite Wikimedia para hotlinking; tamaños arbitrarios son rechazados).
+- **Atribución:** las imágenes tienen licencias libres (CC BY / CC BY-SA / GFDL) que **requieren atribución**. Si se reembeben en otro medio, debe mantenerse el crédito (ver las páginas de cada archivo en Commons).
+- **Placeholders:** **Peceto** y **Mocho** quedan intencionalmente sin imagen porque no existe en Commons una foto exacta y confiable (eye round / cogote); se prefiere el placeholder antes que mostrar un corte incorrecto. Cuando el administrador tenga fotos propias, puede cargarlas desde el panel y el frontend las mostrará automáticamente.
+- El frontend usa la imagen si `image_url` viene del servidor; el catálogo local de respaldo (`public/js/products.js`) tiene las mismas URLs.
+
 ### Políticas RLS
 
 - Productos activos: lectura pública
@@ -217,11 +227,11 @@ La migración `supabase/migrations/20260909000100_create_meat_store_schema.sql` 
 
 ### Solo frontend (sin backend)
 
-Abrir `index.html` directamente en un navegador, o servir con un servidor HTTP local:
+Abrir `public/index.html` directamente en un navegador, o servir con un servidor HTTP local:
 
 ```bash
-# Python
-python -m http.server 8000
+# Python, publicando únicamente el frontend
+python -m http.server 8000 --directory public
 
 # Luego abrir http://localhost:8000
 ```
@@ -242,26 +252,33 @@ El frontend consulta Supabase y usa el catálogo local como respaldo si no hay d
 2. Ejecutar las migraciones en orden:
    - `supabase/migrations/20260909000100_create_meat_store_schema.sql` (tablas base + RLS)
    - `supabase/migrations/20260910001000_connect_frontend_catalog.sql` (columnas, tabla `combos` y semilla de 24 cortes + 3 combos)
+   - `supabase/migrations/20260912000000_add_orders_payments.sql` (órdenes, ítems y pagos)
+   - `supabase/migrations/20260925000000_combos_comprables.sql` (kilos de combos y snapshot para checkout)
+   - `supabase/migrations/20260925010000_payment_audit_fields.sql` (auditoría de pagos y `paid_at`)
 3. Recargar la página → debería mostrarse **"Catálogo en vivo desde Supabase"**
 
-> Las credenciales van en `js/config.js`. La **publishable key** es pública por diseño (RLS protege los datos). La `service_role` key **nunca** debe ir al frontend ni al repo.
+> La **publishable key** de Supabase es pública por diseño y se configura en `public/js/config.js` (el deploy puede inyectarla desde `.env`). El checkout usa Checkout Pro alojado: no hay una public key de Mercado Pago en el frontend. La `service_role` key y el `MP_ACCESS_TOKEN` **nunca** deben ir al frontend ni al repo.
 
 ### Cloudflare Workers
 
 ```bash
-wrangler deploy
+# Desarrollo local con el mismo runtime de Cloudflare
+npx wrangler dev
+
+# Deploy seguro: aplica migraciones, publica Functions y sitio
+.\deploy.ps1
 ```
 
 ---
 
 ## Funcionamiento del pedido
 
-1. El usuario navega la sección **Cortes** o **Combos**
-2. Selecciona kilos con los botones **+** / **-**
-3. Hace clic en **Agregar** → el corte se suma al carrito
-4. El badge del header muestra la cantidad de ítems distintos
-5. El botón **Pedido** abre el drawer lateral con detalle completo
-6. **Enviar pedido por WhatsApp** genera un mensaje formateado:
+1. El usuario navega la sección **Cortes** o **Combos**.
+2. Selecciona kilos para cortes o unidades para combos.
+3. Hace clic en **Agregar** → el producto se suma al carrito.
+4. El badge del header muestra la cantidad de ítems distintos.
+5. El botón **Pedido** abre el drawer lateral con el detalle completo.
+6. Puede **Enviar pedido por WhatsApp** o elegir **Pagá con Mercado Pago**.
 
 ```
 Hola MAX Carnes! Quiero hacer un pedido:
@@ -272,7 +289,21 @@ Kilos totales: 3 kg
 Total estimado: $54.970
 ```
 
-7. El carrito se persiste en `localStorage` → no se pierde al recargar
+7. El carrito se persiste en `localStorage` → no se pierde al recargar.
+
+### Checkout de Mercado Pago (validación server-side)
+
+- El navegador **nunca confirma un pago**: sólo muestra un mensaje de verificación y conserva el carrito al volver de Checkout Pro (`#/ok`, `#/pending`, `#/error`).
+- Un marcador local evita abrir una segunda Preference para el mismo pedido y se libera al cambiar el carrito o volver con error.
+- La **Edge Function `create-mp-preference`** valida en el servidor: slugs/cantidades, límites por línea, precios leídos de Supabase, mode de venta por kg, `min_weight_grams`/`max_weight_grams`, `stock_grams`, total, origen CORS y rate limit. La orden y su snapshot se persisten antes de crear la Preference.
+- La **Edge Function `mp-webhook`** reconsulta el pago real en la API de Mercado Pago, valida referencia, importe, moneda, Preference, ambiente y firma (`MP_WEBHOOK_SECRET`), y recién entonces marca la orden `pending → paid` con transición condicional (no degrada `paid`/`refunded` con eventos viejos).
+
+### Estado operativo (antes de producción)
+
+- `stock_grams` es un **snapshot de disponibilidad**, no una reserva: valida en el momento del checkout pero no descuenta inventario. El descuento/reserva se resuelve en el flujo operativo o con la futura reserva transaccional del panel admin.
+- Los combos controlan "disponibilidad" con `is_active`; hoy no tienen BOM/inventario propio.
+- `MP_WEBHOOK_SECRET` es opcional pero **recomendado** para enviar la firma verificada.
+- La migración `20260910001000_connect_frontend_catalog.sql` fue editada para volver la siembra idempotente y no destructiva. Si el proyecto remoto ya la aplicó con el checksum anterior, ejecutar `npx supabase migration list` antes de `db push`; si salta "Remote migration mismatch", usar `npx supabase migration repair` o aplicar el SQL nuevo a mano (ver `DEPLOY.md`).
 
 ---
 
@@ -293,14 +324,27 @@ Total estimado: $54.970
 
 ## Próximos pasos
 
-1. **Conectar frontend a Supabase** — reemplazar datos estáticos por consultas al backend
-2. **Tabla `orders` + `order_items`** — historial de pedidos y control de stock
-3. **Auth completo** — login, perfil, historial de suscripciones
-4. **Imágenes reales** — fotos de cada corte para reemplazar el placeholder
-5. **Pasarela de pago** — integración con Stripe, MercadoPago o similar
-6. **Panel de administración** — gestión de productos, cajas y recetas
-7. **Tracking de envíos** — estado del pedido en tiempo real
-8. **Notificaciones push** — confirmación de entrega
+1. **Auth completo** — login, registro, perfil y recuperación de contraseña
+2. **Panel de administración** — gestión de productos, combos, órdenes y stock
+3. **Imágenes reales** — fotos fidelity-correctas de cada corte
+4. **Tracking de envíos** — estado del pedido en tiempo real
+5. **Notificaciones** — confirmación de pago y entrega
+6. **Historial del cliente** — consultas y pedidos desde la cuenta
+
+---
+
+## Despliegue
+
+> **Todo en un comando.** Copiá `deploy.ps1` a la raíz del repo, poné las claves reales en `.env` (nunca se sube a git) y ejecutá `.\deploy.ps1`. Guía completa en [`DEPLOY.md`](DEPLOY.md).
+
+```powershell
+# 1) Configurá .env con las claves reales (MP_ACCESS_TOKEN, etc.)
+Copy-Item .env.example .env -Force
+# 2) Un solo comando aplica migraciones y despliega Functions + sitio
+.\deploy.ps1
+```
+
+El script **aborta si detecta placeholders** (`TU_ACCESS_TOKEN_MP`, etc.) para no publicar un checkout roto.
 
 ---
 
