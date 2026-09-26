@@ -621,6 +621,36 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
   outline: 3px solid var(--amber);
   outline-offset: 3px;
 }
+/* Slides de historia: la duda va en el h2 y debajo va la cita del cliente,
+   asi que el bloque necesita mas lineas que el copy de venta. Por eso el h2
+   baja de escala (clamp en vez de un media query) y la cita/autor son chicos.
+   El selector lleva dos clases a proposito: gana al .photo-slide h2 base y al
+   del media query de 768px, que son de una sola clase. */
+.photo-slide.photo-slide--story h2 {
+  font-size: clamp(26px, 3.6vw, 46px);
+  margin-bottom: 14px;
+}
+.photo-slide .photo-quote {
+  margin: 0 0 10px;
+  padding-left: 16px;
+  border-left: 3px solid var(--amber);
+  font-size: clamp(15px, 1.6vw, 18px);
+  line-height: 1.5;
+  font-style: italic;
+  color: #fff;
+  max-width: 520px;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+}
+.photo-slide .photo-attr {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 14px;
+  color: rgba(250, 246, 242, 0.85);
+}
+.photo-slide .photo-attr strong { color: var(--amber); }
+.photo-slide .photo-attr span::before { content: "·"; margin-right: 8px; }
 .photo-btn {
   position: absolute;
   top: 50%;

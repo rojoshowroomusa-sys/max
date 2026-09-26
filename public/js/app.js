@@ -33,7 +33,7 @@ rotateTitle(); // inicializa
   // crea dots
   slides.forEach((_, i) => {
     const btn = document.createElement("button");
-    btn.setAttribute("aria-label", `Oferta ${i + 1}`);
+    btn.setAttribute("aria-label", `Duda ${i + 1}`);
     btn.addEventListener("click", () => goTo(i));
     dotsWrap.appendChild(btn);
   });
