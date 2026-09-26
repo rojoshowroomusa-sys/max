@@ -15,6 +15,11 @@ function mapProduct(row) {
     nombre: row.name,
     categoria: row.categoria || "clasicos",
     price: Number(row.price_per_kg),
+    // Rango de venta y stock en gramos (server-side en create-mp-preference).
+    // Sin ellos el stepper deja armar pedidos que el servidor rechaza.
+    minG: Number(row.min_weight_grams),
+    maxG: Number(row.max_weight_grams),
+    stockG: Number(row.stock_grams),
     desc: row.description || "",
     meta: meta.coccion
       ? { coccion: meta.coccion, punto: meta.punto || "", tiempo: meta.tiempo || "" }
@@ -43,7 +48,7 @@ function mapCombo(row) {
 async function fetchProducts(supabaseClient) {
   const { data, error } = await supabaseClient
     .from("products")
-    .select("slug, name, categoria, price_per_kg, description, meta, image_url")
+    .select("slug, name, categoria, price_per_kg, min_weight_grams, max_weight_grams, stock_grams, description, meta, image_url")
     .eq("is_active", true)
     .order("sku", { ascending: true });
   if (error) throw error;

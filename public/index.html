@@ -56,7 +56,7 @@
         <p class="hero-sub">Sin especulaciones, con el valor de la familia.</p>
         <div class="hero-stats">
           <div class="hero-stat"><strong>100%</strong><span>Carne argentina</span></div>
-          <div class="hero-stat"><strong>+15</strong><span>cortes premium</span></div>
+          <div class="hero-stat"><strong id="heroCortes">+15</strong><span>cortes en catálogo</span></div>
           <div class="hero-stat"><strong>24hs</strong><span>entrega pactada</span></div>
         </div>
         <div class="hero-actions">
@@ -86,6 +86,7 @@
           <select id="sortSelect">
             <option value="destacado">Destacados</option>
             <option value="nombre">Nombre (A-Z)</option>
+            <option value="precio">Precio (menor a mayor)</option>
           </select>
         </label>
       </div>
@@ -98,6 +99,9 @@
       </div>
       <p class="data-status hidden" id="dataStatus" role="status"></p>
       <p class="empty-msg hidden" id="emptyMsg">No encontramos cortes que coincidan con tu búsqueda.</p>
+      <p class="center empty-actions">
+        <button class="btn btn-ghost hidden" id="clearFiltersBtn">Limpiar búsqueda y filtros</button>
+      </p>
     </section>
 
     <section class="section section-alt" id="combos">
@@ -124,7 +128,7 @@
           <h2>El puente hacia<br />el buen fuego</h2>
           <div class="info-chips">
             <div class="chip"><strong>Envío</strong><span>Sin cargo, horario pactado</span></div>
-            <div class="chip"><strong>Pagos</strong><span>Efectivo / Cuenta DNI</span></div>
+            <div class="chip"><strong>Pagos</strong><span>Mercado Pago / Efectivo / Cuenta DNI</span></div>
           </div>
         </div>
         <div class="about-text">
@@ -210,7 +214,7 @@
     </div>
   </footer>
 
-  <aside class="drawer" id="drawer" aria-hidden="true" aria-label="Tu pedido">
+  <aside class="drawer" id="drawer" aria-hidden="true" aria-label="Tu pedido" inert>
     <div class="drawer-head">
       <h2>Tu pedido</h2>
       <button class="close-btn" id="closeDrawerBtn" aria-label="Cerrar">✕</button>
@@ -222,8 +226,12 @@
           <span>Kilos totales</span>
           <strong id="totalKg">0 kg</strong>
         </div>
+        <div class="total-row total-row--price">
+          <span>Total estimado</span>
+          <strong id="totalPrice">$ 0</strong>
+        </div>
       </div>
-      <p class="cart-note">Cortes por kg y combos por unidad. El monto lo ves al pagar con Mercado Pago o lo coordinás por WhatsApp.</p>
+      <p class="cart-note">Cortes por kg y combos por unidad, con precios del catálogo. El pago se procesa en Mercado Pago.</p>
       <button class="btn btn-whatsapp btn-block" id="sendOrderBtn">Enviar pedido por WhatsApp</button>
       <button class="btn btn-mercado-pago btn-block" id="mpPayBtn">Pagá con Mercado Pago</button>
       <p class="mp-status hidden" id="mpStatus" role="status"></p>

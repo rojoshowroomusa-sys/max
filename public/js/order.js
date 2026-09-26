@@ -24,6 +24,74 @@ function clampComboUnits(value) {
   return Math.min(MAX_COMBO_UNITS, Math.max(0, Math.round(Number(value) || 0)));
 }
 
+/* ---------- Reglas de venta (espejo server-side) ----------
+   create-mp-preference valida min/max/stock en gramos y RECHAZA el pedido si
+   se pasa. El stepper usa estos mismos límites para que nunca se pueda armar
+   un carrito que el servidor va a devolver con error. */
+
+const CORTE_STEP_KG = 0.5;
+
+function corteMinKg(corte) {
+  const min = Number(corte && corte.minG);
+  if (Number.isFinite(min) && min > 0) return round2(min / 1000);
+  return CORTE_STEP_KG;
+}
+
+function corteMaxKg(corte) {
+  const limits = [MAX_CORTE_KG];
+  const max = Number(corte && corte.maxG);
+  const stock = Number(corte && corte.stockG);
+  if (Number.isFinite(max) && max > 0) limits.push(round2(max / 1000));
+  if (Number.isFinite(stock) && stock > 0) limits.push(round2(stock / 1000));
+  return round2(Math.min(...limits));
+}
+
+/* Ajusta un kilaje al rango vendible del corte. Devuelve 0 si el valor
+   resultaría en sacar el ítem del carrito. */
+function clampCorteFor(id, value) {
+  const qty = round2(value);
+  if (!(qty > 0)) return 0;
+  const min = corteMinKg(findCorte(id));
+  const max = corteMaxKg(findCorte(id));
+  return Math.min(max, Math.max(min, qty));
+}
+
+/* ---------- Dinero y formatos ---------- */
+
+const moneyFmt = new Intl.NumberFormat("es-AR", {
+  style: "currency",
+  currency: "ARS",
+  maximumFractionDigits: 0,
+});
+
+function fmtMoney(value) {
+  return moneyFmt.format(Number(value) || 0);
+}
+
+function kgFmt(value) {
+  return `${Number(value).toLocaleString("es-AR")} kg`;
+}
+
+function corteSubtotal(corte, kg) {
+  return round2((Number(corte && corte.price) || 0) * Number(kg || 0));
+}
+
+function comboSubtotal(combo, units) {
+  return round2((Number(combo && combo.price) || 0) * Number(units || 0));
+}
+
+function totalEstimado() {
+  const cortes = Object.entries(pedido).reduce(
+    (sum, [id, kg]) => sum + corteSubtotal(findCorte(id), kg),
+    0,
+  );
+  const combos = Object.entries(comboPedido).reduce(
+    (sum, [id, units]) => sum + comboSubtotal(findCombo(id), units),
+    0,
+  );
+  return round2(cortes + combos);
+}
+
 function isObject(value) {
   return value && typeof value === "object" && !Array.isArray(value);
 }
@@ -95,7 +163,7 @@ function reconcilePedidoWithCatalog() {
       removed += 1;
       continue;
     }
-    const qty = clampCorteKg(pedido[slug]);
+    const qty = clampCorteFor(slug, pedido[slug]);
     if (!(qty > 0)) {
       delete pedido[slug];
       removed += 1;
@@ -142,7 +210,9 @@ function kgDeCombo(combo) {
 function addToPedido(id, kg) {
   const qty = round2(kg);
   if (!(qty > 0)) return;
-  pedido[id] = clampCorteKg((pedido[id] || 0) + qty);
+  const next = clampCorteFor(id, (pedido[id] || 0) + qty);
+  if (!(next > 0)) return;
+  pedido[id] = next;
   persistPedido();
   renderDrawer();
   updateOrderCount();
@@ -150,8 +220,9 @@ function addToPedido(id, kg) {
 
 function changeQty(id, delta) {
   if (!(id in pedido)) return;
-  pedido[id] = clampCorteKg(pedido[id] + delta);
-  if (pedido[id] <= 0) delete pedido[id];
+  const next = clampCorteFor(id, pedido[id] + delta);
+  if (!(next > 0)) delete pedido[id];
+  else pedido[id] = next;
   persistPedido();
   renderDrawer();
   updateOrderCount();
@@ -211,8 +282,14 @@ function updateOrderCount() {
   const el = document.getElementById("orderCount");
   if (!el) return;
   const n = itemCount();
+  const changed = el.textContent !== String(n);
   el.textContent = n;
   el.classList.toggle("hidden", n === 0);
+  if (changed && n > 0) {
+    el.classList.remove("pop");
+    void el.offsetWidth; // reinicia la animación en cada cambio
+    el.classList.add("pop");
+  }
 }
 
 /* ---------- WhatsApp ---------- */
@@ -223,10 +300,10 @@ function buildWhatsAppMessage() {
   for (const [id, kg] of Object.entries(pedido)) {
     const corte = findCorte(id);
     if (!corte) {
-      lines.push(`• ${id}: ${kg} kg`);
+      lines.push(`• ${id}: ${kgFmt(kg)}`);
       continue;
     }
-    lines.push(`• ${corte.nombre}: ${kg} kg`);
+    lines.push(`• ${corte.nombre}: ${kgFmt(kg)} — ${fmtMoney(corteSubtotal(corte, kg))}`);
   }
 
   for (const [id, units] of Object.entries(comboPedido)) {
@@ -235,12 +312,15 @@ function buildWhatsAppMessage() {
       lines.push(`• ${id}: ${units} combo(s)`);
       continue;
     }
-    lines.push(`• ${combo.nombre} x${units}: ${combo.detalle}`);
+    lines.push(
+      `• ${combo.nombre} x${units} — ${fmtMoney(comboSubtotal(combo, units))} (${combo.detalle})`,
+    );
   }
 
   lines.push(
     "",
-    `Kilos totales: ${totalKg()} kg`
+    `Kilos totales: ${kgFmt(totalKg())}`,
+    `Total estimado: ${fmtMoney(totalEstimado())}`,
   );
   return encodeURIComponent(lines.join("\n"));
 }

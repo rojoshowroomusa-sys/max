@@ -5,7 +5,10 @@
   --border: #2b2420;
   --text: #faf6f2;
   --muted: #a8a29e;
-  --red: #e0342f;
+  /* Rojo de marca en dos tonos: --red para rellenos (blanco encima ≥4.5:1) y
+     --red-text para rojo como texto sobre los fondos oscuros (≥4.5:1). */
+  --red: #dd302b;
+  --red-text: #f04a44;
   --red-dark: #7f1d1d;
   --amber: #f59e0b;
   --wa: #25d366;
@@ -37,7 +40,7 @@ body {
 }
 
 .eyebrow {
-  color: var(--red);
+  color: var(--red-text);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.25em;
@@ -290,7 +293,7 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
   font-weight: 700;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--red);
+  color: var(--red-text);
   border: 1px solid rgba(224, 52, 47, 0.4);
   padding: 3px 10px;
   border-radius: 999px;
@@ -408,7 +411,7 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
   display: flex;
   flex-direction: column;
 }
-.chip strong { color: var(--red); font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; }
+.chip strong { color: var(--red-text); font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; }
 .chip span { font-size: 14px; }
 
 .note { color: var(--muted); font-size: 13px; margin-top: 22px; }
@@ -544,7 +547,7 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
   display: block;
   font-family: var(--font-display);
   font-size: 26px;
-  color: var(--red);
+  color: var(--red-text);
   letter-spacing: 0.02em;
 }
 .hero-stat span {
@@ -592,7 +595,7 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
 .faq-item summary::after {
   content: "+";
   font-size: 22px;
-  color: var(--red);
+  color: var(--red-text);
   font-weight: 400;
   transition: transform 0.2s;
 }
@@ -687,7 +690,7 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
 .drawer-item-kind {
   display: inline-block;
   margin-bottom: 4px;
-  color: var(--red);
+  color: var(--red-text);
   font-size: 9px;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -703,7 +706,7 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
   font-size: 11px;
   font-weight: 700;
 }
-.drawer-item-remove:hover { color: var(--red); }
+.drawer-item-remove:hover { color: var(--red-text); }
 .drawer-empty { color: var(--muted); text-align: center; padding: 40px 10px; }
 .drawer-foot { border-top: 1px solid var(--border); padding: 20px; }
 .total-row {
@@ -725,13 +728,14 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
 }
 .overlay.show { opacity: 1; pointer-events: auto; }
 
-/* Mercado Pago */
+/* Mercado Pago — azul en tono con blanco ≥4.5:1 (el #009ee3 oficial queda
+   en 3.0:1 con texto blanco, por debajo del mínimo de contraste). */
 .btn-mercado-pago {
-  background: #009ee3;
+  background: #007ac0;
   color: #fff;
   margin-top: 10px;
 }
-.btn-mercado-pago:hover { background: #007cc4; filter: brightness(1.05); }
+.btn-mercado-pago:hover { background: #0069a8; filter: brightness(1.05); }
 .mp-status {
   margin-top: 12px;
   font-size: 13px;
@@ -789,4 +793,96 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ---------------- UX: anclas bajo el header sticky ---------------- */
+section[id], main[id] { scroll-margin-top: 76px; }
+
+/* ---------------- UX: bloqueo de scroll con el drawer abierto ---------------- */
+body.no-scroll { overflow: hidden; }
+
+/* ---------------- Precios ---------------- */
+.card-price {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+.card-price strong {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+}
+.card-price span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+.card-price s {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+.card-line-total {
+  margin-left: auto;
+  color: var(--amber);
+  font-size: 13px;
+  font-weight: 800;
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+}
+.center-card .card-price { justify-content: center; }
+.center-card .card-line-total { margin-left: 0; }
+
+.card-limit {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-align: center;
+  margin-top: 8px;
+}
+
+/* ---------------- Estados de controles ---------------- */
+.qty button:disabled {
+  opacity: 0.35;
+  cursor: default;
+  border-color: var(--border);
+}
+.qty button:disabled:hover { border-color: var(--border); }
+
+.order-count.pop { animation: badge-pop 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+@keyframes badge-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.45); }
+  100% { transform: scale(1); }
+}
+
+.empty-actions .btn { margin-top: 4px; }
+
+/* ---------------- Total del pedido ---------------- */
+.total-row--price { align-items: baseline; }
+.total-row--price span { color: var(--text); font-weight: 700; }
+.total-row--price strong {
+  color: var(--amber);
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------- Superficies del navegador ---------------- */
+::selection { background: rgba(224, 52, 47, 0.45); color: #fff; }
+input, textarea, select { caret-color: var(--red); }
+select { color-scheme: dark; }
+input[type="search"] { color-scheme: dark; }
+.drawer-items {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.drawer-items::-webkit-scrollbar { width: 8px; }
+.drawer-items::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
 }

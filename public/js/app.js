@@ -17,12 +17,14 @@ function escapeHtml(value) {
 function sortCortes(list) {
   const arr = list.slice();
   if (activeSort === "nombre") arr.sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+  if (activeSort === "precio") arr.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
   return arr;
 }
 
 function renderCortes(filter = "") {
   const grid = document.getElementById("cortesGrid");
   const emptyMsg = document.getElementById("emptyMsg");
+  const clearBtn = document.getElementById("clearFiltersBtn");
   const countEl = document.getElementById("cortesCount");
   const q = filter.trim().toLowerCase();
   const list = sortCortes(
@@ -35,6 +37,7 @@ function renderCortes(filter = "") {
 
   grid.replaceChildren();
   emptyMsg.classList.toggle("hidden", list.length > 0);
+  if (clearBtn) clearBtn.classList.toggle("hidden", list.length > 0);
   if (countEl) {
     countEl.textContent = list.length
       ? `${list.length} ${list.length === 1 ? "corte" : "cortes"}`
@@ -42,11 +45,15 @@ function renderCortes(filter = "") {
   }
 
   list.forEach((corte, idx) => {
-    if (!(corte.id in kgSelection)) kgSelection[corte.id] = 1;
+    const minKg = corteMinKg(corte);
+    const maxKg = corteMaxKg(corte);
+    // La selección se normaliza contra el rango vendible: un carrito guardado
+    // con un kilaje hoy inválido (p. ej. stock bajó) se ajusta al tope.
+    const kg = clampCorteFor(corte.id, kgSelection[corte.id] || Math.max(minKg, 1));
+    kgSelection[corte.id] = kg;
     const card = document.createElement("article");
     card.className = "card animate-in";
     card.style.setProperty("--i", idx);
-    const kg = kgSelection[corte.id] || 1;
     const safeId = escapeHtml(corte.id);
     const safeName = escapeHtml(corte.nombre);
     const safeImage = escapeHtml(corte.img);
@@ -54,30 +61,83 @@ function renderCortes(filter = "") {
       ? `<div class="card-img"><img src="${safeImage}" alt="${safeName}" loading="lazy" /></div>`
       : `<div class="card-img placeholder" aria-hidden="true"><span>🥩</span></div>`;
     const coccion = corte.meta && corte.meta.coccion;
+    const price = Number(corte.price) || 0;
+    const priceLine = price > 0
+      ? `<p class="card-price">
+           <strong>${fmtMoney(price)}</strong><span>/kg</span>
+           <em class="card-line-total${kg === 1 ? " hidden" : ""}" id="sub-${safeId}">${kg === 1 ? "" : fmtMoney(corteSubtotal(corte, kg))}</em>
+         </p>`
+      : "";
+    const showRange = Number.isFinite(Number(corte.maxG)) && Number(corte.maxG) > 0;
+    const limitLine = showRange
+      ? `<p class="card-limit">Mínimo ${kgFmt(minKg)} · máximo ${kgFmt(maxKg)}</p>`
+      : "";
     card.innerHTML = `
       ${foto}
       <span class="card-tag">${corte.categoria === "premium" ? "⭐ Premium" : "Corte Argentino"}</span>
       <div class="card-head">
         <h3>${safeName}</h3>
       </div>
+      ${priceLine}
       <p class="card-desc">${escapeHtml(corte.desc)}</p>
       ${coccion ? `<p class="card-meta-line"><span class="card-meta-key">Cocción</span>${escapeHtml(coccion)}</p>` : ""}
       <div class="kg-row">
         <div class="qty">
-          <button data-action="minus" data-id="${safeId}" aria-label="Restar 1 kg de ${safeName}" aria-controls="kg-${safeId}">−</button>
-          <output id="kg-${safeId}">${kg} kg</output>
-          <button data-action="plus" data-id="${safeId}" aria-label="Sumar 1 kg de ${safeName}" aria-controls="kg-${safeId}">+</button>
+          <button data-action="minus" data-id="${safeId}" aria-label="Restar ${kgFmt(CORTE_STEP_KG)} de ${safeName}" aria-controls="kg-${safeId}" ${kg <= minKg ? "disabled" : ""}>−</button>
+          <output id="kg-${safeId}">${kgFmt(kg)}</output>
+          <button data-action="plus" data-id="${safeId}" aria-label="Sumar ${kgFmt(CORTE_STEP_KG)} de ${safeName}" aria-controls="kg-${safeId}" ${kg >= maxKg ? "disabled" : ""}>+</button>
         </div>
         <button class="add-btn" data-action="add" data-id="${safeId}"
-          aria-label="Agregar ${kg} kg de ${safeName} al pedido">Agregar</button>
+          aria-label="Agregar ${kgFmt(kg)} de ${safeName} al pedido">Agregar</button>
       </div>
+      ${limitLine}
     `;
     grid.appendChild(card);
   });
 }
 
+/* Refresca output, botones ± y subtotal de una ficha tras cambiar el kilaje. */
+function syncCorteStepper(id) {
+  const corte = findCorte(id);
+  const kg = kgSelection[id] || 1;
+  const minKg = corteMinKg(corte);
+  const maxKg = corteMaxKg(corte);
+  const output = document.getElementById(`kg-${id}`);
+  if (!output) return;
+  output.textContent = kgFmt(kg);
+  const qtyBox = output.closest(".qty");
+  if (qtyBox) {
+    const minus = qtyBox.querySelector('[data-action="minus"]');
+    const plus = qtyBox.querySelector('[data-action="plus"]');
+    if (minus) minus.disabled = kg <= minKg + 0.001;
+    if (plus) plus.disabled = kg >= maxKg - 0.001;
+  }
+  const sub = document.getElementById(`sub-${id}`);
+  if (sub) {
+    const show = kg !== 1;
+    sub.textContent = show ? fmtMoney(corteSubtotal(corte, kg)) : "";
+    sub.classList.toggle("hidden", !show);
+  }
+}
+
+/* Igual que syncCorteStepper pero para la cantidad de combos (unidades). */
+function syncComboStepper(id) {
+  const units = comboSelection[id] || 1;
+  const output = document.getElementById(`combo-units-${id}`);
+  if (!output) return;
+  output.textContent = units;
+  const qtyBox = output.closest(".qty");
+  if (qtyBox) {
+    const minus = qtyBox.querySelector('[data-action="combo-minus"]');
+    const plus = qtyBox.querySelector('[data-action="combo-plus"]');
+    if (minus) minus.disabled = units <= 1;
+    if (plus) plus.disabled = units >= MAX_COMBO_UNITS;
+  }
+}
+
 function renderGuia() {
   const grid = document.getElementById("guiaGrid");
+  grid.replaceChildren();
   const conMeta = CORTES.filter((c) => c.meta).slice(0, 6);
   for (const corte of conMeta) {
     const card = document.createElement("article");
@@ -107,16 +167,25 @@ function renderCombos() {
     const card = document.createElement("article");
     card.className = "card center-card combo-card animate-in";
     card.style.setProperty("--i", idx);
+    const price = Number(combo.price) || 0;
+    const regular = Number(combo.regularPrice) || 0;
+    const priceLine = price > 0
+      ? `<p class="card-price combo-price">
+           <strong>${fmtMoney(price)}</strong>
+           ${regular > price ? `<s>${fmtMoney(regular)}</s>` : ""}
+         </p>`
+      : "";
     card.innerHTML = `
       <span class="card-icon" aria-hidden="true">${escapeHtml(combo.icon)}</span>
       <h3>${safeName}</h3>
       <span class="combo-weight">${Number(combo.kg || 0).toLocaleString("es-AR")} kg incluidos</span>
+      ${priceLine}
       <p class="card-desc">${escapeHtml(combo.detalle)}</p>
       <div class="combo-actions">
         <div class="qty" role="group" aria-label="Cantidad de ${safeName}">
-          <button data-action="combo-minus" data-id="${safeId}" aria-label="Restar un combo ${safeName}" aria-controls="combo-units-${safeId}">−</button>
+          <button data-action="combo-minus" data-id="${safeId}" aria-label="Restar un combo ${safeName}" aria-controls="combo-units-${safeId}" ${units <= 1 ? "disabled" : ""}>−</button>
           <output id="combo-units-${safeId}">${units}</output>
-          <button data-action="combo-plus" data-id="${safeId}" aria-label="Sumar un combo ${safeName}" aria-controls="combo-units-${safeId}">+</button>
+          <button data-action="combo-plus" data-id="${safeId}" aria-label="Sumar un combo ${safeName}" aria-controls="combo-units-${safeId}" ${units >= MAX_COMBO_UNITS ? "disabled" : ""}>+</button>
         </div>
         <button class="add-btn" data-action="combo-add" data-id="${safeId}"
           aria-label="Agregar ${units} ${units === 1 ? "combo" : "combos"} ${safeName} al pedido">Agregar</button>
@@ -141,17 +210,21 @@ function renderDrawer() {
       const kg = pedido[id];
       const safeId = escapeHtml(id);
       const safeName = escapeHtml(corte ? corte.nombre : id);
+      const subtotal = corte && Number(corte.price) > 0
+        ? ` · ${fmtMoney(corteSubtotal(corte, kg))}`
+        : "";
+      const atMax = corte ? kg >= corteMaxKg(corte) - 0.001 : false;
       const item = document.createElement("div");
       item.className = "drawer-item";
       item.innerHTML = `
         <div class="drawer-item-info">
           <span class="drawer-item-kind">Corte</span>
           <strong>${safeName}</strong>
-          <small>${kg} kg</small>
+          <small>${kgFmt(kg)}${subtotal}</small>
         </div>
         <div class="qty">
-          <button data-action="item-dec" data-kind="corte" data-id="${safeId}" aria-label="Restar 1 kg de ${safeName}">−</button>
-          <button data-action="item-inc" data-kind="corte" data-id="${safeId}" aria-label="Sumar 1 kg de ${safeName}">+</button>
+          <button data-action="item-dec" data-kind="corte" data-id="${safeId}" aria-label="Restar ${kgFmt(CORTE_STEP_KG)} de ${safeName}">−</button>
+          <button data-action="item-inc" data-kind="corte" data-id="${safeId}" aria-label="Sumar ${kgFmt(CORTE_STEP_KG)} de ${safeName}" ${atMax ? "disabled" : ""}>+</button>
         </div>
         <button class="drawer-item-remove" data-action="item-remove" data-kind="corte" data-id="${safeId}" aria-label="Quitar ${safeName}">Quitar</button>
       `;
@@ -164,38 +237,57 @@ function renderDrawer() {
       const safeId = escapeHtml(id);
       const safeName = escapeHtml(combo ? combo.nombre : id);
       const kg = Number(combo && combo.kg) || 0;
+      const subtotal = combo && Number(combo.price) > 0
+        ? ` · ${fmtMoney(comboSubtotal(combo, units))}`
+        : "";
       const item = document.createElement("div");
       item.className = "drawer-item";
       item.innerHTML = `
         <div class="drawer-item-info">
           <span class="drawer-item-kind combo">Combo</span>
           <strong>${safeName}</strong>
-          <small>${units} ${units === 1 ? "combo" : "combos"}${kg ? ` · ${kg * units} kg` : ""}</small>
+          <small>${units} ${units === 1 ? "combo" : "combos"}${kg ? ` · ${kg * units} kg` : ""}${subtotal}</small>
         </div>
         <div class="qty">
           <button data-action="item-dec" data-kind="combo" data-id="${safeId}" aria-label="Restar un combo ${safeName}">−</button>
-          <button data-action="item-inc" data-kind="combo" data-id="${safeId}" aria-label="Sumar un combo ${safeName}">+</button>
+          <button data-action="item-inc" data-kind="combo" data-id="${safeId}" aria-label="Sumar un combo ${safeName}" ${units >= MAX_COMBO_UNITS ? "disabled" : ""}>+</button>
         </div>
         <button class="drawer-item-remove" data-action="item-remove" data-kind="combo" data-id="${safeId}" aria-label="Quitar ${safeName}">Quitar</button>
       `;
       wrap.appendChild(item);
     }
   }
-  totalEl.textContent = `${totalKg()} kg`;
+  totalEl.textContent = kgFmt(totalKg());
+  const priceEl = document.getElementById("totalPrice");
+  if (priceEl) priceEl.textContent = fmtMoney(totalEstimado());
 }
+
+let drawerLastFocus = null;
 
 function openDrawer() {
   const drawer = document.getElementById("drawer");
+  if (drawer.classList.contains("open")) return;
+  drawerLastFocus = document.activeElement;
   drawer.classList.add("open");
   drawer.setAttribute("aria-hidden", "false");
+  drawer.inert = false;
   document.getElementById("overlay").classList.add("show");
+  document.body.classList.add("no-scroll");
+  document.getElementById("closeDrawerBtn").focus();
 }
 
 function closeDrawer() {
   const drawer = document.getElementById("drawer");
+  if (!drawer.classList.contains("open")) return;
   drawer.classList.remove("open");
   drawer.setAttribute("aria-hidden", "true");
+  drawer.inert = true;
   document.getElementById("overlay").classList.remove("show");
+  document.body.classList.remove("no-scroll");
+  if (drawerLastFocus && typeof drawerLastFocus.focus === "function") {
+    drawerLastFocus.focus();
+  }
+  drawerLastFocus = null;
 }
 
 document.addEventListener("click", (e) => {
@@ -204,18 +296,19 @@ document.addEventListener("click", (e) => {
   const { action, id, kind } = btn.dataset;
 
   if (action === "minus" || action === "plus") {
-    kgSelection[id] = Math.max(1, (kgSelection[id] || 1) + (action === "plus" ? 1 : -1));
-    const output = document.getElementById(`kg-${id}`);
-    if (output) output.textContent = `${kgSelection[id]} kg`;
+    const base = kgSelection[id] ?? 1;
+    const delta = action === "plus" ? CORTE_STEP_KG : -CORTE_STEP_KG;
+    const next = clampCorteFor(id, round2(base + delta));
+    if (next > 0) kgSelection[id] = next;
+    syncCorteStepper(id);
   }
 
   if (action === "add") {
     addToPedido(id, kgSelection[id] || 1);
     btn.textContent = "✓ Agregado";
     btn.disabled = true;
-    kgSelection[id] = 1;
-    const output = document.getElementById(`kg-${id}`);
-    if (output) output.textContent = "1 kg";
+    kgSelection[id] = clampCorteFor(id, Math.max(corteMinKg(findCorte(id)), 1)) || 1;
+    syncCorteStepper(id);
     setTimeout(() => {
       btn.textContent = "Agregar";
       btn.disabled = false;
@@ -223,9 +316,12 @@ document.addEventListener("click", (e) => {
   }
 
   if (action === "combo-minus" || action === "combo-plus") {
-    comboSelection[id] = Math.max(1, (comboSelection[id] || 1) + (action === "combo-plus" ? 1 : -1));
-    const output = document.getElementById(`combo-units-${id}`);
-    if (output) output.textContent = comboSelection[id];
+    const base = comboSelection[id] ?? 1;
+    comboSelection[id] = Math.min(
+      MAX_COMBO_UNITS,
+      Math.max(1, base + (action === "combo-plus" ? 1 : -1)),
+    );
+    syncComboStepper(id);
   }
 
   if (action === "combo-add") {
@@ -233,8 +329,7 @@ document.addEventListener("click", (e) => {
     btn.textContent = "✓ Agregado";
     btn.disabled = true;
     comboSelection[id] = 1;
-    const output = document.getElementById(`combo-units-${id}`);
-    if (output) output.textContent = "1";
+    syncComboStepper(id);
     setTimeout(() => {
       btn.textContent = "Agregar";
       btn.disabled = false;
@@ -244,14 +339,34 @@ document.addEventListener("click", (e) => {
   if (action === "item-inc" || action === "item-dec") {
     const delta = action === "item-inc" ? 1 : -1;
     if (kind === "combo") changeComboQty(id, delta);
-    else changeQty(id, delta);
+    else changeQty(id, delta * CORTE_STEP_KG);
+    refocusDrawerItem(action, kind, id);
   }
 
   if (action === "item-remove") {
     if (kind === "combo") removeComboFromPedido(id);
     else removeFromPedido(id);
+    refocusDrawerItem(action, kind, id);
   }
 });
+
+/* El drawer se re-renderiza tras cada mutación: si el botón presionado ya no
+   está (o quedó deshabilitado), el foco vuelve a un control seguro dentro del
+   drawer en lugar de caer al body. */
+function refocusDrawerItem(action, kind, id) {
+  const find = (a) =>
+    document.querySelector(
+      `#drawerItems [data-action="${a}"][data-kind="${kind}"][data-id="${id}"]`,
+    );
+  const target = [action, "item-remove", "item-inc", "item-dec"]
+    .map(find)
+    .find((el) => el && !el.disabled);
+  if (target) {
+    target.focus();
+    return;
+  }
+  document.getElementById("closeDrawerBtn").focus();
+}
 
 function sendOrderByWhatsAppFeedback() {
   if (itemCount() === 0) {
@@ -490,7 +605,31 @@ async function initMercadoPago() {
 document.getElementById("mpPayBtn").addEventListener("click", initMercadoPago);
 
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") closeDrawer();
+  const drawer = document.getElementById("drawer");
+  const drawerOpen = drawer.classList.contains("open");
+
+  if (e.key === "Escape") {
+    closeDrawer();
+    return;
+  }
+
+  // Mientras el drawer está abierto el Tab queda atrapado dentro: el resto de
+  // la página es inert y no debería recibir foco.
+  if (!drawerOpen || e.key !== "Tab") return;
+  const focusables = drawer.querySelectorAll(
+    'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+  );
+  if (!focusables.length) return;
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+  const active = document.activeElement;
+  if (e.shiftKey && (active === first || !drawer.contains(active))) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && (active === last || !drawer.contains(active))) {
+    e.preventDefault();
+    first.focus();
+  }
 });
 
 document.getElementById("orderBtn").addEventListener("click", openDrawer);
@@ -536,6 +675,19 @@ document.getElementById("catChips").addEventListener("click", (e) => {
   renderCortes(document.getElementById("searchInput").value);
 });
 
+const clearFiltersBtn = document.getElementById("clearFiltersBtn");
+if (clearFiltersBtn) {
+  clearFiltersBtn.addEventListener("click", () => {
+    searchInput.value = "";
+    activeCat = "todos";
+    document
+      .querySelectorAll("#catChips .chip-btn")
+      .forEach((b) => b.classList.toggle("active", b.dataset.cat === "todos"));
+    renderCortes("");
+    searchInput.focus();
+  });
+}
+
 document.getElementById("altaComercialBtn").href =
   `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hola MAX Carnes! Quiero solicitar el alta comercial mayorista.")}`;
 
@@ -553,14 +705,19 @@ async function bootstrap() {
     if (catalog) {
       CORTES = catalog.products;
       COMBOS = catalog.combos;
-      if (statusEl) statusEl.textContent = "Catálogo en vivo desde Supabase";
+      if (statusEl) statusEl.textContent = "Catálogo actualizado";
     } else if (statusEl) {
-      statusEl.textContent = "Catálogo local (supabase sin datos)";
+      statusEl.textContent = "Catálogo de respaldo (sin conexión)";
     }
   } catch (err) {
     console.warn(err);
-    if (statusEl) statusEl.textContent = "Catálogo local";
+    if (statusEl) statusEl.textContent = "Catálogo de respaldo (sin conexión)";
   }
+
+  // El contador del hero sigue al catálogo real (los cortes se suman o
+  // retiran con migraciones).
+  const heroCount = document.getElementById("heroCortes");
+  if (heroCount && CORTES.length) heroCount.textContent = `+${CORTES.length}`;
 
   // El carrito se depura contra el catálogo activo: un corte o combo que ya no
   // está disponible se quita en lugar de hacer fallar todo el checkout.
