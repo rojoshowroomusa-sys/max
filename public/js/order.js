@@ -58,38 +58,8 @@ function clampCorteFor(id, value) {
 
 /* ---------- Dinero y formatos ---------- */
 
-const moneyFmt = new Intl.NumberFormat("es-AR", {
-  style: "currency",
-  currency: "ARS",
-  maximumFractionDigits: 0,
-});
-
-function fmtMoney(value) {
-  return moneyFmt.format(Number(value) || 0);
-}
-
 function kgFmt(value) {
   return `${Number(value).toLocaleString("es-AR")} kg`;
-}
-
-function corteSubtotal(corte, kg) {
-  return round2((Number(corte && corte.price) || 0) * Number(kg || 0));
-}
-
-function comboSubtotal(combo, units) {
-  return round2((Number(combo && combo.price) || 0) * Number(units || 0));
-}
-
-function totalEstimado() {
-  const cortes = Object.entries(pedido).reduce(
-    (sum, [id, kg]) => sum + corteSubtotal(findCorte(id), kg),
-    0,
-  );
-  const combos = Object.entries(comboPedido).reduce(
-    (sum, [id, units]) => sum + comboSubtotal(findCombo(id), units),
-    0,
-  );
-  return round2(cortes + combos);
 }
 
 function isObject(value) {
@@ -303,7 +273,7 @@ function buildWhatsAppMessage() {
       lines.push(`• ${id}: ${kgFmt(kg)}`);
       continue;
     }
-    lines.push(`• ${corte.nombre}: ${kgFmt(kg)} — ${fmtMoney(corteSubtotal(corte, kg))}`);
+    lines.push(`• ${corte.nombre}: ${kgFmt(kg)}`);
   }
 
   for (const [id, units] of Object.entries(comboPedido)) {
@@ -312,15 +282,12 @@ function buildWhatsAppMessage() {
       lines.push(`• ${id}: ${units} combo(s)`);
       continue;
     }
-    lines.push(
-      `• ${combo.nombre} x${units} — ${fmtMoney(comboSubtotal(combo, units))} (${combo.detalle})`,
-    );
+    lines.push(`• ${combo.nombre} x${units}: ${combo.detalle}`);
   }
 
   lines.push(
     "",
-    `Kilos totales: ${kgFmt(totalKg())}`,
-    `Total estimado: ${fmtMoney(totalEstimado())}`,
+    `Kilos totales: ${kgFmt(totalKg())}`
   );
   return encodeURIComponent(lines.join("\n"));
 }

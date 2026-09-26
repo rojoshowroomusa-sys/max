@@ -17,7 +17,6 @@ function escapeHtml(value) {
 function sortCortes(list) {
   const arr = list.slice();
   if (activeSort === "nombre") arr.sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
-  if (activeSort === "precio") arr.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0));
   return arr;
 }
 
@@ -61,13 +60,6 @@ function renderCortes(filter = "") {
       ? `<div class="card-img"><img src="${safeImage}" alt="${safeName}" loading="lazy" /></div>`
       : `<div class="card-img placeholder" aria-hidden="true"><span>🥩</span></div>`;
     const coccion = corte.meta && corte.meta.coccion;
-    const price = Number(corte.price) || 0;
-    const priceLine = price > 0
-      ? `<p class="card-price">
-           <strong>${fmtMoney(price)}</strong><span>/kg</span>
-           <em class="card-line-total${kg === 1 ? " hidden" : ""}" id="sub-${safeId}">${kg === 1 ? "" : fmtMoney(corteSubtotal(corte, kg))}</em>
-         </p>`
-      : "";
     const showRange = Number.isFinite(Number(corte.maxG)) && Number(corte.maxG) > 0;
     const limitLine = showRange
       ? `<p class="card-limit">Mínimo ${kgFmt(minKg)} · máximo ${kgFmt(maxKg)}</p>`
@@ -78,7 +70,6 @@ function renderCortes(filter = "") {
       <div class="card-head">
         <h3>${safeName}</h3>
       </div>
-      ${priceLine}
       <p class="card-desc">${escapeHtml(corte.desc)}</p>
       ${coccion ? `<p class="card-meta-line"><span class="card-meta-key">Cocción</span>${escapeHtml(coccion)}</p>` : ""}
       <div class="kg-row">
@@ -96,7 +87,7 @@ function renderCortes(filter = "") {
   });
 }
 
-/* Refresca output, botones ± y subtotal de una ficha tras cambiar el kilaje. */
+/* Refresca output y botones ± de una ficha tras cambiar el kilaje. */
 function syncCorteStepper(id) {
   const corte = findCorte(id);
   const kg = kgSelection[id] || 1;
@@ -111,12 +102,6 @@ function syncCorteStepper(id) {
     const plus = qtyBox.querySelector('[data-action="plus"]');
     if (minus) minus.disabled = kg <= minKg + 0.001;
     if (plus) plus.disabled = kg >= maxKg - 0.001;
-  }
-  const sub = document.getElementById(`sub-${id}`);
-  if (sub) {
-    const show = kg !== 1;
-    sub.textContent = show ? fmtMoney(corteSubtotal(corte, kg)) : "";
-    sub.classList.toggle("hidden", !show);
   }
 }
 
@@ -167,19 +152,10 @@ function renderCombos() {
     const card = document.createElement("article");
     card.className = "card center-card combo-card animate-in";
     card.style.setProperty("--i", idx);
-    const price = Number(combo.price) || 0;
-    const regular = Number(combo.regularPrice) || 0;
-    const priceLine = price > 0
-      ? `<p class="card-price combo-price">
-           <strong>${fmtMoney(price)}</strong>
-           ${regular > price ? `<s>${fmtMoney(regular)}</s>` : ""}
-         </p>`
-      : "";
     card.innerHTML = `
       <span class="card-icon" aria-hidden="true">${escapeHtml(combo.icon)}</span>
       <h3>${safeName}</h3>
       <span class="combo-weight">${Number(combo.kg || 0).toLocaleString("es-AR")} kg incluidos</span>
-      ${priceLine}
       <p class="card-desc">${escapeHtml(combo.detalle)}</p>
       <div class="combo-actions">
         <div class="qty" role="group" aria-label="Cantidad de ${safeName}">
@@ -210,9 +186,6 @@ function renderDrawer() {
       const kg = pedido[id];
       const safeId = escapeHtml(id);
       const safeName = escapeHtml(corte ? corte.nombre : id);
-      const subtotal = corte && Number(corte.price) > 0
-        ? ` · ${fmtMoney(corteSubtotal(corte, kg))}`
-        : "";
       const atMax = corte ? kg >= corteMaxKg(corte) - 0.001 : false;
       const item = document.createElement("div");
       item.className = "drawer-item";
@@ -220,7 +193,7 @@ function renderDrawer() {
         <div class="drawer-item-info">
           <span class="drawer-item-kind">Corte</span>
           <strong>${safeName}</strong>
-          <small>${kgFmt(kg)}${subtotal}</small>
+          <small>${kgFmt(kg)}</small>
         </div>
         <div class="qty">
           <button data-action="item-dec" data-kind="corte" data-id="${safeId}" aria-label="Restar ${kgFmt(CORTE_STEP_KG)} de ${safeName}">−</button>
@@ -237,16 +210,13 @@ function renderDrawer() {
       const safeId = escapeHtml(id);
       const safeName = escapeHtml(combo ? combo.nombre : id);
       const kg = Number(combo && combo.kg) || 0;
-      const subtotal = combo && Number(combo.price) > 0
-        ? ` · ${fmtMoney(comboSubtotal(combo, units))}`
-        : "";
       const item = document.createElement("div");
       item.className = "drawer-item";
       item.innerHTML = `
         <div class="drawer-item-info">
           <span class="drawer-item-kind combo">Combo</span>
           <strong>${safeName}</strong>
-          <small>${units} ${units === 1 ? "combo" : "combos"}${kg ? ` · ${kg * units} kg` : ""}${subtotal}</small>
+          <small>${units} ${units === 1 ? "combo" : "combos"}${kg ? ` · ${kg * units} kg` : ""}</small>
         </div>
         <div class="qty">
           <button data-action="item-dec" data-kind="combo" data-id="${safeId}" aria-label="Restar un combo ${safeName}">−</button>
@@ -258,8 +228,6 @@ function renderDrawer() {
     }
   }
   totalEl.textContent = kgFmt(totalKg());
-  const priceEl = document.getElementById("totalPrice");
-  if (priceEl) priceEl.textContent = fmtMoney(totalEstimado());
 }
 
 let drawerLastFocus = null;

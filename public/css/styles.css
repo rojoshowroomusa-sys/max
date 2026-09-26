@@ -801,42 +801,7 @@ section[id], main[id] { scroll-margin-top: 76px; }
 /* ---------------- UX: bloqueo de scroll con el drawer abierto ---------------- */
 body.no-scroll { overflow: hidden; }
 
-/* ---------------- Precios ---------------- */
-.card-price {
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 2px;
-}
-.card-price strong {
-  font-family: var(--font-display);
-  font-size: 26px;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  font-variant-numeric: tabular-nums;
-}
-.card-price span {
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 700;
-}
-.card-price s {
-  color: var(--muted);
-  font-size: 14px;
-  font-weight: 700;
-}
-.card-line-total {
-  margin-left: auto;
-  color: var(--amber);
-  font-size: 13px;
-  font-weight: 800;
-  font-style: normal;
-  font-variant-numeric: tabular-nums;
-}
-.center-card .card-price { justify-content: center; }
-.center-card .card-line-total { margin-left: 0; }
-
+/* ---------------- Límites de venta (sin precios en pantalla) ---------------- */
 .card-limit {
   color: var(--muted);
   font-size: 11px;
@@ -861,16 +826,6 @@ body.no-scroll { overflow: hidden; }
 }
 
 .empty-actions .btn { margin-top: 4px; }
-
-/* ---------------- Total del pedido ---------------- */
-.total-row--price { align-items: baseline; }
-.total-row--price span { color: var(--text); font-weight: 700; }
-.total-row--price strong {
-  color: var(--amber);
-  font-family: var(--font-display);
-  font-size: 26px;
-  font-variant-numeric: tabular-nums;
-}
 
 /* ---------------- Superficies del navegador ---------------- */
 ::selection { background: rgba(224, 52, 47, 0.45); color: #fff; }
