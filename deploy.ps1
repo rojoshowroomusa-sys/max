@@ -98,8 +98,11 @@ try {
   }
 
   if (-not $SkipMigrations) {
-    $dbPassword = Read-Env "SUPABASE_DB_PASSWORD" -Required
-    Assert-NoPlaceholder "SUPABASE_DB_PASSWORD" $dbPassword
+    # Opcional: la CLI de Supabase ya está autenticada (login/token) y puede
+    # conectar sin contraseña. Si se provee, se pasa explícitamente.
+    $dbPassword = Read-Env "SUPABASE_DB_PASSWORD"
+    if ($dbPassword) { Assert-NoPlaceholder "SUPABASE_DB_PASSWORD" $dbPassword }
+    else { Write-Host "  (SUPABASE_DB_PASSWORD vacío: se usa la sesión de la CLI)" -ForegroundColor DarkYellow }
   }
 
   if (-not $SkipFunctions) {
@@ -124,7 +127,9 @@ try {
   # --- 1) Migraciones (antes de desplegar código que las consume) ---
   if (-not $SkipMigrations) {
     Write-Host "`n[1/3] Aplicando migraciones en Supabase..." -ForegroundColor Yellow
-    npx --yes supabase@2.117.0 db push --project-ref $projectRef --password $dbPassword --skip-vault
+    $dbPushArgs = @("--yes", "supabase@2.117.0", "db", "push", "--project-ref", $projectRef, "--skip-vault")
+    if ($dbPassword) { $dbPushArgs += @("--password", $dbPassword) }
+    npx @dbPushArgs
     if ($LASTEXITCODE -ne 0) { throw "Falló la aplicación de migraciones en Supabase." }
     Write-Host "[1/3] Migraciones OK" -ForegroundColor Green
   }

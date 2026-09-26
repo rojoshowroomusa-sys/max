@@ -1,7 +1,7 @@
 # Configuración del proyecto Supabase.
 # Usar como base; ajustar project_id al del proyecto real.
 
-project_id = "dezoakblkwhmzskbyugw"
+project_id = "jiprthnqojpybfzmwmso"
 
 [api]
 enabled = true
@@ -29,11 +29,9 @@ enabled = true
 [functions.create-mp-preference]
 enabled = true
 verify_jwt = false
-import_map = null
 
 # Webhook que confirma el pago real de Mercado Pago y marca la orden como 'paid'.
 # La confirmación de pago la hace MP server-side: no hay JWT de usuario.
 [functions.mp-webhook]
 enabled = true
 verify_jwt = false
-import_map = null
