@@ -51,10 +51,21 @@
     </div>
   </header>
 
-  <section class="photo-carousel" id="photoCarousel" aria-label="Dudas de clientes, respondidas">
+  <section class="photo-carousel" id="photoCarousel" aria-label="Presentación y dudas de clientes respondidas">
     <div class="photo-track">
-      <figure class="photo-slide photo-slide--story active">
-        <img src="images/cortes/tapa-de-asado.jpeg" alt="Tapa de asado fileteada, lista para la parrilla" loading="eager" />
+      <!-- Slide de marca: no lleva foto de fondo, la altura la fija la clase
+           .photo-slide--brand. El logo va contenido a tamaño menor que el
+           nativo (160px de alto) para que no se pixele. -->
+      <figure class="photo-slide photo-slide--brand active" data-dot-label="MAX Carnes">
+        <figcaption>
+          <img class="photo-brand-logo" src="assets/logomax.png" alt="" width="102" height="160" />
+          <h2>Max Carnes Premium</h2>
+          <p>La verdadera carne argentina, directo a tu mesa.</p>
+          <a class="photo-cta" href="#cortes">Pedir ahora <span aria-hidden="true">→</span></a>
+        </figcaption>
+      </figure>
+      <figure class="photo-slide photo-slide--story" aria-hidden="true" inert>
+        <img src="images/cortes/tapa-de-asado.jpeg" alt="Tapa de asado fileteada, lista para la parrilla" loading="lazy" />
         <figcaption>
           <span class="photo-badge">Envíos</span>
           <h2>¿Llega fría y en horario?</h2>
@@ -94,8 +105,8 @@
         </figcaption>
       </figure>
     </div>
-    <button class="photo-btn photo-prev" id="photoPrev" aria-label="Foto anterior" title="Anterior">‹</button>
-    <button class="photo-btn photo-next" id="photoNext" aria-label="Foto siguiente" title="Siguiente">›</button>
+    <button class="photo-btn photo-prev" id="photoPrev" aria-label="Anterior" title="Anterior">‹</button>
+    <button class="photo-btn photo-next" id="photoNext" aria-label="Siguiente" title="Siguiente">›</button>
     <div class="photo-dots" id="photoDots" aria-label="Navegación del carrusel"></div>
   </section>
 

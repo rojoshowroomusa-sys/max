@@ -656,6 +656,31 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
   font-size: clamp(26px, 3.6vw, 46px);
   margin-bottom: 14px;
 }
+/* Slide de marca (la primera): no lleva foto de fondo, asi que la altura no la
+   aporta el img de 420px y hay que fijarla en el slide. El logo va contenido y
+   por debajo de su alto nativo (160px) para que no se pixele; los selectores
+   llevan dos clases a proposito para ganarle a .photo-slide img, que lo estiraria
+   a 100% de ancho con object-fit:cover y brightness(0.72). */
+.photo-slide.photo-slide--brand {
+  min-height: 420px;
+  background: radial-gradient(130% 150% at 50% 8%, #2a1d13 0%, #140f0b 45%, #0a0908 100%);
+}
+.photo-slide.photo-slide--brand figcaption {
+  align-items: center;
+  text-align: center;
+}
+.photo-slide.photo-slide--brand .photo-brand-logo {
+  width: auto;
+  height: 150px;
+  object-fit: contain;
+  filter: none;
+  margin-bottom: 28px;
+}
+.photo-slide.photo-slide--brand h2 {
+  font-size: clamp(30px, 4.2vw, 56px);
+  margin-bottom: 12px;
+}
+.photo-slide.photo-slide--brand p { margin: 0; }
 .photo-slide .photo-quote {
   margin: 0 0 10px;
   padding-left: 16px;
@@ -741,6 +766,17 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
   .photo-slide figcaption { padding: 0 24px 64px; }
   .photo-slide h2 { font-size: 30px; }
   .photo-slide p { font-size: 15px; max-width: 100%; }
+  /* La slide de marca no tiene img de fondo, asi que su alto lo fija esta regla
+     en vez del .photo-slide img de arriba. El logo baja a 76px porque a 150px
+     el logo + titulo + parrafo + CTA + los 64px de padding de los dots se
+     pasan de los 320px (y mas aun si el parrafo pasa a dos lineas en un
+     telefono angosto). Sigue siendo downscale del nativo de 160px. */
+  .photo-slide.photo-slide--brand { min-height: 320px; }
+  .photo-slide.photo-slide--brand .photo-brand-logo {
+    height: 76px;
+    margin-bottom: 16px;
+  }
+  .photo-slide.photo-slide--brand .photo-cta { margin-top: 16px; }
   .photo-btn { width: 44px; height: 44px; font-size: 22px; }
   .photo-prev { left: 12px; }
   .photo-next { right: 12px; }

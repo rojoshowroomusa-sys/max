@@ -32,9 +32,12 @@ rotateTitle(); // inicializa
   if (!track || !slides.length || !prev || !next || !dotsWrap) return;
 
   // crea dots
-  slides.forEach((_, i) => {
+  slides.forEach((s, i) => {
     const btn = document.createElement("button");
-    btn.setAttribute("aria-label", `Duda ${i + 1}`);
+    // La primera slide es de marca, no de duda, asi que cada slide puede
+    //poner su propio nombre con data-dot-label. Sin eso el dot de marca
+    //anunciaria "Duda 1".
+    btn.setAttribute("aria-label", s.dataset.dotLabel || `Duda ${i + 1}`);
     btn.addEventListener("click", () => goTo(i));
     dotsWrap.appendChild(btn);
   });
