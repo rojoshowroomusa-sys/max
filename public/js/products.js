@@ -40,6 +40,15 @@ let CORTES = [
     img: "images/cortes/tira-de-asado.jpeg",
   },
   {
+    id: "asado-ventana",
+    nombre: "Asado de Ventana",
+    categoria: "clasicos",
+    price: 14990,
+    desc: "El costillar cortado en ventana: cinco costillas para asar tranquilamente a las brasas. Tierno, con la grasa que lo hace irresistible.",
+    meta: { coccion: "Parrilla lenta", punto: "Bien cocido", tiempo: "40-60 min" },
+    img: "images/cortes/asado-ventana-5-costillas.jpeg",
+  },
+  {
     id: "matambre",
     nombre: "Matambre",
     categoria: "clasicos",
