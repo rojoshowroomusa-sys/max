@@ -851,3 +851,90 @@ input[type="search"] { color-scheme: dark; }
   border-radius: 14px;
   box-shadow: 0 18px 45px rgba(0, 0, 0, 0.5);
 }
+
+/* ---------------- Carrusel de fotos (galería de cortes) ---------------- */
+.carousel {
+  position: relative;
+}
+.carousel-track {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding: 4px 4px 14px;
+  scrollbar-width: none;
+}
+.carousel-track::-webkit-scrollbar {
+  display: none;
+}
+.carousel-track:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 4px;
+}
+.carousel-slide {
+  flex: 0 0 clamp(210px, 26vw, 300px);
+  margin: 0;
+  scroll-snap-align: start;
+}
+.carousel-slide img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 12px;
+  background: #17130f;
+  border: 1px solid var(--border);
+}
+.carousel-slide figcaption {
+  margin-top: 10px;
+  text-align: center;
+  font-family: "Oswald", sans-serif;
+  font-weight: 600;
+  font-size: 1.02rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.carousel-btn {
+  position: absolute;
+  top: calc(50% - 24px);
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 175, 55, 0.65);
+  background: rgba(10, 9, 8, 0.88);
+  color: #d4af37;
+  font-size: 27px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.carousel-btn:hover {
+  background: #17130f;
+  transform: translateY(-50%) scale(1.06);
+}
+.carousel-btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+#galeria .carousel-btn {
+  top: calc(50% - 24px);
+}
+#galPrev {
+  left: -12px;
+}
+#galNext {
+  right: -12px;
+}
+@media (max-width: 640px) {
+  #galPrev {
+    left: 0;
+  }
+  #galNext {
+    right: 0;
+  }
+}
