@@ -1,0 +1,32 @@
+[
+    {
+        "slug":  "entrana-a-la-parrilla",
+        "title":  "Entraña a la Parrilla",
+        "descripcion":  "La entraña es uno de los cortes más sabrosos y tiernos. Con esta receta la vas a cocinar perfecta, jugosa por dentro y crocante por fuera.",
+        "fecha":  "2026-09-20",
+        "imagen":  "images/cortes/entrana.jpeg",
+        "tiempo":  "25 min",
+        "porciones":  "4",
+        "dificultad":  "Fácil"
+    },
+    {
+        "slug":  "asado-de-tira-al-horno",
+        "title":  "Asado de Tira al Horno",
+        "descripcion":  "El asado de tira es un clásico argentino. Esta versión al horno es perfecta para cuando no tenés parrilla o querés cocinar para mucha gente.",
+        "fecha":  "2026-09-18",
+        "imagen":  "images/cortes/tira-de-asado.jpeg",
+        "tiempo":  "90 min",
+        "porciones":  "6",
+        "dificultad":  "Media"
+    },
+    {
+        "slug":  "bife-a-la-pizza",
+        "title":  "Bife a la Pizza",
+        "descripcion":  "Un clásico de las pizzerías argentinas: bife de chorizo cubierto con salsa de tomate, mozzarella y orégano. Fácil, rápido y delicioso.",
+        "fecha":  "2026-09-15",
+        "imagen":  "images/cortes/bife-de-chorizo.jpeg",
+        "tiempo":  "30 min",
+        "porciones":  "2",
+        "dificultad":  "Fácil"
+    }
+]

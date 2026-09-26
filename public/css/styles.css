@@ -1000,6 +1000,135 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
 .mp-status.mp-success { color: #4ade80; }
 .mp-status.mp-error { color: #f87171; }
 
+/* ---------- Páginas de recetas ---------- */
+.receta-card {
+  text-decoration: none;
+  color: inherit;
+  padding: 0;
+  overflow: hidden;
+}
+.receta-card .card-img {
+  margin: 0;
+  border-radius: 0;
+  aspect-ratio: 16 / 10;
+}
+.receta-card .card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.receta-card .card-tag {
+  margin: 16px 16px 0;
+}
+.receta-card h3 {
+  margin: 0 16px;
+  font-size: 20px;
+}
+.receta-card .card-desc {
+  margin: 0 16px;
+  flex: 1;
+}
+.receta-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0 16px 16px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Página de receta individual */
+.receta-article {
+  max-width: 760px;
+}
+.receta-volver {
+  display: inline-block;
+  margin-bottom: 24px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+.receta-volver:hover { color: var(--text); }
+.receta-hero {
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 32px;
+  aspect-ratio: 16 / 9;
+}
+.receta-hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.receta-header h1 {
+  font-size: clamp(28px, 4vw, 40px);
+  margin-bottom: 16px;
+}
+.receta-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 32px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.receta-body {
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--text);
+}
+.receta-body h2 {
+  font-size: 24px;
+  margin-top: 36px;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+.receta-body h3 {
+  font-size: 19px;
+  margin-top: 28px;
+  margin-bottom: 12px;
+}
+.receta-body p { margin-bottom: 16px; }
+.receta-body ul, .receta-body ol {
+  margin: 0 0 16px 24px;
+}
+.receta-body li { margin-bottom: 8px; }
+.receta-body strong { color: var(--amber); }
+.receta-body em { color: var(--muted); }
+.receta-body code {
+  background: var(--card);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+.receta-body blockquote {
+  border-left: 3px solid var(--amber);
+  padding-left: 16px;
+  margin: 16px 0;
+  color: var(--muted);
+  font-style: italic;
+}
+.receta-body hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 32px 0;
+}
+.receta-body img {
+  max-width: 100%;
+  border-radius: var(--radius);
+  margin: 16px 0;
+}
+.receta-cta {
+  display: flex;
+  gap: 12px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+
 .wa-float {
   position: fixed;
   bottom: 24px;

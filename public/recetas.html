@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recetas — MAX Carnes Premium</title>
+  <meta name="description" content="Recetas de cocina con cortes argentinos: entraña a la parrilla, asado de tira al horno, bife a la pizza y más." />
+  <meta property="og:title" content="Recetas — MAX Carnes Premium" />
+  <meta property="og:description" content="Recetas de cocina con cortes argentinos de calidad." />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="es_AR" />
+  <meta property="og:image" content="https://carnesmax.caminosdelnorte84.workers.dev/assets/flyer-share.png" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#recetas">Saltar al contenido</a>
+  <header class="header">
+    <div class="container header-inner">
+      <a class="logo" href="index.html">
+        <img src="assets/logomax.png" alt="MAX Carnes Premium" />
+      </a>
+      <nav class="nav" id="mainNav">
+        <a href="index.html#cortes">Cortes</a>
+        <a href="index.html#combos">Combos</a>
+        <a href="index.html#accesorios">Accesorios</a>
+        <a href="index.html#guia">Guía</a>
+        <a href="index.html#nosotros">Nosotros</a>
+        <a href="index.html#mayoristas">Mayoristas</a>
+      </nav>
+      <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="mainNav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="recetas">
+    <section class="section container" style="padding-top: 48px;">
+      <p class="eyebrow center">Cocinar con carne argentina</p>
+      <h1 class="center">Recetas</h1>
+      <p class="section-sub center">Ideas para sacarle el máximo provecho a cada corte. Recetas fáciles, con ingredientes que conseguís en cualquier lado.</p>
+      <div class="grid grid-3" id="recetasGrid"></div>
+    </section>
+  </main>
+
+  <footer class="footer" id="contacto">
+    <div class="container footer-inner">
+      <a class="footer-phone" href="https://wa.me/5492213541722" target="_blank" rel="noopener">221 354 1722</a>
+      <p>© 2026 MAX Carnes Premium</p>
+    </div>
+  </footer>
+
+  <a class="wa-float" href="https://wa.me/5492213541722" target="_blank" rel="noopener" aria-label="Chateá con nosotros por WhatsApp">
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/></svg>
+  </a>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/recetas.js"></script>
+  <script src="js/recetas-app.js"></script>
+</body>
+</html>
