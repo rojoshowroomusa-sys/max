@@ -179,7 +179,7 @@ function renderDrawer() {
 
   wrap.replaceChildren();
   if (corteIds.length === 0 && comboIds.length === 0) {
-    wrap.innerHTML = `<p class="drawer-empty">Tu pedido está vacío.<br />Agregá cortes o combos desde el catálogo.</p>`;
+    wrap.innerHTML = `<p class="drawer-empty">Tu pedido está vacio.<br />Agregá cortes o combos desde el catálogo.</p>`;
   } else {
     for (const id of corteIds) {
       const corte = findCorte(id);

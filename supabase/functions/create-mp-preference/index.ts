@@ -202,7 +202,7 @@ async function handleRequest(req: Request): Promise<Response> {
     ? (body as { items?: unknown }).items
     : null;
   if (!Array.isArray(rawItems) || rawItems.length === 0) {
-    return json({ error: "El pedido está vacío" }, 400);
+    return json({ error: "El pedido está vacio" }, 400);
   }
   if (rawItems.length > 50) {
     return json({ error: "El pedido tiene demasiadas líneas" }, 400);

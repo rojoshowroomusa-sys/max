@@ -55,7 +55,7 @@ async function fetchProducts(supabaseClient) {
   // Cortes retirados del catálogo a propósito: se filtran aunque el remoto
   // todavía los devuelva activos (hasta que la migración 20260925030000 los
   // marque is_active=false en el deploy).
-  const RETIRED = new Set(["bifes", "bife-lomo-media-res", "completo", "mocho", "asado"]);
+  const RETIRED = new Set(["bifes", "bife-lomo-media-res", "completo", "mocho", "asado", "ojo-bife"]);
   return (data || [])
     .filter((row) => !RETIRED.has(row.slug || row.id))
     .map(mapProduct);

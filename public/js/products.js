@@ -14,7 +14,7 @@ const WHATSAPP_NUMBER = "5492213541722";
 let CORTES = [
   {
     id: "vacio",
-    nombre: "Vacío",
+    nombre: "Vacio",
     categoria: "clasicos",
     price: 15990,
     desc: "Corte tierno y jugoso, ideal para la parrilla. Con su característica capa de grasa que le da un sabor inigualable.",
@@ -274,7 +274,7 @@ let COMBOS = [
     id: "combo-asado",
     icon: "🔥",
     nombre: "Combo Asado para 4",
-    detalle: "2kg de tapa de asado + 1kg de vacío + 1kg de entraña",
+    detalle: "2kg de tapa de asado + 1kg de vacio + 1kg de entraña",
     price: 49990,
     regularPrice: 56960,
     kg: 4,
@@ -283,7 +283,7 @@ let COMBOS = [
     id: "combo-parrillada",
     icon: "🥩",
     nombre: "Combo Parrillada para 6",
-    detalle: "2kg de tapa de asado + 2kg de vacío + 1kg de matambre + 1kg de entraña",
+    detalle: "2kg de tapa de asado + 2kg de vacio + 1kg de matambre + 1kg de entraña",
     price: 74990,
     regularPrice: 86940,
     kg: 6,
