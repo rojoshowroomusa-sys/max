@@ -588,6 +588,39 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
   max-width: 580px;
   text-shadow: 0 2px 12px rgba(0,0,0,0.5);
 }
+/* El CTA es el único elemento interactivo del slide: la figcaption es
+   pointer-events:none para no frenar el swipe, así que el botón lo
+   rehabilita explícitamente. */
+.photo-cta {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 24px;
+  padding: 14px 30px;
+  border-radius: 999px;
+  background: var(--red);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 8px 28px rgba(224, 52, 47, 0.45);
+  transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+}
+.photo-cta:hover {
+  background: var(--red-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 34px rgba(224, 52, 47, 0.6);
+}
+.photo-cta:focus-visible {
+  background: var(--red-dark);
+  outline: 3px solid var(--amber);
+  outline-offset: 3px;
+}
 .photo-btn {
   position: absolute;
   top: 50%;
@@ -647,7 +680,11 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
 
 @media (max-width: 768px) {
   .photo-slide img { height: 320px; }
-  .photo-slide figcaption { padding: 0 24px; }
+  /* padding inferior para que el bloque de texto + CTA no quede debajo de
+     los dots, que van centrados abajo. */
+  .photo-slide figcaption { padding: 0 24px 64px; }
+  .photo-slide h2 { font-size: 30px; }
+  .photo-slide p { font-size: 15px; max-width: 100%; }
   .photo-btn { width: 44px; height: 44px; font-size: 22px; }
   .photo-prev { left: 12px; }
   .photo-next { right: 12px; }
@@ -894,7 +931,6 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
   .about-grid { grid-template-columns: 1fr; }
   .hero { padding: 80px 0 60px; }
   .page { padding: 60px 0; }
-  .shipping-banner { font-size: 12px; }
 }
 
 @media (max-width: 480px) {
@@ -909,6 +945,8 @@ h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em;
   .hero-stat strong { font-size: 22px; }
   .wa-float { bottom: 16px; left: 16px; width: 50px; height: 50px; }
   .drawer-item { flex-wrap: wrap; }
+  .photo-slide h2 { font-size: 26px; }
+  .photo-cta { margin-top: 18px; padding: 12px 24px; font-size: 14px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -33,8 +33,7 @@ rotateTitle(); // inicializa
   // crea dots
   slides.forEach((_, i) => {
     const btn = document.createElement("button");
-    btn.setAttribute("role", "tab");
-    btn.setAttribute("aria-label", `Foto ${i + 1}`);
+    btn.setAttribute("aria-label", `Oferta ${i + 1}`);
     btn.addEventListener("click", () => goTo(i));
     dotsWrap.appendChild(btn);
   });
@@ -45,8 +44,22 @@ rotateTitle(); // inicializa
 
   function update() {
     track.style.transform = `translateX(-${idx * 100}%)`;
-    slides.forEach((s, i) => s.classList.toggle("active", i === idx));
-    dots.forEach((d, i) => d.classList.toggle("active", i === idx));
+    slides.forEach((s, i) => {
+      const isActive = i === idx;
+      s.classList.toggle("active", isActive);
+      // Solo el slide visible queda expuesto: los otros se ocultan al lector
+      // de pantalla y sacan su CTA del orden de tabulación, para no tener que
+      // recorrer tres "Pedir ahora" que están fuera de pantalla.
+      s.toggleAttribute("inert", !isActive);
+      if (isActive) s.removeAttribute("aria-hidden");
+      else s.setAttribute("aria-hidden", "true");
+    });
+    dots.forEach((d, i) => {
+      const isActive = i === idx;
+      d.classList.toggle("active", isActive);
+      if (isActive) d.setAttribute("aria-current", "true");
+      else d.removeAttribute("aria-current");
+    });
   }
 
   function goTo(i) {
@@ -67,7 +80,13 @@ rotateTitle(); // inicializa
   carousel.addEventListener("mouseenter", () => clearInterval(timer));
   carousel.addEventListener("focusin", () => clearInterval(timer));
   carousel.addEventListener("mouseleave", resetTimer);
-  carousel.addEventListener("focusout", resetTimer);
+  // Solo se reanuda cuando el foco sale del carrusel de verdad. Sin este
+  // chequeo, tabular de un CTA a un dot dispara focusout y reactiva el
+  // autoplay con el foco todavía adentro: el slide se vuelve inert y el
+  // foco se pierde.
+  carousel.addEventListener("focusout", (e) => {
+    if (!carousel.contains(e.relatedTarget)) resetTimer();
+  });
 
   // swipe táctil
   let startX = 0;
