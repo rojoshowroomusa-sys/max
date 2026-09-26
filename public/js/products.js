@@ -235,7 +235,7 @@ let CORTES = [
     price: 24990,
     desc: "El bife de chorizo sin hueso: tierno, magro y con el sabor que lo hace el rey de la plancha.",
     meta: { coccion: "Parrilla", punto: "Jugoso (a punto)", tiempo: "10-15 min" },
-    img: "images/cortes/bife-de-chorizo.jpeg",
+    img: "images/cortes/bife-angosto.jpeg",
   },
   {
     id: "tomahawk",
