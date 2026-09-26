@@ -13,7 +13,7 @@ function mapProduct(row) {
   return {
     id: row.slug || row.id,
     nombre: row.name,
-    categoria: row.categoria || "clasicos",
+    categoria: row.categoria || "clasico",
     price: Number(row.price_per_kg),
     // Rango de venta y stock en gramos (server-side en create-mp-preference).
     // Sin ellos el stepper deja armar pedidos que el servidor rechaza.

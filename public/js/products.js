@@ -15,7 +15,7 @@ let CORTES = [
   {
     id: "vacio",
     nombre: "Vacio",
-    categoria: "clasicos",
+    categoria: "clasico",
     price: 15990,
     desc: "Corte tierno y jugoso, ideal para la parrilla. Con su característica capa de grasa que le da un sabor inigualable.",
     meta: { coccion: "Parrilla", punto: "Jugoso (a punto)", tiempo: "15-20 min" },
@@ -24,7 +24,7 @@ let CORTES = [
   {
     id: "tapa-asado",
     nombre: "Tapa de Asado",
-    categoria: "clasicos",
+    categoria: "clasico",
     price: 12990,
     desc: "La tapa del asado de tira, con esa grasa que al derretirse sobre las brasas da un sabor único.",
     meta: { coccion: "Parrilla lenta", punto: "Bien cocido", tiempo: "40-60 min" },
@@ -33,7 +33,7 @@ let CORTES = [
   {
     id: "tira-asado",
     nombre: "Tira de Asado",
-    categoria: "clasicos",
+    categoria: "clasico",
     price: 13990,
     desc: "La estrella de la parrilla argentina: hueso cortito, grasa entreverada y sabor a leña. Imposible resistirse.",
     meta: { coccion: "Parrilla", punto: "Jugosa", tiempo: "15-25 min" },
@@ -42,7 +42,7 @@ let CORTES = [
   {
     id: "asado-ventana",
     nombre: "Asado de Ventana",
-    categoria: "clasicos",
+    categoria: "especiales",
     price: 14990,
     desc: "El costillar cortado en ventana: cinco costillas para asar tranquilamente a las brasas. Tierno, con la grasa que lo hace irresistible.",
     meta: { coccion: "Parrilla lenta", punto: "Bien cocido", tiempo: "40-60 min" },
@@ -51,7 +51,7 @@ let CORTES = [
   {
     id: "matambre",
     nombre: "Matambre",
-    categoria: "clasicos",
+    categoria: "clasico",
     price: 13990,
     desc: "Corte fino y versátil. Ideal arrollado o a la parrilla. Relleno de verduras y huevo es un clásico.",
     meta: { coccion: "Parrilla", punto: "Cocido completo", tiempo: "25-35 min" },
@@ -60,7 +60,7 @@ let CORTES = [
   {
     id: "entrana",
     nombre: "Entraña",
-    categoria: "clasicos",
+    categoria: "clasico",
     price: 14990,
     desc: "Corte delgado y muy sabroso. Se cocina rápido y queda crocante por fuera, jugosa por dentro. Imperdible.",
     meta: { coccion: "Parrilla muy caliente", punto: "Jugosa", tiempo: "6-10 min" },
@@ -69,7 +69,7 @@ let CORTES = [
   {
     id: "falda",
     nombre: "Falda",
-    categoria: "clasicos",
+    categoria: "clasico",
     price: 13990,
     desc: "Corte del costillar, versátil y rendidor. Ideal para la parrilla, guisos o arrollado.",
     meta: { coccion: "Parrilla lenta", punto: "Bien cocido", tiempo: "40-60 min" },
@@ -78,7 +78,7 @@ let CORTES = [
   {
     id: "lomo",
     nombre: "Lomo",
-    categoria: "clasicos",
+    categoria: "clasico",
     price: 22990,
     desc: "El corte más tierno. Magro y suave, perfecto para horno o plancha. Ideal para ocasiones especiales.",
     meta: { coccion: "Horno o plancha", punto: "Jugoso (a punto)", tiempo: "20-30 min" },
@@ -87,7 +87,7 @@ let CORTES = [
   {
     id: "peceto",
     nombre: "Peceto",
-    categoria: "clasicos",
+    categoria: "clasico",
     price: 17990,
     desc: "Corte magro y tierno, ideal para roast beef, milanesas o al horno con verduras.",
     meta: { coccion: "Horno", punto: "A punto", tiempo: "50-60 min" },
@@ -96,7 +96,7 @@ let CORTES = [
   {
     id: "nalga",
     nombre: "Nalga",
-    categoria: "clasicos",
+    categoria: "clasico",
     price: 14990,
     desc: "Magro y versátil, perfecto para milanesas, bocados o a la plancha.",
     meta: { coccion: "Plancha o sartén", punto: "A punto", tiempo: "8-12 min" },
@@ -105,7 +105,7 @@ let CORTES = [
   {
     id: "tortuguita",
     nombre: "Tortuguita",
-    categoria: "clasicos",
+    categoria: "clasico",
     price: 13990,
     desc: "Corte chico y tierno del cuarto trasero, ideal para milanesas o a la plancha.",
     meta: { coccion: "Plancha o sartén", punto: "A punto", tiempo: "8-10 min" },
@@ -114,7 +114,7 @@ let CORTES = [
   {
     id: "tapa-nalga",
     nombre: "Tapa de Nalga",
-    categoria: "clasicos",
+    categoria: "clasico",
     price: 15490,
     desc: "Pieza grande y pareja del cuarto trasero, ideal para roast beef, al horno o milanesas.",
     meta: { coccion: "Horno", punto: "Jugoso (a punto)", tiempo: "50-70 min" },
@@ -123,7 +123,7 @@ let CORTES = [
   {
     id: "bola-lomo",
     nombre: "Bola de Lomo",
-    categoria: "clasicos",
+    categoria: "clasico",
     price: 16990,
     desc: "Tierno y magro, ideal para porciones al horno o brochettes.",
     meta: { coccion: "Horno", punto: "Jugoso (a punto)", tiempo: "35-45 min" },
@@ -132,7 +132,7 @@ let CORTES = [
   {
     id: "cuadrada",
     nombre: "Cuadrada",
-    categoria: "clasicos",
+    categoria: "clasico",
     price: 13990,
     desc: "Ideal para roast beef o cocción al horno. Rinde y no falla.",
     meta: { coccion: "Horno", punto: "A punto", tiempo: "60-70 min" },
@@ -141,7 +141,7 @@ let CORTES = [
   {
     id: "cuadril",
     nombre: "Cuadril",
-    categoria: "clasicos",
+    categoria: "clasico",
     price: 18990,
     desc: "Sabor intenso y textura firme. Excelente a la parrilla o al horno.",
     meta: { coccion: "Parrilla", punto: "Jugoso (a punto)", tiempo: "20-25 min" },
@@ -150,7 +150,7 @@ let CORTES = [
   {
     id: "colita-cuadril",
     nombre: "Colita de Cuadril",
-    categoria: "clasicos",
+    categoria: "clasico",
     price: 19990,
     desc: "El corte de los asados especiales. Tierno, jugoso y con sabor inigualable a la parrilla.",
     meta: { coccion: "Parrilla", punto: "Jugoso (a punto)", tiempo: "25-30 min" },
@@ -159,7 +159,7 @@ let CORTES = [
   {
     id: "roast-beef",
     nombre: "Roast Beef",
-    categoria: "clasicos",
+    categoria: "clasico",
     price: 15990,
     desc: "El clásico de mesa. Ideal al horno, caliente o frío, para toda ocasión.",
     meta: { coccion: "Horno", punto: "A punto", tiempo: "60-75 min" },
@@ -168,7 +168,7 @@ let CORTES = [
   {
     id: "paleta",
     nombre: "Paleta",
-    categoria: "clasicos",
+    categoria: "clasico",
     price: 10990,
     desc: "Versátil y económica. Ideal al horno, estofada o a la parrilla.",
     meta: { coccion: "Horno o estofado", punto: "Bien cocido", tiempo: "90-120 min" },
@@ -177,7 +177,7 @@ let CORTES = [
   {
     id: "aguja",
     nombre: "Aguja",
-    categoria: "clasicos",
+    categoria: "clasico",
     price: 11990,
     desc: "Corte jugoso del cuarto delantero, con marmolado que le da sabor. Ideal para guisos, estofados o a la parrilla.",
     meta: { coccion: "Guiso o parrilla", punto: "Bien cocido", tiempo: "60-90 min" },
@@ -186,7 +186,7 @@ let CORTES = [
   {
     id: "palomita",
     nombre: "Palomita",
-    categoria: "clasicos",
+    categoria: "clasico",
     price: 14990,
     desc: "Corte tierno con leve marmolado, de la zona delantera. Ideal a la plancha o brochettes.",
     meta: { coccion: "Plancha", punto: "Jugoso (a punto)", tiempo: "8-12 min" },
@@ -195,7 +195,7 @@ let CORTES = [
   {
     id: "picada",
     nombre: "Picada",
-    categoria: "clasicos",
+    categoria: "clasico",
     price: 12990,
     desc: "Cortes chicos listos para la picada o para saltear. Rinde y gusta.",
     meta: { coccion: "Sartén", punto: "Cocido", tiempo: "5-8 min" },
@@ -204,7 +204,7 @@ let CORTES = [
   {
     id: "osobuco",
     nombre: "Osobuco",
-    categoria: "clasicos",
+    categoria: "clasico",
     price: 11990,
     desc: "Corte con hueso y médula. Ideal para guisos y estofados de cocción lenta.",
     meta: { coccion: "Estofado", punto: "Muy tierno", tiempo: "120-150 min" },
@@ -213,7 +213,7 @@ let CORTES = [
   {
     id: "t-bone",
     nombre: "T-Bone",
-    categoria: "premium",
+    categoria: "especiales",
     price: 26990,
     desc: "Dos cortes en uno: lomo y bife separados por su hueso en T. La experiencia premium de la parrilla.",
     meta: { coccion: "Parrilla alta", punto: "Jugoso (a punto)", tiempo: "15-20 min" },
@@ -222,7 +222,7 @@ let CORTES = [
   {
     id: "bife-ancho",
     nombre: "Bife Ancho",
-    categoria: "premium",
+    categoria: "clasico",
     price: 26990,
     desc: "El costillar con hueso: jugoso, con el sabor profundo de la grasa que lo atraviesa. Un clásico de parrilla.",
     meta: { coccion: "Parrilla alta", punto: "Jugoso (a punto)", tiempo: "20-25 min" },
@@ -231,7 +231,7 @@ let CORTES = [
   {
     id: "bife-angosto",
     nombre: "Bife Angosto",
-    categoria: "premium",
+    categoria: "clasico",
     price: 24990,
     desc: "El bife de chorizo sin hueso: tierno, magro y con el sabor que lo hace el rey de la plancha.",
     meta: { coccion: "Parrilla", punto: "Jugoso (a punto)", tiempo: "10-15 min" },
@@ -240,7 +240,7 @@ let CORTES = [
   {
     id: "tomahawk",
     nombre: "Tomahawk",
-    categoria: "premium",
+    categoria: "especiales",
     price: 28990,
     desc: "El corte más imponente. Bife de chorizo con hueso largo, ideal para reverse sear y sorprender a todos.",
     meta: { coccion: "Reverse sear", punto: "Jugoso (a punto)", tiempo: "30-40 min" },
@@ -249,7 +249,7 @@ let CORTES = [
   {
     id: "ojo-de-bife",
     nombre: "Ojo de Bife",
-    categoria: "premium",
+    categoria: "clasico",
     price: 25990,
     desc: "El ribeye argentino: marmoleado, tierno y con sabor intenso. La estrella de la parrilla.",
     meta: { coccion: "Parrilla", punto: "Jugoso (a punto)", tiempo: "12-15 min" },
@@ -258,7 +258,7 @@ let CORTES = [
   {
     id: "picana",
     nombre: "Picaña",
-    categoria: "premium",
+    categoria: "especiales",
     price: 21990,
     desc: "La joya brasileña. Su capa de grasa la hace jugosa, con un sabor intenso e inconfundible.",
     meta: { coccion: "Parrilla", punto: "Jugosa", tiempo: "20-25 min" },
@@ -267,7 +267,7 @@ let CORTES = [
   {
     id: "osobuco-rey",
     nombre: "Osobuco del Rey",
-    categoria: "premium",
+    categoria: "especiales",
     price: 16990,
     desc: "Nuestro osobuco premium, seleccionado especialmente para preparaciones de autor.",
     meta: { coccion: "Cocción lenta", punto: "Muy tierno", tiempo: "120-150 min" },

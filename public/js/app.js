@@ -66,7 +66,7 @@ function renderCortes(filter = "") {
       : "";
     card.innerHTML = `
       ${foto}
-      <span class="card-tag">${corte.categoria === "premium" ? "⭐ Premium" : "Corte Argentino"}</span>
+      <span class="card-tag">${corte.categoria === "especiales" ? "⭐ Especial" : "Corte Argentino"}</span>
       <div class="card-head">
         <h3>${safeName}</h3>
       </div>
