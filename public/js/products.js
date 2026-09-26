@@ -41,10 +41,10 @@ let CORTES = [
   },
   {
     id: "asado-ventana",
-    nombre: "Asado de Ventana",
+    nombre: "Asado de Ventana de 5 costillas",
     categoria: "especiales",
     price: 14990,
-    desc: "El costillar cortado en ventana: cinco costillas para asar tranquilamente a las brasas. Tierno, con la grasa que lo hace irresistible.",
+    desc: "El costillar cortado en ventana: 5 costillas para asar tranquilamente a las brasas. Tierno, con la grasa que lo hace irresistible.",
     meta: { coccion: "Parrilla lenta", punto: "Bien cocido", tiempo: "40-60 min" },
     img: "images/cortes/asado-ventana-5-costillas.jpeg",
   },
