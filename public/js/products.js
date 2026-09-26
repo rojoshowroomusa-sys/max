@@ -264,15 +264,6 @@ let CORTES = [
     meta: { coccion: "Cocción lenta", punto: "Muy tierno", tiempo: "120-150 min" },
     img: "images/cortes/osobuco-rey.jpeg",
   },
-  {
-    id: "pecho",
-    nombre: "Pecho",
-    categoria: "premium",
-    price: 13990,
-    desc: "Con marmoleado natural, ideal para cocciones lentas que se deshacen en la boca.",
-    meta: { coccion: "Cocción lenta", punto: "Muy tierno", tiempo: "180-240 min" },
-    img: "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e6/Brisket_topped_with_fat_-_Decmeber_2023_-_Sarah_Stierch.jpg/960px-Brisket_topped_with_fat_-_Decmeber_2023_-_Sarah_Stierch.jpg",
-  },
 ];
 
 /* Combos: precio cerrado por unidad (no por kg).
