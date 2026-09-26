@@ -1,5 +1,6 @@
 -- El cliente pidio precisar el nombre del corte: "Asado de Ventana" -> "Asado de
--- Ventana de 5 costillas", que es como se vende y como esta rotulada la foto.
+-- Ventana 5 costillas", que es como se vende y como esta rotulada la foto. Sin
+-- segunda preposicion: "de Ventana de 5 costillas" sonaba trabado.
 --
 -- Solo UPDATE sobre public.products: no se toca el esquema ni la semilla de
 -- 20260926060000 (esa migracion ya esta aplicada en remoto; editarla haria
@@ -13,7 +14,7 @@
 -- No se cambia la URL a proposito: preferimos sin imagen antes que una foto de un
 -- corte equivocado. Hay que agregar el archivo a la carpeta.
 update public.products
-set name = 'Asado de Ventana de 5 costillas'
+set name = 'Asado de Ventana 5 costillas'
 where slug = 'asado-ventana';
 
 -- La descripcion ya decia "cinco costillas"; se homologa a "5 costillas" para que

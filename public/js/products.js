@@ -41,7 +41,7 @@ let CORTES = [
   },
   {
     id: "asado-ventana",
-    nombre: "Asado de Ventana de 5 costillas",
+    nombre: "Asado de Ventana 5 costillas",
     categoria: "especiales",
     price: 14990,
     desc: "El costillar cortado en ventana: 5 costillas para asar tranquilamente a las brasas. Tierno, con la grasa que lo hace irresistible.",
