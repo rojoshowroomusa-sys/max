@@ -133,6 +133,15 @@ function sortCortes(list) {
   return arr;
 }
 
+/* Caja de foto de un corte. Sin foto, y tambien cuando la foto da 404
+   (archivo faltante o renombrado), cae en el placeholder. Esta en una funcion
+   para que las dos rutas no puedan quedar con markup distinto. */
+function cardImgBox(inner) {
+  return `<div class="card-img${inner ? "" : " placeholder"}"${
+    inner ? "" : ' aria-hidden="true"'
+  }>${inner || "<span>🥩</span>"}</div>`;
+}
+
 function renderCortes(filter = "") {
   const grid = document.getElementById("cortesGrid");
   const emptyMsg = document.getElementById("emptyMsg");
@@ -170,8 +179,8 @@ function renderCortes(filter = "") {
     const safeName = escapeHtml(corte.nombre);
     const safeImage = escapeHtml(corte.img);
     const foto = corte.img
-      ? `<div class="card-img"><img src="${safeImage}" alt="${safeName}" loading="lazy" /></div>`
-      : `<div class="card-img placeholder" aria-hidden="true"><span>🥩</span></div>`;
+      ? cardImgBox(`<img src="${safeImage}" alt="${safeName}" loading="lazy" />`)
+      : cardImgBox();
     const coccion = corte.meta && corte.meta.coccion;
     const showRange = Number.isFinite(Number(corte.maxG)) && Number(corte.maxG) > 0;
     const limitLine = showRange
@@ -197,6 +206,27 @@ function renderCortes(filter = "") {
       ${limitLine}
     `;
     grid.appendChild(card);
+    // Una foto que da 404 (archivo que falta, o renombrado) dejaba el icono de
+    // imagen rota en la card. Se reemplaza por el mismo placeholder que se usa
+    // cuando el corte no tiene foto. El evento error de <img> no burbujea, asi
+    // que el listener va directo en el elemento y no delegado en el grid.
+    const img = card.querySelector(".card-img img");
+    if (img) {
+      img.addEventListener(
+        "error",
+        () => {
+          const box = img.closest(".card-img");
+          if (!box) return;
+          box.classList.add("placeholder");
+          box.setAttribute("aria-hidden", "true");
+          box.replaceChildren();
+          const span = document.createElement("span");
+          span.textContent = "🥩";
+          box.appendChild(span);
+        },
+        { once: true }
+      );
+    }
   });
 }
 
