@@ -1,0 +1,31 @@
+---
+/** Grilla del lookbook. El section y el encabezado los pone la pagina. */
+import { looks, lookSrc, lookSrcset, gridSizes } from '../data/catalog';
+---
+
+<ul class="lookbook-grid" role="list">
+  {
+    looks.map((l) => (
+      <li>
+        <figure class="look">
+          <span class="media reveal">
+            <img
+              src={lookSrc(l.id, 840)}
+              srcset={lookSrcset(l.id)}
+              sizes={gridSizes}
+              width={l.width}
+              height={l.height}
+              alt={l.alt}
+              loading="lazy"
+              decoding="async"
+            />
+          </span>
+          <figcaption>
+            <h3>{l.title}</h3>
+            <p>{l.copy}</p>
+          </figcaption>
+        </figure>
+      </li>
+    ))
+  }
+</ul>

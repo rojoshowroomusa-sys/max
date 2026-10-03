@@ -1,0 +1,32 @@
+---
+/** Grilla de accesorios. El section y el encabezado los pone la pagina. */
+import { accessories, accessorySrc, waHref } from '../data/catalog';
+import { Image } from 'astro:assets';
+---
+
+<ul class="access-grid" role="list">
+  {
+    accessories.map((a) => (
+      <li>
+        <a class="access" href={waHref} data-wa={a.wa}>
+          <span class="media reveal">
+            <Image
+              src={accessorySrc(a.slug)}
+              alt={a.name}
+              width="240"
+              height="240"
+              loading="lazy"
+              decoding="async"
+            />
+          </span>
+          <span class="access-body">
+            <h3>{a.name}</h3>
+            <span class="access-desc">{a.desc}</span>
+            <span class="access-price">{a.price}</span>
+            <span class="product-cta">Pedir por WhatsApp</span>
+          </span>
+        </a>
+      </li>
+    ))
+  }
+</ul>

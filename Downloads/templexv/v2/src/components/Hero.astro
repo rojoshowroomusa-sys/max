@@ -1,0 +1,39 @@
+---
+import { waHref } from '../data/catalog';
+import { Image } from 'astro:assets';
+import heroImg from '../assets/images/temple-xv-hero-1536.jpg';
+
+/* Las letras van sueltas en un array porque .wordmark las anima de a una al
+   scrollear. El XV entra aca, no en el texto del h1: el h1 lleva el nombre
+   completo en el .sr-only, y las letras visibles son solo la decoracion. */
+const WORDMARK = ['T', 'E', 'M', 'P', 'L', 'E', 'X', 'V'];
+---
+
+<header class="hero" id="top">
+  <div class="hero-plate">
+    <Image
+      src={heroImg}
+      alt="Pelota de rugby Temple XV sobre el césped, de noche, con el logo de la marca"
+      fetchpriority="high"
+      sizes="100vw"
+      width={heroImg.width}
+      height={heroImg.height}
+    />
+  </div>
+
+  <div class="wrap hero-inner">
+    <h1 class="hero-title">
+      <span class="sr-only">Temple XV</span>
+      <span class="wordmark" aria-hidden="true">{WORDMARK.map((l) => <span>{l}</span>)}</span>
+      <span class="tagline">El carácter se forja</span>
+    </h1>
+    <p class="hero-lede">
+      En el rugby, la fuerza no está solamente en el cuerpo. Está en la cabeza, y en la capacidad de
+      levantarse después de cada tackle.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-cream" href="/coleccion">Ver colección</a>
+      <a class="btn btn-ghost" href={waHref} data-wa="Hola%20Temple%20XV">Pedir por WhatsApp</a>
+    </div>
+  </div>
+</header>

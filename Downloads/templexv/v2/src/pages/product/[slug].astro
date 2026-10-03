@@ -1,0 +1,124 @@
+---
+import Base from '../../layouts/Base.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import StructuredData from '../../components/StructuredData.astro';
+import { Image } from 'astro:assets';
+import {
+  products,
+  accessories,
+  productImg,
+  accessorySrc,
+  waHref,
+  routeByPath,
+} from '../../data/catalog';
+
+export async function getStaticPaths() {
+  const allItems = [...products, ...accessories];
+  return allItems.map((item) => ({
+    params: { slug: item.slug },
+    props: { item },
+  }));
+}
+
+const { item } = Astro.props;
+const isProduct = products.some((p) => p.slug === item.slug);
+const collectionRoute = routeByPath.get('coleccion')!;
+const accessoriesRoute = routeByPath.get('accesorios')!;
+const parentRoute = isProduct ? collectionRoute : accessoriesRoute;
+
+const SITE = 'https://t1mpl2xv.pages.dev';
+const canonicalURL = `${SITE}/product/${item.slug}`;
+// Astro Image.Metadata src is always relative, prepend SITE for og:image
+const ogImageSrc = isProduct
+  ? `${SITE}${productImg(item.slug, 840).src}`
+  : `${SITE}${accessorySrc(item.slug).src}`;
+
+// Precio numérico para schema.org (quitar $ y puntos)
+const priceNumber = parseInt(item.price.replace(/[^\d]/g, ''), 10);
+
+const breadcrumbItems = [
+  { name: 'Inicio', url: '/' },
+  { name: parentRoute.label, url: `/${parentRoute.path}` },
+  { name: item.name, url: canonicalURL },
+];
+---
+
+<Base
+  title={`${item.name} — Temple XV`}
+  description={item.desc}
+>
+  <Nav />
+
+  <main id="contenido" tabindex="-1">
+    <nav class="breadcrumb" aria-label="Navegación">
+      <ol class="wrap breadcrumb-list" role="list">
+        <li><a href="/">Inicio</a></li>
+        <li><a href={`/${parentRoute.path}`}>{parentRoute.label}</a></li>
+        <li aria-current="page">{item.name}</li>
+      </ol>
+    </nav>
+
+    <section class="section product-detail" aria-labelledby="product-title">
+      <div class="wrap product-grid">
+        <div class="product-media">
+          {isProduct ? (
+            <Image
+              src={productImg(item.slug, 840)}
+              alt={item.name}
+              sizes="(max-width: 700px) 100vw, 50vw"
+              loading="eager"
+              fetchpriority="high"
+            />
+          ) : (
+            <Image
+              src={accessorySrc(item.slug)}
+              alt={item.name}
+              sizes="(max-width: 700px) 100vw, 300px"
+              loading="eager"
+              fetchpriority="high"
+            />
+          )}
+        </div>
+
+        <div class="product-info">
+          <h1 id="product-title" class="product-name">{item.name}</h1>
+          <p class="product-description">{item.desc}</p>
+          <p class="product-price" data-price={priceNumber}>{item.price}</p>
+
+          <a
+            class="btn btn-solid btn-lg product-cta"
+            href={waHref}
+            data-wa={item.wa}
+          >
+            Pedir por WhatsApp
+          </a>
+
+          <p class="product-back">
+            <a href={`/${parentRoute.path}`} class="back-link">
+              ← Volver a {parentRoute.label}
+            </a>
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <StructuredData type="product" data={{
+    name: item.name,
+    description: item.desc,
+    image: ogImageSrc,
+    brand: { '@type': 'Brand', name: 'Temple XV' },
+    sku: item.slug,
+    offers: {
+      '@type': 'Offer',
+      url: canonicalURL,
+      priceCurrency: 'ARS',
+      price: priceNumber,
+      availability: 'https://schema.org/InStock'
+    }
+  }} />
+
+  <StructuredData type="breadcrumb" data={{ items: breadcrumbItems }} />

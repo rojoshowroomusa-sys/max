@@ -1,0 +1,21 @@
+# Dependencias
+node_modules/
+
+# Build de Astro
+dist/
+.astro/
+
+# Salida de types
+*.tsbuildinfo
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Entorno
+.env
+.env.production
+.env.*.local
+
+# Los snapshots de critique de Impeccable se versionan a proposito: son el
+# registro de las decisiones de diseno. No agregar aca.

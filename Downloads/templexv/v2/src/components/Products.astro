@@ -1,0 +1,37 @@
+---
+/**
+ * Grilla de prendas. El <section>, el wrap y el encabezado los pone la pagina,
+ * que es quien sabe que ruta es y que numero de yard le toca. Este componente
+ * solo aporta la grilla.
+ */
+import { products, productSrc, productSrcset, gridSizes, waHref } from '../data/catalog';
+import { Image } from 'astro:assets';
+---
+
+<ul class="products" role="list">
+  {
+    products.map((p) => (
+      <li>
+        <a class="product" href={waHref} data-wa={p.wa}>
+          <span class="media reveal">
+            <Image
+              src={productSrc(p.slug)}
+              alt={p.name}
+              sizes={gridSizes}
+              width="840"
+              height="1050"
+              loading="lazy"
+              decoding="async"
+            />
+          </span>
+          <span class="product-body">
+            <h3>{p.name}</h3>
+            <span class="product-desc">{p.desc}</span>
+            <span class="product-price">{p.price}</span>
+            <span class="product-cta">Pedir por WhatsApp</span>
+          </span>
+        </a>
+      </li>
+    ))
+  }
+</ul>

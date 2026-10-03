@@ -1,0 +1,1007 @@
+
+/* ─────────────────────────────────────────────
+   Tokens
+   ───────────────────────────────────────────── */
+:root{
+  --base:#faf9f6;
+  --surface:#f0ede8;
+  --ink:#141311;
+  --ink-dim:#6a6560;
+  --line:#ddd9d0;
+
+  --accent:#6e2e24;
+  --accent-hi:#8b1a1a;
+  --on-accent:#faf9f6;
+
+  --glass:rgba(250,249,246,.88);
+
+  --footer-bg:#141210;
+  --footer-ink:#cfc9c2;
+  --footer-dim:#8f8880;
+  --footer-line:#302c28;
+
+  --font-body:'Archivo',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-display:'Archivo Black',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --base:#141311;
+    --surface:#1c1b19;
+    --ink:#f5f3ef;
+    --ink-dim:#a8a29b;
+    --line:#37332f;
+
+    --accent:#dd8873;
+    --accent-hi:#f0a491;
+    --on-accent:#17130f;
+
+    --glass:rgba(20,19,17,.88);
+
+    --footer-bg:#0e0d0c;
+    --footer-ink:#cfc9c2;
+    --footer-dim:#8f8880;
+    --footer-line:#2a2724;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   Base
+   ───────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box}
+
+html{
+  -webkit-text-size-adjust:100%;
+  scroll-behavior:smooth;
+  scrollbar-width:thin;
+  scrollbar-color:var(--ink-dim) var(--base);
+}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:var(--base)}
+::-webkit-scrollbar-thumb{background:var(--ink-dim);border:3px solid var(--base);border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+
+body{
+  margin:0;
+  background:var(--base);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:1rem;
+  line-height:1.5;
+  letter-spacing:-.01em;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  caret-color:var(--accent);
+}
+::selection{background:var(--accent);color:var(--on-accent)}
+
+img{display:block;max-width:100%;height:auto}
+a{color:inherit;text-decoration:none}
+
+h1,h2,h3,h4{
+  font-family:var(--font-display);
+  font-weight:400;
+  letter-spacing:-.03em;
+  text-wrap:balance;
+  margin:0;
+}
+
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+.hero :focus-visible{outline-color:#fff}
+
+.wrap{width:100%;max-width:1200px;margin-inline:auto;padding:0 2rem}
+
+.sr-only{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;
+}
+.skip{
+  position:fixed;left:1rem;top:-120px;z-index:200;
+  background:var(--accent);color:var(--on-accent);
+  padding:.75rem 1.15rem;border-radius:.45rem;
+  font-weight:700;font-size:.9rem;letter-spacing:0;
+  transition:top .18s ease;
+}
+.skip:focus{top:1rem}
+
+/* ─────────────────────────────────────────────
+   Nav
+   ───────────────────────────────────────────── */
+.nav{
+  position:sticky;top:0;z-index:60;
+  padding-top:env(safe-area-inset-top);
+  background:var(--glass);
+  -webkit-backdrop-filter:saturate(150%) blur(14px);
+  backdrop-filter:saturate(150%) blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.nav-inner{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:clamp(1rem,3vw,2.5rem);min-height:4rem;padding-block:.7rem;
+}
+.nav-brand{
+  display:flex;align-items:center;gap:.65rem;
+  font-family:var(--font-display);font-size:.95rem;
+  text-transform:uppercase;letter-spacing:.16em;
+}
+.nav-mark{
+  display:block;width:34px;height:34px;
+  border-radius:9px;flex:0 0 auto;
+  box-shadow:0 2px 6px -2px rgba(20,19,17,.45);
+}
+.nav-brand:hover{color:var(--accent)}
+.nav-links{
+  display:flex;align-items:center;
+  gap:clamp(1.25rem,3vw,2.25rem);
+  list-style:none;margin:0;padding:0;
+}
+.nav-links a{
+  display:block;padding-block:.85rem;
+  font-family:var(--font-display);font-size:.74rem;
+  text-transform:uppercase;letter-spacing:.11em;
+  border-bottom:2px solid transparent;
+  transition:color .2s,border-color .2s;
+}
+.nav-links a:hover{color:var(--accent)}
+.nav-links a[aria-current]{color:var(--accent);border-bottom-color:var(--accent)}
+
+.nav-actions{display:flex;align-items:center;gap:.5rem}
+
+/* Boton de menu. Solo existe <=900px: con cuatro destinos mas el CTA, los
+   links no entran en la barra angosta sin comprimir la marca o el Pedir. */
+.nav-toggle{
+  display:none;
+  place-items:center;
+  width:44px;height:44px;flex:0 0 44px;
+  padding:0;
+  background:none;border:0;border-radius:.45rem;
+  color:var(--ink);cursor:pointer;
+  transition:color .2s,background-color .2s;
+}
+.nav-toggle:hover{color:var(--accent);background:var(--surface)}
+.nav-bars{position:relative;display:block;width:19px;height:13px}
+.nav-bar{
+  position:absolute;left:0;right:0;height:2px;border-radius:2px;
+  background:currentColor;
+  transition:transform .24s cubic-bezier(.16,1,.3,1),opacity .18s;
+}
+.nav-bar:nth-child(1){top:0}
+.nav-bar:nth-child(2){bottom:0}
+.nav[data-open="true"] .nav-bar:nth-child(1){transform:translateY(5.5px) rotate(45deg)}
+.nav[data-open="true"] .nav-bar:nth-child(2){transform:translateY(-5.5px) rotate(-45deg)}
+
+/* ─────────────────────────────────────────────
+   Buttons
+   ───────────────────────────────────────────── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  gap:.5rem;padding:.85rem 1.7rem;
+  font-family:var(--font-display);font-size:.78rem;
+  text-transform:uppercase;letter-spacing:.09em;
+  border:1.5px solid transparent;border-radius:.5rem;
+  text-align:center;cursor:pointer;
+  transition:background-color .2s,color .2s,border-color .2s,transform .15s;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(0)}
+
+.btn-solid{background:var(--accent);color:var(--on-accent)}
+.btn-solid:hover{background:var(--accent-hi)}
+
+.btn-cream{background:var(--base);color:var(--ink);border-color:var(--base)}
+.btn-cream:hover{background:#e8d5c4;border-color:#e8d5c4}
+
+.btn-ghost{border-color:rgba(255,255,255,.55);color:#fff}
+.btn-ghost:hover{background:rgba(255,255,255,.14);border-color:#fff}
+
+.btn-sm{padding:.75rem 1.15rem;font-size:.72rem;letter-spacing:.1em}
+.btn-lg{padding:1.05rem 2.3rem;font-size:.84rem}
+
+/* ─────────────────────────────────────────────
+   Hero
+   ───────────────────────────────────────────── */
+.hero{
+  position:relative;isolation:isolate;
+  display:flex;align-items:flex-end;
+  min-height:92vh;min-height:92svh;
+  overflow:hidden;background:#0d0b09;color:#fff;
+  scroll-margin-top:4.75rem;
+}
+.hero-plate{position:absolute;inset:0;z-index:-2;overflow:hidden}
+.hero-plate::after{
+  content:"";position:absolute;inset:0;z-index:1;
+  background:linear-gradient(180deg,rgba(13,11,9,.14) 0%,rgba(13,11,9,.26) 34%,rgba(13,11,9,.70) 47%,rgba(13,11,9,.84) 68%,rgba(13,11,9,.94) 100%);
+}
+.hero-img{
+  width:100%;height:100%;object-fit:cover;object-position:center 38%;
+  animation:heroZoom 1.7s cubic-bezier(.16,1,.3,1) both;
+}
+.hero-inner{
+  position:relative;z-index:1;
+  padding-block:clamp(3.5rem,10vh,6.5rem) clamp(2.75rem,7vh,4.5rem);
+}
+
+.hero-title{font-weight:400;margin:0}
+.wordmark{
+  display:flex;justify-content:space-between;width:100%;
+  font-family:var(--font-display);
+  font-size:6rem;
+  line-height:.88;letter-spacing:0;
+  color:#fff;text-transform:uppercase;
+}
+.wordmark>span{display:block;animation:letterRise .95s cubic-bezier(.16,1,.3,1) both}
+.wordmark>span:nth-child(1){animation-delay:.05s}
+.wordmark>span:nth-child(2){animation-delay:.11s}
+.wordmark>span:nth-child(3){animation-delay:.17s}
+.wordmark>span:nth-child(4){animation-delay:.23s}
+.wordmark>span:nth-child(5){animation-delay:.29s}
+.wordmark>span:nth-child(6){animation-delay:.35s}
+.wordmark>span:nth-child(7){animation-delay:.41s}
+.wordmark>span:nth-child(8){animation-delay:.47s}
+
+.tagline{
+  display:block;margin-top:clamp(.85rem,2.4vh,1.4rem);
+  font-family:var(--font-display);
+  font-size:clamp(1.05rem,2.4vw,1.7rem);
+  line-height:1.15;letter-spacing:-.02em;
+  color:#e8d5c4;text-wrap:balance;
+  animation:fadeUp .8s cubic-bezier(.16,1,.3,1) .5s both;
+}
+.hero-lede{
+  max-width:54ch;margin:clamp(1.25rem,3vh,1.9rem) 0 clamp(1.6rem,3.5vh,2.3rem);
+  color:#e3ddd7;
+  font-size:clamp(1rem,1.5vw,1.15rem);line-height:1.55;
+  animation:fadeUp .8s cubic-bezier(.16,1,.3,1) .62s both;
+}
+.hero-actions{
+  display:flex;flex-wrap:wrap;gap:.85rem;
+  animation:fadeUp .8s cubic-bezier(.16,1,.3,1) .74s both;
+}
+
+@keyframes heroZoom{from{transform:scale(1.09)}to{transform:scale(1)}}
+@keyframes letterRise{
+  from{opacity:0;transform:translateY(.38em);filter:blur(9px)}
+  to{opacity:1;transform:none;filter:blur(0)}
+}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:none}
+}
+
+/* ─────────────────────────────────────────────
+   Manifesto band
+   ───────────────────────────────────────────── */
+.band{
+  background:var(--accent);color:var(--on-accent);
+  padding:4.5rem 0;
+}
+.band-statement{
+  margin:0;max-width:24ch;
+  font-family:var(--font-display);
+  font-size:3.25rem;line-height:1.05;letter-spacing:-.03em;
+  text-wrap:balance;
+}
+
+/* ─────────────────────────────────────────────
+   Sections
+   ───────────────────────────────────────────── */
+.section{padding:6.5rem 0;scroll-margin-top:4.75rem}
+.section-title{font-size:clamp(1.9rem,4.2vw,3rem);line-height:.95}
+.section-head{margin-bottom:3rem}
+
+
+/* Products */
+.products{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,258px),1fr));
+  gap:clamp(1.75rem,3vw,2.5rem);
+  list-style:none;margin:0;padding:0;
+}
+.product{
+  display:flex;flex-direction:column;height:100%;
+  border-radius:16px;
+}
+.media{
+  display:block;
+  position:relative;overflow:hidden;
+  background:var(--surface);border-radius:16px;
+}
+.products .media{aspect-ratio:4/5}
+.media img{
+  position:absolute;inset:0;
+  width:100%;height:100%;object-fit:cover;
+  transition:transform .6s cubic-bezier(.16,1,.3,1);
+}
+.product:hover .media img{transform:scale(1.05)}
+
+/* Imagen que fallo: el panel se ve como caja, no como bug de render. La img se
+   oculta (opacity no la saca del arbol de accesibilidad, asi que el alt sigue
+   siendo anuncio para lector de pantalla). */
+.media.is-broken{box-shadow:inset 0 0 0 1px var(--line)}
+.media.is-broken img{opacity:0}
+
+.product-body{
+  display:flex;flex-direction:column;flex:1;gap:.6rem;
+  padding-top:1.15rem;
+}
+.product-body h3{font-size:1.2rem;letter-spacing:-.02em}
+.product-desc{
+  margin:0;color:var(--ink-dim);
+  font-size:.95rem;line-height:1.45;max-width:34ch;
+}
+.product-price{
+  margin:0;font-weight:700;font-size:1.05rem;
+  font-variant-numeric:tabular-nums;letter-spacing:0;
+}
+.product-cta{
+  display:inline-block;vertical-align:middle;max-width:100%;
+  align-self:flex-start;margin-top:auto;
+  padding:.55rem 1.1rem;
+  border:1.5px solid var(--ink);border-radius:.45rem;
+  font-family:var(--font-display);font-size:.72rem;
+  text-transform:uppercase;letter-spacing:.1em;
+  transition:background-color .2s,color .2s,border-color .2s;
+}
+/* .access usa el MISMO componente, no una variante: la señal de que los seis
+   productos son comprables tiene que ser idéntica en las dos grillas. Antes
+   los tres accesorios eran links sin ninguna señal de que leadan a algo. */
+.access .product-cta{margin-top:.7rem}
+.product:hover .product-cta,
+.product:focus-visible .product-cta,
+.access:hover .product-cta,
+.access:focus-visible .product-cta{
+  background:var(--accent);border-color:var(--accent);color:var(--on-accent);
+}
+.product:focus-visible{outline-offset:6px}
+
+/* Accessories */
+/* El min de columna no es estetico: la fila es imagen de 92px + cuerpo, y el cuerpo tiene que
+   entrar la pastilla de "Pedir por WhatsApp" (~208px medidos) sin que desborde. Con 300px el body
+   queda en ~169px a dos columnas y la pastilla se sale de la tarjeta. 360px deja 229px. */
+.access-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));
+  gap:clamp(1.25rem,2.5vw,2rem);
+  list-style:none;margin:0;padding:0;
+}
+.access{
+  display:flex;align-items:center;gap:1.15rem;
+  padding:.65rem;border-radius:16px;
+  transition:background-color .2s;
+}
+.access:hover{background:var(--base)}
+.access .media{width:92px;height:92px;flex:0 0 92px;aspect-ratio:1}
+.access-body{min-width:0}
+.access-body h3{font-size:1.02rem;letter-spacing:-.02em}
+.access-desc{
+  display:block;margin:.35rem 0 0;color:var(--ink-dim);
+  font-size:.88rem;line-height:1.4;
+}
+/* El precio es el mismo componente en las dos grillas: misma escala, mismo
+   color, mismo peso. Antes .access-price era mas chico y en el acento, lo que
+   hacia leer los accesorios como si estuvieran en oferta. */
+.access-price{
+  display:block;margin-top:.5rem;font-weight:700;font-size:1.05rem;
+  color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:0;
+}
+.access:focus-visible{outline-offset:4px}
+
+/* Lookbook */
+.lookbook-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));
+  gap:clamp(1.75rem,3vw,2.5rem);
+  list-style:none;margin:0;padding:0;
+}
+.look{margin:0}
+.look .media{aspect-ratio:3/4}
+.look figcaption{padding-top:1.1rem}
+.look h3{font-size:1.18rem;letter-spacing:-.02em}
+.look p{margin:.45rem 0 0;color:var(--ink-dim);font-size:.95rem;line-height:1.45;max-width:36ch}
+
+/* Breadcrumb */
+.breadcrumb{margin:1.5rem 0 0;padding:0}
+.breadcrumb-list{
+  display:flex;flex-wrap:wrap;gap:.5rem;
+  list-style:none;margin:0;padding:0;
+  font-size:.85rem;color:var(--ink-dim);
+}
+.breadcrumb-list li{display:flex;align-items:center;gap:.5rem}
+.breadcrumb-list li:not(:last-child)::after{
+  content:'/';color:var(--line);
+}
+.breadcrumb-list a{color:var(--ink-dim);transition:color .2s}
+.breadcrumb-list a:hover{color:var(--accent)}
+.breadcrumb-list li[aria-current]{color:var(--ink);font-weight:500}
+
+/* Product Detail */
+.product-detail{padding-top:2rem}
+.product-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:clamp(2rem,4vw,3rem);
+  align-items:start;
+}
+@media (min-width:900px){
+  .product-grid{grid-template-columns:1fr 1fr}
+}
+.product-media{
+  border-radius:16px;
+  overflow:hidden;
+  background:var(--surface);
+  position:relative;
+  isolation:isolate;
+  transition:transform .3s ease;
+}
+.product-media:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 32px rgba(0,0,0,.25);
+}
+.product-media::after{
+  content:'';
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  background:linear-gradient(180deg,transparent,rgba(0,0,0,.1));
+  opacity:0;
+  transition:opacity .3s;
+}
+.product-media:hover::after{opacity:1}
+.product-media img{
+  width:100%;
+  height:auto;
+  display:block;
+  transition:transform .5s cubic-bezier(.16,1,.3,1);
+}
+.product-media:hover img{transform:scale(1.05)}
+.product-name{
+  font-family:var(--font-display);
+  font-size:clamp(1.75rem,3.5vw,2.5rem);
+  line-height:1.1;letter-spacing:-.03em;
+  margin:0 0 .75rem;
+}
+.product-description{
+  color:var(--ink-dim);
+  font-size:1.05rem;line-height:1.6;
+  max-width:55ch;margin:0 0 1.5rem;
+}
+.product-price{
+  font-family:var(--font-display);
+  font-size:clamp(1.5rem,2.5vw,2rem);
+  font-weight:700;font-variant-numeric:tabular-nums;
+  letter-spacing:0;margin:0 0 2rem;
+  color:var(--ink);
+}
+.product-cta{width:100%;max-width:320px}
+@media (min-width:600px){
+  .product-cta{width:auto}
+}
+.product-back{margin-top:2rem}
+.back-link{
+  display:inline-flex;align-items:center;gap:.4rem;
+  color:var(--ink-dim);font-size:.9rem;
+  transition:color .2s;
+}
+.back-link:hover{color:var(--accent)}
+
+/* Contact */
+.contact-grid{
+  display:grid;
+  grid-template-columns:1.45fr 1fr;
+  gap:clamp(2.5rem,6vw,5rem);
+  align-items:start;
+}
+.contact-lead{
+  margin:1.15rem 0 2rem;
+  color:var(--ink-dim);font-size:1.1rem;line-height:1.5;max-width:34ch;
+}
+.contact-alt h3{font-size:1.1rem;margin-bottom:1rem}
+.contact-list{
+  list-style:none;margin:0;padding:0;
+  display:flex;flex-direction:column;gap:.85rem;
+  font-size:1.02rem;
+}
+/* El area de toque sube a 45px con padding arriba y un margin negativo que
+   compensa contra el gap: el ritmo vertical entre links y la posicion del
+   underline quedan exactamente como estaban. */
+.contact-list a{
+  display:inline-flex;align-items:center;
+  padding:1.15rem 0 .15rem;margin-top:-.6rem;
+  border-bottom:1px solid var(--line);
+  transition:border-color .2s,color .2s;
+}
+.contact-list a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* ─────────────────────────────────────────────
+   Footer
+   ───────────────────────────────────────────── */
+.site-footer{
+  background:var(--footer-bg);color:var(--footer-ink);
+  padding:clamp(3rem,6vw,4.5rem) 0 max(clamp(1.5rem,3vw,2rem), env(safe-area-inset-bottom));
+}
+.footer-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));
+  gap:clamp(2rem,4vw,3rem);
+}
+.site-footer h4{
+  font-size:.75rem;text-transform:uppercase;letter-spacing:.13em;
+  color:#fff;margin-bottom:1rem;
+}
+.site-footer p{
+  margin:0;font-size:.95rem;line-height:1.55;
+  color:var(--footer-dim);max-width:38ch;
+}
+.footer-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.55rem}
+/* Mismo truco que .contact-list: area de toque 45px, ritmo visual intacto. */
+.footer-list a{
+  display:inline-block;
+  padding:1.1rem 0 .1rem;margin-top:-.55rem;
+  font-size:.95rem;color:var(--footer-ink);
+  text-decoration:underline;text-underline-offset:4px;
+  text-decoration-color:var(--footer-line);
+  transition:color .2s,text-decoration-color .2s;
+}
+.footer-list a:hover{color:#fff;text-decoration-color:var(--accent)}
+.footer-legal{
+  margin-top:clamp(2.5rem,5vw,3.5rem);padding-top:1.75rem;
+  border-top:1px solid var(--footer-line);
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:.75rem;
+  font-size:.85rem;color:var(--footer-dim);
+}
+
+/* ─────────────────────────────────────────────
+   Reveal
+   ───────────────────────────────────────────── */
+/* El clip-path vive en el <img>, nunca en el elemento observado: si va en el
+   .reveal, IntersectionObserver mide ratio 0 (Chrome aplica el clip-path al
+   calcular la interseccion), el threshold 0.12 jamas se alcanza, el .is-in no
+   se agrega y la media queda invisible para siempre. */
+.js .reveal img{
+  clip-path:inset(0 0 100% 0);
+  transition:clip-path .8s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1);
+}
+.js .reveal.is-in img{clip-path:inset(0 0 0 0)}
+.products li:nth-child(2) .reveal img,
+.access-grid li:nth-child(2) .reveal img,
+.lookbook-grid li:nth-child(2) .reveal img{transition-delay:.09s,0s}
+.products li:nth-child(3) .reveal img,
+.access-grid li:nth-child(3) .reveal img,
+.lookbook-grid li:nth-child(3) .reveal img{transition-delay:.18s,0s}
+
+/* ─────────────────────────────────────────────
+   Responsive
+   ───────────────────────────────────────────── */
+@media (max-width:1100px){
+  .wordmark{font-size:4.75rem}
+}
+@media (max-width:900px){
+  .section{padding:5rem 0}
+  .band-statement{font-size:2.5rem}
+}
+@media (max-width:860px){
+  .contact-grid{grid-template-columns:1fr}
+
+  /* Hero stacked: plate on top, copy on solid dark — no scrim needed behind text */
+  .hero{display:block;min-height:0}
+  .hero-plate{position:relative;inset:auto;aspect-ratio:4/3}
+  .hero-img{object-position:center center}
+  .hero-plate::after{
+    background:linear-gradient(180deg,rgba(13,11,9,.20) 0%,rgba(13,11,9,.06) 55%,rgba(13,11,9,.55) 88%,rgba(13,11,9,.92) 100%);
+  }
+  .hero-inner{padding-block:2.5rem 3.25rem}
+}
+
+/* ─────────────────────────────────────────────
+   Nav <=900px: los cuatro destinos + el CTA no entran
+   en la barra. Pasa a panel, que es la razon por la
+   que el corte esta aca y no en 640px.
+   ───────────────────────────────────────────── */
+@media (max-width:900px){
+  .nav-toggle{display:grid}
+  .nav-links{
+    display:none;
+    position:absolute;left:0;right:0;top:100%;
+    flex-direction:column;align-items:stretch;gap:0;
+    padding:.35rem 0 .85rem;
+    background:var(--base);
+    border-bottom:1px solid var(--line);
+    box-shadow:0 20px 30px -20px rgba(20,19,17,.4);
+  }
+  .nav[data-open="true"] .nav-links{display:flex}
+  .nav-links li+li{border-top:1px solid var(--line)}
+  .nav-links a{width:100%;border-bottom:0}
+  .nav-links a[aria-current]{box-shadow:inset 3px 0 0 var(--accent);padding-inline-start:1rem}
+  .nav-links a:hover{color:var(--accent)}
+}
+
+@media (max-width:700px){
+  .wordmark{font-size:3.5rem}
+}
+/* El XV llevo el wordmark de 6 a 8 letras, y el ancho disponible baja con el
+   viewport. A 3.5rem las ocho miden alrededor de 380px en Archivo Black, pero
+   el contenido dentro de .wrap es de 320px en un viewport de 360: desbordan por
+   debajo de ~450px. El 0.85 de la cuenta es el avance medio por letra en un
+   grotesco heavy, y es conservador. No hay forma de medir el texto sin ver la
+   pagina, asi que el margen es a proposito. */
+@media (max-width:480px){
+  .wordmark{font-size:2.6rem}
+}
+@media (max-width:360px){
+  .wordmark{font-size:2.2rem}
+}
+@media (max-width:640px){
+  .wrap{padding-inline:1.25rem}
+  /* Antes esto bajaba el min-height de la barra a 3.5rem y no hacia nada: el
+     alto natural de la fila da ~68px por el CTA de 45.4px mas el padding
+     block, asi que ningun min-height de 56 o 64 llega a atar. Se saco el
+     override en vez de dejar un piso muerto que aparente achicar la barra. */
+  .section{padding:3.75rem 0}
+  .section-head{margin-bottom:2rem}
+  .band{padding:3rem 0}
+  .band-statement{font-size:2rem}
+  .hero-actions .btn{flex:1 1 auto}
+}
+
+/* A 320px la barra queda en 280px de contenido y marca + toggle + Pedir piden
+   ~289px. El nombre de la marca baja y lo que queda es el mark, que ya dice
+   Temple; el wordmark esta a 100px de scroll, en el hero. */
+@media (max-width:360px){
+  .nav-brand span{display:none}
+  /* A 320px los dos botones del hero parten de 133px cada uno y "Pedir por
+     WhatsApp" se parte en dos lineas. Apilados entran los dos enteros. */
+  .hero-actions{flex-direction:column;align-items:stretch}
+  .hero-actions .btn{flex:0 0 auto}
+}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{
+    animation-duration:.001ms !important;
+    animation-delay:0ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+    transition-delay:0ms !important;
+  }
+  /* Las animaciones ligadas a scroll ignoran animation-duration: el progreso
+     lo da la posicion de scroll, no el reloj. Hay que apagarlas por nombre y
+     devolverlas a su estado neutro a mano, o el motion sigue pasando.
+     letter-drift vive en `translate` y letterRise en `transform`: los dos
+     hay que neutralizarlos. */
+  .wordmark > span,
+  .field-line,
+  main > section::before{animation:none !important}
+  .field-line{transform:none !important}
+  .wordmark > span{transform:none !important;translate:none !important}
+  main > section::before{color:var(--ink-dim) !important}
+}
+
+/* ─────────────────────────────────────────────
+   Puntero grueso.
+   Va al final, despues de los cortes responsivos, para ganar los empates de
+   especificidad: en un :hover de barra angosta hay una regla de color igual
+   de especifica mas abajo. En touch el :hover se queda pegado despues del
+   primer toque, asi que se neutraliza y el estado real pasa a :active.
+   ───────────────────────────────────────────── */
+@media (hover: none){
+  .btn:hover{transform:none}
+  .btn:active{transform:translateY(-2px)}
+  .product:hover .media img{transform:none}
+  .product:active .media img{transform:scale(1.03)}
+  .product:active .product-cta{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+  .access:active .product-cta{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+  .nav-links a:hover{color:inherit}
+  .nav-links a[aria-current]:hover{color:var(--accent)}
+  .nav-toggle:hover{background:none}
+  .nav-toggle:active{background:var(--surface)}
+  .contact-list a:hover,.footer-list a:hover{color:inherit;border-bottom-color:var(--line);text-decoration-color:var(--footer-line)}
+  .contact-list a:active{color:var(--accent)}
+}
+
+/* ═════════════════════════════════════════════
+   OVERDRIVE — Campo + Forja
+   ─────────────────────────────────────────────
+   Todo lo de abajo es decorativo y aditivo: si el navegador no lo soporta,
+   la pagina queda igual que antes, que es un diseno terminado. No hay ni un
+   solo cambio de copy, de markup semantico ni de comportamiento de compra.
+
+   Campo: la pagina era una pila de rectangulos sin una sola linea de rugby.
+   Le damos geometria de cancha — lineas de sobra, yard markers con numero de
+   camiseta, y el wordmark que se abre al scrollear como una linea que se
+   forma. Todo con animation-timeline, que corre en el compositor: cero JS,
+   cero layout.
+
+   Forja: la marca dice "el caracter se forja" y no lo representaba en ningun
+   lado. El ladrillo del accent respira como brasa, el grano de la pantalla le
+   da textura de impression, y el footer plano recibe un residuo de calor.
+   ═════════════════════════════════════════════ */
+
+/* ── FORJA · grano de impression ──
+   feTurbulence estatico, en mosaico de 120px, sin animacion: animar el
+   ruido es el error caro. Sin mix-blend-mode a proposito — un blend sobre una
+   capa fija a pantalla completa fuerza a recomponer todo lo de abajo en cada
+   frame, y en un device de gama media se nota. Opacidad baja y listo.
+
+   El SVG vive en images/ y no como data: URI embebido: img-src gobierna
+   los url() de CSS, asi que un data: en background-image lo haria falta en la
+   CSP. Un asset ademas lo toma la regla /images/* immutable y se cachea.
+
+   La ruta es ABSOLUTA a proposito. Antes el CSS vivia inline en el HTML, en
+   "/", asi que una ruta relativa resolvia bien. Con Astro el CSS se emite
+   como /_astro/index.<hash>.css, y "images/forge-grain.svg" passaria a
+   resolver contra /_astro/ y daria 404. Vite avisa de esto en el build pero
+   no lo arregla. */
+body::after{
+  content:'';position:fixed;inset:0;z-index:5;
+  pointer-events:none;
+  background-image:url("/images/forge-grain.svg");
+  background-size:120px 120px;
+  opacity:.05;
+}
+
+/* ── FORJA · la brasa y la cancha ──
+   El gate de 861px no es decorativo: <=860px .band cae a background:none
+   (el bloque ladrillo se apaga a proposito en movil). Una animacion de CSS
+   le gana en prioridad a cualquier declaracion normal de autor, asi que sin
+   este min-width la brasa volveria a pintar el ladrillo en el movil. */
+@media (min-width:861px){
+  .band{
+    background-color:var(--accent);
+    background-image:repeating-linear-gradient(180deg,
+      rgba(250,249,246,.055) 0 1px,
+      transparent 1px 4.75rem);
+    animation:forge-breathe 13s ease-in-out infinite;
+  }
+}
+@keyframes forge-breathe{
+  0%,100%{ background-color:#6e2e24 }
+  50%    { background-color:#7d2a1e }
+}
+
+/* ── FORJA · residuo de calor en el pie ──
+   El footer era el unico bloque plano y muerto de la pagina. Un radial
+   calido arriba, como lo que queda encendido despues del partido. Estatico:
+   una sola capa, sin coste. */
+.site-footer{
+  background-image:radial-gradient(120% 70% at 50% 0%,
+    rgba(139,26,26,.22) 0%,
+    rgba(110,46,36,.10) 38%,
+    transparent 72%);
+}
+
+/* ── CAMPO · yard markers ──
+   Numeros de camiseta arriba de cada titulo de seccion. Van EN FLUJO, no
+   posicionados: .wrap tiene padding de 2rem y max-width 1200px, asi que hay
+   que decidir si el margen exterior existe antes de poner nada a la izquierda.
+   Una etiqueta absoluta termina encima del texto en cuanto esa cuenta sale
+   mal. En flujo no hay nada que colisione.
+
+   El conteo corre solo sobre .section, no sobre main > section a secas: el
+   bloque .band es un statement, no una seccion, y numerarlo obligaba a
+   resolver el color del numero sobre ladrillo y sobre el fondo plano del
+   movil. Sin el arrancan en 01 Coleccion / 02 Accesorios / 03 Lookbook /
+   04 Contacto, que es la numeracion que ya siguen los links del nav. */
+/* Ademas el numero del yard marker viene del atributo data-yard, no de un contador CSS.
+   Cuando las secciones eran una sola pagina, counter-increment sobre main > .section
+   producia la secuencia solo. Ahora cada seccion es su pagina: el contador se reinicia
+   en cada una y todas mostrarian 01. El numero es parte de la marca y de la
+   navegacion, asi que se pasa explicito desde la pagina. El prefijo "0" vive en el
+   contenido del pseudo-elemento y el atributo trae solo el digito, para que la
+   numeracion no se desincronice si alguna vez se inserta una seccion. */
+.section-head[data-yard]::before{
+  content:"0" attr(data-yard);
+  display:block;margin-bottom:.6rem;
+  font-family:var(--font-display);font-size:.68rem;
+  letter-spacing:.14em;color:var(--ink-dim);
+  transition:color .45s ease;
+}
+.section-head[data-current]::before{color:var(--accent)}
+/* Lede del encabezado de pagina. Sale de la misma familia que .hero-lede y
+   .contact-lead: mismo --ink-dim, mismo interlineado. El max-width es mas
+   ancho que el de los productos porque aca la frase es de pagina, no de
+   tarjeta, y a 34ch quedaria partida en tres lineas en un monitor. */
+.page-lede{
+  max-width:46ch;margin:1.15rem 0 0;
+  color:var(--ink-dim);font-size:1.1rem;line-height:1.5;
+}
+
+/* INDICE DE SECCIONES (home) — la fila es el encabezado de seccion hecho link.
+   Tres columnas: el numero de yard en su propia columna, el titulo y el lede
+   juntos, y la flecha. El numero se alinea con la grilla en vez de flotar
+   arriba: como hay cuatro filas, un numero desalineado se lee como un error
+   de maquetado y no como una decision. */
+.index-list{
+  list-style:none;margin:0;padding:0;
+  border-top:1px solid var(--line);
+}
+.index-list > li{
+  border-bottom:1px solid var(--line);
+}
+.index-link{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:0 1.5rem;
+  align-items:baseline;
+  padding:1.75rem .25rem;
+  color:inherit;text-decoration:none;
+  transition:background-color .3s ease;
+}
+.index-link::before{
+  content:"0" attr(data-yard);
+  font-family:var(--font-display);font-size:.68rem;letter-spacing:.14em;
+  color:var(--ink-dim);
+  transition:color .45s ease;
+}
+.index-body{display:grid;gap:.4rem}
+.index-title{
+  font-family:var(--font-display);
+  font-size:clamp(1.25rem,2.4vw,1.75rem);
+  line-height:1.05;
+}
+.index-desc{
+  color:var(--ink-dim);
+  font-size:.95rem;line-height:1.5;
+  max-width:52ch;
+}
+.index-go{
+  font-size:1.25rem;line-height:1;
+  color:var(--ink-dim);
+  transition:transform .3s ease, color .3s ease;
+}
+.index-link:hover{background:var(--surface);padding-left:1rem}
+.index-link:hover::before,
+.index-link:focus-visible::before{color:var(--accent)}
+.index-link:hover .index-go,
+.index-link:focus-visible .index-go{color:var(--accent);transform:translateX(.3rem)}
+/* ── CAMPO · linea de sobra en el margen ──
+   Se dibuja con el scroll del documento. scaleY en una capa fija: solo
+   compositor, no toca layout ni paint del contenido.
+   El corte es 1300px y no 1100 porque .wrap es max-width 1200px con padding
+   de 2rem recio: el margen exterior de verdad no existe hasta que el viewport
+   pasa 1200 + 64. Antes de eso la linea caia adentro del gutter y rozaba el
+   texto. */
+.field-line{display:none}
+@media (min-width:1300px){
+  .field-line{
+    display:block;position:fixed;z-index:2;
+    left:clamp(.75rem,1.6vw,2rem);top:0;
+    width:1px;height:100vh;
+    background:linear-gradient(180deg,
+      transparent 0%,
+      var(--accent) 10%,
+      var(--line) 52%,
+      var(--line) 100%);
+    transform-origin:top center;
+  }
+  @supports (animation-timeline: scroll()){
+    .field-line{
+      transform:scaleY(0);
+      animation:field-draw linear both;
+      animation-timeline:scroll(root block);
+    }
+    @keyframes field-draw{ to{ transform:scaleY(1) } }
+  }
+}
+
+/* ── CAMPO · el wordmark se abre al scrollear ──
+   Las seis letras se separan a velocidades distintas: la primera se queda casi
+   quieta, la ultima se va. Es la linea formandose al backwards.
+
+   Ojo con el shorthand: `animation:letter-drift ...` borra TODOS los longhands
+   de animacion del elemento, incluido el animation-name. Las letras ya tenian
+   `animation:letterRise` para la entrada, y con el shorthand esa entrada
+   desaparecia en silencio — el keyframe seguia declarado y sin usar. Por eso
+   esto va con longhands, y son dos animaciones en vez de una.
+
+   Y van en DOS propiedades distintas a proposito: letterRise mueve
+   `transform` y letter-drift mueve `translate`. Son propiedades independientes
+   y se componen (translate, despues rotate, despues scale, despues transform),
+   asi que conviven sin pelearse por el mismo valor. Si las dos animaran
+   `transform`, la ultima de la lista gana y se pierde el movimiento de entrada. */
+@supports (animation-timeline: scroll()){
+  .wordmark > span{
+    animation-name:letterRise, letter-drift;
+    animation-duration:.95s, 0s;
+    animation-timing-function:cubic-bezier(.16,1,.3,1), linear;
+    animation-fill-mode:both, both;
+    animation-timeline:auto, scroll(root block);
+  }
+  .wordmark > span:nth-child(1){ --p:6px }
+  .wordmark > span:nth-child(2){ --p:11px }
+  .wordmark > span:nth-child(3){ --p:17px }
+  .wordmark > span:nth-child(4){ --p:23px }
+  .wordmark > span:nth-child(5){ --p:30px }
+  .wordmark > span:nth-child(6){ --p:38px }
+  /* El XV. Sin --p el custom property queda invalido en tiempo de computo y
+     `translate:0 var(--p)` se descarta entero, o sea que estas dos letras se
+     quedarian quietas mientras las otras seis se separan. Las distancias siguen
+     la aceleracion de la serie (6, 11, 17, 23, 30, 38 -> 47, 57). */
+  .wordmark > span:nth-child(7){ --p:47px }
+  .wordmark > span:nth-child(8){ --p:57px }
+  @keyframes letter-drift{
+    from{ translate:0 0 }
+    to  { translate:0 var(--p) }
+  }
+}
+
+/* ── LOOKBOOK · duotono ──
+   Son tres fotos de stock de rugby generico, y eso era el punto debil de la
+   pagina: en un sitio de marca, tres imagens de stock del producto genusico
+   dejan de ser contenido y pasan a ser relleno. No se pueden cambiar sin
+   fotos propias, pero si se pueden tratar para que se lean como documentacion
+   de campo y no como placeholder.
+
+   El pipeline es: grayscale a la foto, un sesgo brick por multiply (multiplica
+   solo el canal de color, asi que las altas siguen being off-white y las
+   sombras caen al ladrillo de la marca — eso es un duotono de verdad), y el
+   grano de la pagina hace el resto. El blend vive dentro de .media, que ya
+   era un stacking context con overflow:hidden, asi que no se escapa.
+
+   NO se toco el copy de los captions. "El tackle no es el final. Es el
+   principio de levantarse." ya era lo mejor escrito del sitio, y reescribirlo
+   como anotacion de partido habria sido bajarlo de nivel. */
+.look .media img{
+  filter:grayscale(1) contrast(1.14) brightness(.95);
+}
+.look .media::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,
+    rgba(110,46,36,.26) 0%,
+    rgba(20,19,17,.10) 52%,
+    rgba(110,46,36,.46) 100%);
+  mix-blend-mode:multiply;
+}
+
+/* ─────────────────────────────────────────────
+   Print
+   ───────────────────────────────────────────── */
+@media print{
+
+/* WhatsApp CTA pulse effect */
+.product-cta:hover {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: translateY(-2px) scale(1.02); }
+  50% { transform: translateY(-3px) scale(1.04); }
+}
+
+  /* Sin JS las imagenes quedan con clip-path y se imprimen vacias. */
+  .js .reveal img{clip-path:none}
+  .nav,.skip,.hero-actions,.hero-plate::after{display:none}
+  .hero{min-height:0;background:none;color:var(--ink)}
+  .hero-inner{padding-block:0 1.5rem}
+  .wordmark{color:var(--ink)}
+  .tagline,.hero-lede{color:var(--ink-dim)}
+  .band{background:none;color:var(--ink);border-block:1px solid var(--line)}
+  .band-statement{font-size:1.5rem}
+  .product,.access,.look{break-inside:avoid}
+  .site-footer{background:none;color:var(--ink);border-top:1px solid var(--line)}
+  .site-footer p,.footer-legal{color:var(--ink-dim)}
+  .site-footer h4,.footer-list a{color:var(--ink)}
+  /* El grano, la linea de sobra y los numeros de yard son tinta, no contenido:
+     en papel salen como manchas grises. */
+  body::after,.field-line,main > section::before{display:none !important}
+  .look .media img{filter:none}
+  .look .media::after{display:none}
+}
+
+/* ─────────────────────────────────────────────
+   Windows High Contrast
+   ───────────────────────────────────────────── */
+/* El modo forzado sobreescribe colores pero no background-image, box-shadow ni
+   backdrop-filter. El scrim del hero es un gradiente: sin esto, el texto blanco
+   queda sobre el sistema de colores del usuario con el contraste que quiera. */
+@media (forced-colors:active){
+  .nav{-webkit-backdrop-filter:none;backdrop-filter:none;background:Canvas}
+  .hero-plate::after{display:none}
+  .hero{background:Canvas;color:CanvasText}
+  .tagline,.hero-lede{color:CanvasText}
+  :focus-visible{outline:2px solid Highlight}
+  .media,.product,.access,.site-footer{border:1px solid CanvasText}
+  .media.is-broken{box-shadow:none}
+  /* En Windows High Contrast el modo de blend se ignora y el duotono se
+     convierte en un velo opaco sobre la foto. Se saca la foto del juego. */
+  body::after,.field-line{display:none}
+  .look .media img{filter:grayscale(1)}
+  .look .media::after{display:none}
+  main > section::before{color:CanvasText !important;background:none}
+}

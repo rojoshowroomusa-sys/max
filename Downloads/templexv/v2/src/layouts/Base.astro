@@ -1,0 +1,110 @@
+---
+/**
+ * Layout base: todo lo que vive en <head> mas el script principal.
+ *
+ * El numero de WhatsApp se recibe por prop para que siga siendo UN solo lugar
+ * editable. La alternativa —hardcodearlo en el markup— es exactamente el
+ * patron que hacia imposible activar la conversion sin tocar tres archivos.
+ */
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  description: string;
+  /**
+   * Numero de WhatsApp en E.164, SOLO digitos: 54 + area + numero, sin + ni
+   * guiones. Con +54 9 221 626 8594 el valor es '5492216268594'.
+   *
+   * Si este valor no matchea /^\d{10,15}$/ el script NO reescribe los href:
+   * los enlaces siguen funcionando con el prellenado generico (abren WhatsApp
+   * con el texto staged, pero muestran el selector de contactos en vez de abrir
+   * el chat directo) y se emite un warning en consola. Para desactivar eso,
+   * vaciar el valor.
+   */
+  waNumber?: string;
+}
+
+// 54 pais + 9 (movil) + 221 (La Plata) + 6268594 = 13 digitos.
+const { title, description, waNumber = '5492216268594' } = Astro.props;
+
+const SITE = 'https://t1mpl2xv.pages.dev';
+const OG_IMAGE = `${SITE}/images/temple-og-1200.jpg`;
+const OG_ALT = 'Pelota de rugby Temple XV sobre el césped, con el logo de la marca';
+const SHORT = 'Ropa y objetos para los que juegan al rugby. Pedí por WhatsApp.';
+---
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#faf9f6" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#141311" media="(prefers-color-scheme: dark)" />
+
+    <!-- ─────────────────────────────────────────────
+         NUMERO DE WHATSAPP — unico lugar donde vive.
+         Se edita en la prop waNumber, arriba en este mismo archivo.
+
+         5492216268594 = 54 pais + 9 movil + 221 La Plata + 6268594.
+         El script reescribe los 10 href solo si el valor matchea
+         /^\d{10,15}$/. Para desactivarlo, vaciar la prop: los enlaces vuelven
+         al prellenado generico del href, que sigue siendo un enlace funcional
+         de WhatsApp (abre con el texto staged, pero por el selector de
+         contactos en vez de abrir el chat directo).
+         ───────────────────────────────────────────── -->
+    <meta name="temple:wa" content={waNumber} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:site_name" content="Temple XV" />
+    <meta property="og:url" content={`${SITE}/`} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={SHORT} />
+    <meta property="og:image" content={OG_IMAGE} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={OG_ALT} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={SHORT} />
+    <meta name="twitter:image" content={OG_IMAGE} />
+    <meta name="twitter:image:alt" content={OG_ALT} />
+    <link rel="canonical" href={`${SITE}/`} />
+
+    <link rel="icon" type="image/png" sizes="64x64" href="/images/favicon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
+    <meta name="msapplication-TileImage" content={`${SITE}/images/apple-touch-icon.png`} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&display=swap"
+    />
+  </head>
+
+  <body>
+    <slot />
+
+    <!--
+      Astro empaqueta esto a /_astro/main.<hash>.js y lo carga como module, que
+      es defer por definicion. No hace falta un listener de DOMContentLoaded, y
+      en la pagina no queda ningun bloque de estilo ni de script embebido: la CSP
+      quedo en 'self' y se termino el recalculo manual de hashes.
+
+      Los nombres de las etiquetas van sin parentesis angulares a proposito. Un
+      comentario HTML que los trae rompe cualquier grep que busque "script
+      inline" o "style inline" - cuenta como un match -, y uno que incluyera el
+      cierre de la etiqueta cortaria el documento. En un comentario HTML el
+      parser no distingue texto de markup: lo primero se ignora y lo segundo
+      rompe la pagina.
+    -->
+    <script type="module">
+      import '../scripts/main.ts';
+    </script>
+  </body>
+</html>

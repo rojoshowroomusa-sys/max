@@ -1,0 +1,35 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import PageHead from '../components/PageHead.astro';
+import Products from '../components/Products.astro';
+import Footer from '../components/Footer.astro';
+import StructuredData from '../components/StructuredData.astro';
+import { routeByPath } from '../data/catalog';
+
+const route = routeByPath.get('coleccion')!;
+const SITE_URL = 'https://t1mpl2xv.pages.dev';
+const breadcrumbs = [
+  { name: 'Inicio', url: '/' },
+  { name: route.title, url: `/${route.path}` },
+];
+---
+
+<Base
+  title="Colección — Temple XV"
+  description="Polo, hoodie y campera Temple XV. El carácter se forja. Pedilos por WhatsApp."
+>
+  <StructuredData type="BreadcrumbList" data={{ items: breadcrumbs }} />
+  <Nav />
+
+  <main id="contenido" tabindex="-1">
+    <section class="section" id="coleccion" aria-labelledby="coleccion-t">
+      <div class="wrap">
+        <PageHead id="coleccion-t" yard={route.yard} title={route.title} lede={route.lede} />
+        <Products />
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Base>

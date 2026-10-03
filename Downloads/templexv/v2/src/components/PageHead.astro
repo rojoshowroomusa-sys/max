@@ -1,0 +1,32 @@
+---
+/**
+ * Encabezado de seccion. Reusa .section-head tal cual estaba en la home, asi que
+ * el unico dato nuevo es data-yard: el numero de camiseta que antes salia de un
+ * contador CSS y ahora es explicito porque cada seccion es su pagina.
+ *
+ * `id` va en el heading para que el section pueda apuntar con aria-labelledby.
+ * `level` decide h1 o h2. En una subpagina el encabezado es el h1 de la pagina.
+ * En la home NO puede serlo, porque el h1 ya es el wordmark del hero: dos h1 en
+ * un documento anuncian dos temas, y ademas el indice de la home esta fuera de
+ * la numeracion 01-04, asi que va como lo que es, una seccion mas.
+ *
+ * `yard` es opcional por eso mismo: la numeracion 01-04 es de las cuatro
+ * secciones de marca, y el indice de la home no es una de ellas. Sin el
+ * atributo, la regla .section-head[data-yard]::before no aplica y no sale numero.
+ */
+export interface Props {
+  id?: string;
+  yard?: string;
+  title: string;
+  lede?: string;
+  level?: 1 | 2;
+}
+
+const { id, yard, title, lede, level = 1 } = Astro.props;
+const Heading = `h${level}` as 'h1' | 'h2';
+---
+
+<div class="section-head" data-yard={yard}>
+  <Heading class="section-title" id={id}>{title}</Heading>
+  {lede && <p class="page-lede">{lede}</p>}
+</div>

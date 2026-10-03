@@ -1,0 +1,57 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import PageHead from '../components/PageHead.astro';
+import Footer from '../components/Footer.astro';
+import FAQ from '../components/FAQ.astro';
+import StructuredData from '../components/StructuredData.astro';
+import { routeByPath, waHref } from '../data/catalog';
+
+const route = routeByPath.get('contacto')!;
+const SITE_URL = 'https://t1mpl2xv.pages.dev';
+const breadcrumbs = [
+  { name: 'Inicio', url: '/' },
+  { name: route.title, url: `/${route.path}` },
+];
+---
+
+<Base
+  title="Contacto — Temple XV"
+  description="Pedidos por WhatsApp. Contame qué querés y te respondo rápido, por el mismo chat."
+>
+  <StructuredData type="BreadcrumbList" data={{ items: breadcrumbs }} />
+  <Nav />
+
+  <main id="contenido" tabindex="-1">
+    <section class="section" id="contacto" aria-labelledby="contacto-t">
+      <div class="wrap contact-grid">
+        <div>
+          <PageHead id="contacto-t" yard={route.yard} title={route.title} lede={route.lede} />
+          <a class="btn btn-solid btn-lg" href={waHref} data-wa="Hola%20Temple%20XV">Pedir por WhatsApp</a>
+        </div>
+        <div class="contact-alt">
+          <h2>Si no usás WhatsApp</h2>
+          <ul class="contact-list" role="list">
+            <li>
+              <a href="https://www.instagram.com/temple.argentina" target="_blank" rel="noopener">
+                Instagram <span aria-hidden="true">↗</span>
+              </a>
+            </li>
+            <li>
+              <a href="mailto:hola@temple.art">Email <span aria-hidden="true">↗</span> hola@temple.art</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq" aria-labelledby="faq-t" style="padding-top: 0;">
+      <div class="wrap">
+        <h2 id="faq-t" class="sr-only">Preguntas frecuentes</h2>
+        <FAQ />
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Base>

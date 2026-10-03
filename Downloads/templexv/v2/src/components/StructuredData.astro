@@ -1,0 +1,82 @@
+---
+/**
+ * Componente de datos estructurados JSON-LD (schema.org)
+ * Genera markup semántico para SEO: Organization, WebSite, Product, BreadcrumbList
+ */
+
+interface Props {
+  type: 'organization' | 'website' | 'product' | 'breadcrumb' | 'BreadcrumbList' | 'WebSite' | 'Organization';
+  data: Record<string, unknown>;
+}
+
+const { type, data } = Astro.props;
+
+const SITE = 'https://t1mpl2xv.pages.dev';
+
+// Normalizar tipo (aceptar tanto kebab-case como PascalCase)
+const normalizedType = type.toLowerCase().replace('list', '').replace('website', 'website');
+
+function getSchema(): object {
+  switch (normalizedType) {
+    case 'organization':
+      return {
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        name: 'Temple XV',
+        url: SITE,
+        logo: `${SITE}/images/temple-mark.png`,
+        sameAs: [
+          'https://www.instagram.com/temple.argentina',
+          'https://wa.me/5492216268594'
+        ],
+        contactPoint: {
+          '@type': 'ContactPoint',
+          telephone: '+54-9-221-626-8594',
+          contactType: 'customer service',
+          availableLanguage: 'Spanish',
+          areaServed: 'AR'
+        }
+      };
+
+    case 'website':
+      return {
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'Temple XV',
+        url: SITE,
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: `${SITE}/buscar?q={search_term_string}`
+          },
+          'query-input': 'required name=search_term_string'
+        }
+      };
+
+    case 'product':
+      return {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        ...data
+      };
+
+    case 'breadcrumb':
+      return {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: data.items.map((item: Record<string, unknown>, index: number) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          name: item.name,
+          item: item.url.startsWith('http') ? item.url : `${SITE}${item.url}`
+        }))
+      };
+
+    default:
+      return {};
+  }
+}
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(getSchema())} />

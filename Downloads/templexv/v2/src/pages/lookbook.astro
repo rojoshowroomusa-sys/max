@@ -1,0 +1,35 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import PageHead from '../components/PageHead.astro';
+import Lookbook from '../components/Lookbook.astro';
+import Footer from '../components/Footer.astro';
+import StructuredData from '../components/StructuredData.astro';
+import { routeByPath } from '../data/catalog';
+
+const route = routeByPath.get('lookbook')!;
+const SITE_URL = 'https://t1mpl2xv.pages.dev';
+const breadcrumbs = [
+  { name: 'Inicio', url: '/' },
+  { name: route.title, url: `/${route.path}` },
+];
+---
+
+<Base
+  title="Lookbook — Temple XV"
+  description="El golpe, el after y el entrenamiento. Lookbook de Temple XV."
+>
+  <StructuredData type="BreadcrumbList" data={{ items: breadcrumbs }} />
+  <Nav />
+
+  <main id="contenido" tabindex="-1">
+    <section class="section" id="lookbook" aria-labelledby="lookbook-t">
+      <div class="wrap">
+        <PageHead id="lookbook-t" yard={route.yard} title={route.title} lede={route.lede} />
+        <Lookbook />
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Base>

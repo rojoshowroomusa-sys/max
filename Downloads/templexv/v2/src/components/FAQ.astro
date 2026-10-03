@@ -1,0 +1,42 @@
+---
+/**
+ * Preguntas frecuentes — componente semántico usando <dl>.
+ * Sin JS, sin estado. Diseñado para insertarse en contacto.astro.
+ */
+
+const faqs = [
+  {
+    q: '¿Cómo hago un pedido?',
+    a: 'Elegí el producto que querés, hacé click en "Pedir por WhatsApp" y se te abre el chat con el texto prellenado. Solo tenés que enviar el mensaje y te respondo con la confirmación, talles, tiempos y forma de pago.',
+  },
+  {
+    q: '¿Qué medios de pago aceptan?',
+    a: 'Transferencia bancaria, Mercado Pago (tarjetas, saldo, QR) y efectivo contra entrega (solo CABA / Gran La Plata). El detalle se coordina por WhatsApp.',
+  },
+  {
+    q: '¿Cuánto tarda en llegar?',
+    a: 'Stock disponible: 24–48 hs hábiles a CABA/GBA. Envíos al interior: 3–5 días por Correo Argentino o Andreani. Si no hay stock, el tiempo de producción es de 10–15 días y te aviso antes de confirmar.',
+  },
+  {
+    q: '¿Cómo elijo el talle?',
+    a: 'Cada prenda tiene su guía de talles en la descripción. Si tenés duda, escribime por WhatsApp con tu altura/peso y te oriento. Los cambios de talle son sin cargo (el envío de vuelta corre por nuestra cuenta).',
+  },
+  {
+    q: '¿Hacen envíos a todo el país?',
+    a: 'Sí, a toda la Argentina por Correo Argentino o Andreani. El costo se calcula según destino y peso; te lo paso por WhatsApp antes de cerrar.',
+  },
+  {
+    q: '¿Puedo retirar en persona?',
+    a: 'Sí, en La Plata (zona centro) coordinando día y horario por WhatsApp. Sin costo.',
+  },
+];
+---
+
+<dl class="faq" role="list">
+  {faqs.map((f) => (
+    <>
+      <dt>{f.q}</dt>
+      <dd>{f.a}</dd>
+    </>
+  ))}
+</dl>

@@ -1,0 +1,53 @@
+# Headers de seguridad y cache para Temple XV (Cloudflare Pages)
+#
+# CSP: no hay ningun bloque de estilo ni de script embebido en ninguna pagina.
+# Astro emite el CSS y el JS a /_astro/ con el hash en el nombre y los dos
+# externos, asi que script-src y style-src vuelven a ser 'self' a secas.
+#
+# Esto es lo que la migracion a Astro compro: antes cada edicion de index.html
+# obligaba a recalcular dos hashes SHA-256 a mano y pegarlos aca, y en una
+# sesion hubo que hacerlo tres veces (con el riesgo de publicar con el hash
+# viejo). El nombre con hash del archivo lo hace el build. Si alguna vez
+# apareciera algo embebido de nuevo, hay que volver a pinear ese hash
+# especifico.
+#
+# Ojo con una trampa al verificar: los comentarios del fuente que describen
+# esto no pueden escribir las etiquetas con parentesis angulares. Un comentario
+# HTML que contiene "<script>" hace que un grep de "script inline".account un
+# match, y si contuviera el cierre de la etiqueta cortaria el documento. Van
+# sin parentesis a proposito.
+#
+# /_astro/* tambien es inmutable: el hash del nombre cambia con cada cambio de
+# contenido, asi que se puede cachear para siempre igual que /images/*. Con las
+# cinco paginas hay un unico CSS y un unico JS, compartidos: no se duplican por
+# pagina.
+#
+# connect-src NO gobierna la navegacion de un enlace, asi que el https://wa.me
+# que estaba ahi no protegia nada: los enlaces de WhatsApp son navegaciones de
+# primer nivel. Ademas no hay fetch/XHR/WS/sendBeacon en la pagina, asi que
+# connect-src 'self' alcanza.
+# img-src: no hay ningun data: URI en el documento. El grano de la forja
+# (/images/forge-grain.svg) es un asset mas y por eso no hace falta 'data:'
+# de vuelta - si alguna vez vuelve a embeberse como data: URI en un
+# background-image, hay que volver a agregar 'data:' a img-src, porque
+# img-src gobierna tambien los url() de CSS.
+# style-src: fonts.gstatic.com sirve binarios de fuente, nunca CSS, y ya
+# estaba cubierto por font-src. Se saco de ahi.
+#
+# Los comentarios van ACA y no adentro de un bloque /* ... */, porque dentro
+# un linea indentada se parsea como header.
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; img-src 'self' https://images.unsplash.com; font-src https://fonts.gstatic.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+
+/*.html
+  Cache-Control: public, max-age=3600, must-revalidate
+
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/images/*
+  Cache-Control: public, max-age=31536000, immutable

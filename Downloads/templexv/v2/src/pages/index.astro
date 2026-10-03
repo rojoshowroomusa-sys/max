@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import PageHead from '../components/PageHead.astro';
+import SectionIndex from '../components/SectionIndex.astro';
+import Footer from '../components/Footer.astro';
+import StructuredData from '../components/StructuredData.astro';
+
+const SITE_URL = 'https://t1mpl2xv.pages.dev';
+const breadcrumbs = [
+  { name: 'Inicio', url: '/' },
+];
+---
+
+<Base
+  title="Temple XV — El carácter se forja"
+  description="El carácter se forja. Polo, hoodie, campera y accesorios de rugby, hechos para durar. Pedilos por WhatsApp. Argentina."
+>
+  <StructuredData type="Organization" data={{}} />
+  <StructuredData type="WebSite" data={{ name: 'Temple XV', url: SITE_URL }} />
+  <Nav />
+
+  <main id="contenido" tabindex="-1">
+    <Hero />
+
+    <section class="band">
+      <div class="wrap">
+        <p class="band-statement">Diseñado para el rugby, hecho para durar.</p>
+      </div>
+    </section>
+
+    <section class="section" id="secciones" aria-labelledby="secciones-t">
+      <div class="wrap">
+        <PageHead
+          id="secciones-t"
+          level={2}
+          title="Por dónde empezar"
+          lede="Cada sección tiene su propia página."
+        />
+        <SectionIndex />
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Base>

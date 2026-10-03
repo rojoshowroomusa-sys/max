@@ -1,0 +1,27 @@
+---
+/**
+ * Indice de secciones de la home.
+ *
+ * No invento una tarjeta nueva: la fila es el mismo encabezado de seccion que
+ * ya tenian, con su numero de yard, hecho link. El yard marker es la firma de
+ * esta marca, asi que el indice se ve como la lista de las secciones que
+ * acabas de dejar de ver al partirla en paginas.
+ */
+import { routes } from '../data/catalog';
+---
+
+<ul class="index-list" role="list">
+  {
+    routes.map((r) => (
+      <li>
+        <a class="index-link" href={`/${r.path}`} data-yard={r.yard}>
+          <span class="index-body">
+            <span class="index-title">{r.title}</span>
+            <span class="index-desc">{r.lede}</span>
+          </span>
+          <span class="index-go" aria-hidden="true">→</span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
