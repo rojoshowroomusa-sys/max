@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<title>Preview de MAX Carnes</title>
+<style>
+:root {
+  --bg: #0a0908;
+  --card: #171310;
+  --accent: #dd302b;
+  --accent-text: #ffffff;
+  --text: #faf6f2;
+  --radius-full: 9999px;
+  --radius-lg: 18px;
+}
+
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text)}
+.h1{font-family:Oswald,serif;font-size:2rem}
+.btn-primary{background:var(--accent);color:var(--accent-text);padding:.5rem 1rem;border:none;border-radius:var(--radius-full);cursor:pointer}
+.card{background:var(--card);color:var(--text);padding:1rem;border-radius:var(--radius-lg);margin:.5rem 0}
+</style>
+<style>
+  .container{max-width:600px;margin:auto;padding:1rem;background:var(--bg);color:var(--text);font-size:1rem}
+  h1{font-size:2rem;margin-bottom:.5rem}
+  button{background:var(--accent);color:var(--on-accent);padding:.5rem 1rem;border:none;border-radius:var(--rounded-full);cursor:pointer}
+  .card{background:var(--neutral);padding:1rem;border-radius:var(--rounded-lg);color:var(--on-primary);margin:.5rem 0}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Título de prueba</h1>
+  <p>Este es un párrafo de prueba para comprobar la tipografía y la paleta de colores.</p>
+  <button>Botón primario</button>
+  <div class="card">
+    <h2>Card de prueba</h2>
+    <p>Contenido de la card con el texto de la paleta.</p>
+  </div>
+</div>
+</body>
+</html>
